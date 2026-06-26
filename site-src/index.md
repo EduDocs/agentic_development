@@ -86,8 +86,4 @@ See the [skill progression](PROGRESSION.md) for the full capability ladder.
 
 ---
 
-!!! info "This site is built from the course's own markdown"
-    The course is itself an agentic-development artifact: markdown is the source of truth, and
-    this website renders the *same* files as the PDF build. Identity and conventions live in
-    [CLAUDE.md](CLAUDE.md); the decision history in the [governance ledger](DECISIONS.md). The
-    material is released to the public domain under [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/).
+*The material is released to the public domain under [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/).*
