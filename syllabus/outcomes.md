@@ -3,7 +3,8 @@
 > Objectives are the broad aims (the *why*); learning outcomes are **measurable** statements of
 > what a student can do by the end (the *what*, each assessable). Outcomes are derived from the
 > capability ladder in [`../PROGRESSION.md`](../PROGRESSION.md) and mapped to the assessment
-> components in [`assessment.md`](assessment.md). The outcome→evidence matrix is built next (S4).
+> components in [`assessment.md`](assessment.md). The outcome→evidence matrix lives in
+> [`assessment-map.md`](assessment-map.md).
 
 ## Objectives
 
@@ -48,8 +49,8 @@ be graded rather than merely asserted:
 - **LO9** is evidenced by *verification work* and *honest failure reporting* (C4, capstone) plus the
   *AI-use disclosure* required on submissions (policy set at S5).
 
-The next step (S4) builds the outcome→evidence matrix and checks that every outcome is covered and
-every assessment is motivated; per-unit rubrics (S9–S10) will trace each criterion back to an
+The outcome→evidence matrix ([`assessment-map.md`](assessment-map.md)) checks that every outcome is
+covered and every assessment is motivated; per-unit rubrics (S9–S10) trace each criterion back to an
 outcome here.
 
 ## Notes

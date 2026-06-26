@@ -32,4 +32,4 @@ Take a symbolic-regression task and show two prompts side by side. Prompt A: "fi
 - Anthropic's prompt engineering guidance and prompt-library documentation.
 - The "few-shot learning" framing from the original large-LM papers (name generically: GPT-3-era in-context learning).
 - Any current model provider's system-prompt / role best-practices doc.
-- Course material: `template-article/` prompts for examples of spec-style instructions.
+- A project's own `CLAUDE.md` and prior prompts as a living library of spec-style instructions.

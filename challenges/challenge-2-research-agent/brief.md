@@ -46,8 +46,8 @@ fails. (Rubric: S9.)
   feel like a new topic — it will feel like this Challenge in a `while` loop.
 - **PySR previews the method:** PySR is itself evolutionary (genetic programming). Meeting it now as
   a baseline-to-beat previews the capstone's machinery before you build the LLM-driven version.
-- **Seeds generate→evaluate→select:** propose-many-then-score is exactly the pattern Challenge 4
-  turns into an orchestrated, verified loop.
+- **Previews generate→evaluate→select:** propose-many-then-score is the kernel of the pattern that
+  Challenge 4 seeds in full — turning it into an orchestrated, verified loop.
 
 ## A note on eval hacking
 Because the next half of the course *optimizes against this harness*, its weaknesses become

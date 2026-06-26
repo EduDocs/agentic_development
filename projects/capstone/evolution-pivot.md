@@ -39,7 +39,7 @@ This is also where your **two spines converge**:
   context engineering in a loop.
 
 ## The lineage (required reading)
-- **FunSearch** (DeepMind, *Nature* 2024) — LLM-guided evolutionary search over *programs*, scored
+- **FunSearch** (DeepMind, *Nature* 2023) — LLM-guided evolutionary search over *programs*, scored
   by an automatic evaluator; found new constructions in combinatorics (cap sets) and better
   online bin-packing heuristics. The template: *LLM as mutation operator, code as artifact,
   automatic score as fitness.*

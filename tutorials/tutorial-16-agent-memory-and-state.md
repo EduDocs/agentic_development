@@ -15,7 +15,7 @@ Multi-step agents fail in characteristic ways when memory is mishandled: they lo
 - Scratchpads / working memory: the agent writes intermediate state to a file or note and reads it back, freeing the context window.
 - Persistence across sessions: serializing facts, decisions, and artifacts so a later run resumes instead of restarting.
 - Compaction: summarizing old turns vs naive truncation; what information must survive a summary.
-- Retrieval as recall: storing memories and pulling the relevant few back in (overlaps with RAG, Tutorial in C3).
+- Retrieval as recall: storing memories and pulling the relevant few back in (overlaps with RAG, Tutorial 09, in C3).
 - What to forget: stale facts, dead ends, secrets, and noise; eviction and TTL policies.
 - Memory hygiene: avoiding "context poisoning," where a wrong fact gets remembered and repeatedly reinforced.
 

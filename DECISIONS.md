@@ -4,6 +4,10 @@
 > block. This is the **governance** record (what we chose and why); `PROGRESSION.md` is the
 > **conceptual** spine (skills and their dependencies); `CLAUDE.md` is the identity + pointer.
 >
+> Entries are numbered in the order they were logged; the session tags (SX) may appear out of
+> numeric order because sessions were executed non-sequentially (e.g. unit build-out before
+> finalizing outcomes and weights).
+>
 > Block format:
 > ```
 > ## D-0NN  <short title>   [YYYY-MM-DD, Session SX]
@@ -34,27 +38,27 @@ generate→evaluate→select→mutate (FunSearch / AlphaEvolve / OpenEvolve line
 vehicle is **symbolic regression / model-discovery-from-data** (clean automatic fitness,
 re-skins across quantitative disciplines).
 Supersedes: —
-Touches: benchmarks/, Challenges/, Projects/
+Touches: benchmarks/, challenges/, projects/
 
 ## D-004  Cohort starts from zero tooling   [2026-06-25, ideation]
 Decision: Assume *some* Python and high general ability, but **no** prior experience with
 agents, git, the shell, or professional tooling. Week-1 onboarding installs the rig, git, and
 shell from scratch.
 Supersedes: —
-Touches: Tasks/, CLAUDE.md
+Touches: tasks/, CLAUDE.md
 
 ## D-005  Grounding: shared early → own domain at the capstone   [2026-06-25, ideation]
 Decision: Tasks and Challenges use shared scaffolding / common datasets so the cohort can
 compare; the Project (capstone) moves to each student's own dissertation domain.
 Supersedes: —
-Touches: Challenges/, Projects/, benchmarks/
+Touches: challenges/, projects/, benchmarks/
 
 ## D-006  Foundations tooling source = vendored Claude Code workshop   [2026-06-25, ideation]
 Decision: Week-1+ tooling content draws from the vendored workshop in
-`Resources/claude-cli-workshop/` (upstream `../../claude-cli`, commit `dd479ab`). Tasks wrap
+`resources/claude-cli-workshop/` (upstream `../../claude-cli`, commit `dd479ab`). Tasks wrap
 its lessons/appendices; drift is tracked in that folder's `PROVENANCE.md`.
 Supersedes: —
-Touches: Resources/claude-cli-workshop/, Tasks/
+Touches: resources/claude-cli-workshop/, tasks/
 
 ## D-007  Adopt the Tasks → Challenges → Project → Tutorials skeleton   [2026-06-25, S0]
 Decision: Use a proven project-based structural vocabulary — **Tasks → Challenges → Project →
@@ -68,13 +72,13 @@ Touches: whole repo layout, CLAUDE.md
 Decision: Include a student-led Tutorials track (peer-taught talks on agent patterns / tools),
 graded as participation, distributed across the term.
 Supersedes: —
-Touches: Tutorials/, syllabus/assessment.md, syllabus/calendar.md
+Touches: tutorials/, syllabus/assessment.md, syllabus/calendar.md
 
 ## D-009  Modernization swap: leaderboard scoring   [2026-06-25, S0]
 Decision: Use a **shared eval-harness / internal leaderboard** for objective scoring of agent and
 SR outputs (rather than an external competition platform). Concrete harness finalized at S7.
 Supersedes: —
-Touches: benchmarks/, Challenges/
+Touches: benchmarks/, challenges/
 
 ## D-010  Final exam included (net-new)   [2026-06-25, S0]
 Decision: The course has a **final exam** — a net-new addition. Its purpose, format, and weight
@@ -89,7 +93,7 @@ co-ideation (assistant brings a thinking scaffold, not a finished draft); design
 structure-first (calendar before outcomes), with outcomes+assessment locked before unit
 content. Decisions are logged here in `DECISIONS.md`.
 Supersedes: —
-Touches: process; plan at `~/.claude/plans/i-want-you-to-expressive-liskov.md`
+Touches: process (the build protocol is recorded in this ledger)
 
 ## D-012  The final Project IS the summative; calendar carries slack   [2026-06-25, S1]
 Decision: The course runs **14 teaching weeks + a week-15 finals slot**; the **final Project is
@@ -99,7 +103,7 @@ progression is protected over the exact grid. Term shape: Tasks (wk 1) → Chall
 foundations (wks 1–8) → evolution pivot + capstone launch (~wk 9) → Project (~wks 10–14, due
 wk 15); Tutorials throughout.
 Refines: D-010 (exam now = the Project, not a net-new instrument), D-001 (term shape)
-Touches: syllabus/calendar.md, Projects/, syllabus/assessment.md; collapses old S11 into S10
+Touches: syllabus/calendar.md, projects/, syllabus/assessment.md; collapses old S11 into S10
 
 ## D-013  Four Challenges + capstone; evolution lives in the pivot + capstone; overlapping cadence   [2026-06-25, S1]
 Decision: **Four foundations Challenges + one capstone Project** (no 5th Challenge). Agentic
@@ -107,7 +111,7 @@ Decision: **Four foundations Challenges + one capstone Project** (no 5th Challen
 not as a separate Challenge. Units may **overlap** — the capstone can launch ~week 9 and run
 concurrently with the tail of foundations rather than strictly after.
 Refines: D-012; resolves the "Challenge 5" question (dropped)
-Touches: syllabus/calendar.md, Challenges/, Projects/, PROGRESSION.md
+Touches: syllabus/calendar.md, challenges/, projects/, PROGRESSION.md
 
 ## D-014  Assessment is distributed across four components (no sit-down exam)   [2026-06-25, S1]
 Decision: Because agentic development makes a traditional exam ill-fitting, assessment is
@@ -117,7 +121,7 @@ scoring on Challenges/Project), and **(4) the Capstone Project** (the summative 
 Weights are open and set at S5.
 Refines: D-008 (Tutorials = the Presentations component), D-009 (leaderboard = the Comparative
 component), D-010/D-012 (capstone = the final)
-Touches: syllabus/assessment.md, Tutorials/, Assessment/, benchmarks/
+Touches: syllabus/assessment.md, tutorials/, assessment/, benchmarks/
 
 ## D-015  Week-1 onboarding is concept-forward, not just setup   [2026-06-25, S1]
 Decision: Week-1 onboarding (Tasks) leads with **concepts** — **prompt engineering, context
@@ -125,7 +129,7 @@ engineering, automated context management** — as the key notions, with **mecha
 calls, version control / git, rig install) as supporting scaffolding. The conceptual vocabulary
 of the course is established in week 1, not deferred to later Challenges.
 Refines: D-004, D-006
-Touches: Tasks/, PROGRESSION.md
+Touches: tasks/, PROGRESSION.md
 
 ## D-016  Progression locked: two spines + 4-Challenge decomposition   [2026-06-25, S6]
 Decision: The course is organized around **two spines** — (1) *evaluation becomes fitness* (the
@@ -135,7 +139,7 @@ decompose as **C1 agentic coding → C2 build a research agent (eval harness bor
 retrieval/grounding → C4 orchestration & reliability (seeds generate→eval→select)**; the
 evolutionary pivot reaches back to C2 (eval) and C4 (the loop). Captured in `PROGRESSION.md`.
 Supersedes: —
-Touches: PROGRESSION.md, Challenges/, Projects/
+Touches: PROGRESSION.md, challenges/, projects/
 
 ## D-017  Tool- and model-plural, for accessibility and didactics   [2026-06-25, S7]
 Decision: The course teaches **transferable** agentic-development concepts across **multiple
@@ -145,7 +149,7 @@ chosen for accessibility so no student is gated by paid access. **Optional:** do
 open-weights model from Hugging Face and run it locally (accessibility + understanding the
 stack). Tool/model plurality doubles as **benchmarking targets** (D-019).
 Supersedes: refines D-004 ("most capable current Claude models" → default, not exclusive)
-Touches: benchmarks/, Tasks/, Challenges/, Tutorials/
+Touches: benchmarks/, tasks/, challenges/, tutorials/
 
 ## D-018  Substrate = single SR task; easy data first; baseline ladder   [2026-06-25, S7]
 Decision: One shared substrate — **scientific model discovery from data (symbolic regression)**,
@@ -154,7 +158,7 @@ spanning foundations → capstone. Begin with **easy, intuitive datasets** and g
 classical symbolic regression** (genetic programming — itself evolutionary, previews the
 capstone; the baseline to beat) → (3) **agentic/evolutionary** (LLM-as-mutation + Agent SDK).
 Supersedes: makes D-003 concrete
-Touches: benchmarks/, Challenges/, Projects/
+Touches: benchmarks/, challenges/, projects/
 
 ## D-019  Include a model-benchmarking activity   [2026-06-25, S7]
 Decision: The course includes a **benchmarking activity** where students compare **methods**
@@ -163,15 +167,7 @@ proposal/mutation operator) on the shared substrate, scored by the eval harness/
 Produces the leaderboard data behind the **comparative-performance** grade (D-014) and exercises
 Spine 1. Exact placement in the 4-Challenge sequence: open (S8/S9).
 Supersedes: —
-Touches: benchmarks/, Challenges/, syllabus/assessment.md
-
-## D-021  Folder names are lowercase   [2026-06-25, S8]
-Decision: All top-level course folders are **lowercase** (`tasks`, `challenges`, `projects`,
-`tutorials`, `assessment`, `resources`, `benchmarks`, `syllabus`, `scratch`). Path references and
-links use lowercase; **unit-type names in prose** (the Tasks, Challenges, the Project, Tutorials)
-remain capitalized as proper nouns.
-Supersedes: the capitalized-folder rationale in D-007 (vocabulary kept; casing dropped)
-Touches: whole repo, CLAUDE.md
+Touches: benchmarks/, challenges/, syllabus/assessment.md
 
 ## D-020  Benchmarking placement: methods in C2, models in C4   [2026-06-25, S8b/c]
 Decision: Resolves D-019's open placement. **Method benchmarking** (linear → PySR → agentic) lives
@@ -180,6 +176,14 @@ as the proposal operator, on score and cost) lives in **Challenge 4**, where mul
 orchestration already exists — a natural, cheap home that also exercises tool plurality (D-017).
 Refines: D-019
 Touches: challenges/challenge-2-research-agent/, challenges/challenge-4-orchestration/
+
+## D-021  Folder names are lowercase   [2026-06-25, S8]
+Decision: All top-level course folders are **lowercase** (`tasks`, `challenges`, `projects`,
+`tutorials`, `assessment`, `resources`, `benchmarks`, `syllabus`, `scratch`). Path references and
+links use lowercase; **unit-type names in prose** (the Tasks, Challenges, the Project, Tutorials)
+remain capitalized as proper nouns.
+Supersedes: the capitalized-folder rationale in D-007 (vocabulary kept; casing dropped)
+Touches: whole repo, CLAUDE.md
 
 ## D-022  Objectives + 9 measurable learning outcomes   [2026-06-25, S3]
 Decision: Four course objectives (A research-instrument, B evaluation-centered, C

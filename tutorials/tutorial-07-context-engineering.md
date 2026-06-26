@@ -32,4 +32,4 @@ Demonstrate CLAUDE.md as an index. Start an agent in the course repo with no pro
 - Anthropic documentation on CLAUDE.md / project memory and effective context use.
 - The "lost in the middle" study on context-position effects in long contexts.
 - Provider docs on context windows and token budgets for current models.
-- Course folders: `probability/` and `template-book/` as examples of conventions worth indexing.
+- A project's own `CLAUDE.md` and folder conventions as a worked example of context worth indexing.

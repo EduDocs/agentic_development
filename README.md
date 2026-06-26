@@ -27,7 +27,7 @@ a model from data in their own field.
 | `projects/capstone/` | The capstone package + the evolutionary-frameworks pivot module |
 | `tutorials/` | 36 student-led peer-teaching briefs (the Presentations track) |
 | `benchmarks/` | The shared substrate (symbolic regression), baseline ladder, and scoring harness |
-| `assessment/` | Rubrics (Project, Teamwork, Tutorial) and grading infrastructure |
+| `assessment/` | Cross-unit rubrics (Tutorial), the roster, and grading infrastructure |
 | `resources/` | Reading library, incl. the vendored Claude Code workshop |
 
 ## For maintainers
@@ -37,3 +37,9 @@ a model from data in their own field.
 
 The course is itself an agentic-development artifact: markdown is the source of truth, and the
 material is built and evolved the same way the systems it teaches are.
+
+## License
+
+Dedicated to the public domain under [CC0 1.0 Universal](LICENSE). You may copy, modify,
+distribute, and use this material — including for commercial purposes — without asking permission
+or providing attribution. (Attribution is always appreciated, never required.)

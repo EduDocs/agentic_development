@@ -7,8 +7,8 @@ summative (D-012).**
 The capstone is the course's final and its whole point: take the stack you built across the
 foundations — **drive → build → ground → orchestrate → evolve** — and turn it on a real problem in
 **your own research domain**. You will build an agentic evolutionary search that **discovers a model
-from data in your field**, and report it like a paper. It is due in finals week (week 15) and serves
-as the final exam.
+from data in your field**, and report it like a paper. It is due in finals week (week 15) and is the
+course's **summative** — there is no separate final exam.
 
 ## The arc: build → evolve → write up
 1. **Build.** Stand up the substrate for *your* problem — a `(features → target)` dataset (or another

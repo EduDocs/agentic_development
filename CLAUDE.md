@@ -7,8 +7,7 @@ critique, and evolve course material the same way they build the systems they st
 
 > **Binding decisions live in [`DECISIONS.md`](DECISIONS.md)** (the governance ledger).
 > The skill through-line lives in `PROGRESSION.md` (the conceptual spine, authored at S6).
-> The build is run as a sequence of co-ideation sessions; the protocol is at
-> `~/.claude/plans/i-want-you-to-expressive-liskov.md`.
+> The build is run as a sequence of co-ideation sessions, each recorded in `DECISIONS.md`.
 
 ## Course Identity
 
@@ -78,7 +77,7 @@ AgenticDevelopmentCourse/
 ├── challenges/                # The core biweekly unit (4): brief · data · rubric · submission
 ├── projects/                  # The capstone: proposal · milestones · rubric · report template
 ├── tutorials/                 # Student-led peer-teaching: roster · topic menu · presenter guide
-├── assessment/                # Rubrics (Project, Teamwork) · roster CSV · peer-review templates
+├── assessment/                # Cross-unit rubrics (Tutorial) · roster CSV · peer-review templates
 ├── resources/                 # Reading library + vendored curriculum sources — transferable
 │   └── claude-cli-workshop/   #   VENDORED Claude Code workshop = tasks/foundations source;
 │                              #   lessons/ + slides/ + PROVENANCE.md (drift-tracked, commit-pinned)

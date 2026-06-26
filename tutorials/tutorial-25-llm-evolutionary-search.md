@@ -5,7 +5,7 @@
 ## What it is
 LLM-driven evolutionary search keeps the evolutionary skeleton — a population of candidates, a fitness function, selection — but replaces the *random* mutation/crossover operators of classic genetic programming with a language model. Instead of swapping subtrees at random, you prompt the LLM with one or more high-scoring parent candidates (often as code) and ask it to propose an improved variant. The LLM's priors over plausible programs make its "mutations" vastly less random than GP's, so the search can climb toward good solutions in far fewer evaluations.
 
-The loop is **generate → evaluate → select → mutate (repeat)**: the LLM *generates* candidate programs, the fitness function *evaluates* them, selection keeps the best (often in an island/MAP-Elites-style archive that preserves diversity), and those become parents the LLM *mutates* next. FunSearch (Romera-Paredes et al., Nature 2024) introduced this for evolving programs against a scoring function; AlphaEvolve extended it to richer codebases and objectives; OpenEvolve is an open reimplementation you can run. The crucial discipline is fitness design: because the LLM optimizes whatever you measure, a sloppy fitness function invites **eval hacking** — candidates that score well by exploiting the scorer rather than solving the problem.
+The loop is **generate → evaluate → select → mutate (repeat)**: the LLM *generates* candidate programs, the fitness function *evaluates* them, selection keeps the best (often in an island/MAP-Elites-style archive that preserves diversity), and those become parents the LLM *mutates* next. FunSearch (Romera-Paredes et al., Nature 2023) introduced this for evolving programs against a scoring function; AlphaEvolve extended it to richer codebases and objectives; OpenEvolve is an open reimplementation you can run. The crucial discipline is fitness design: because the LLM optimizes whatever you measure, a sloppy fitness function invites **eval hacking** — candidates that score well by exploiting the scorer rather than solving the problem.
 
 ## Why it matters for agentic development
 This is the capstone's core method: it fuses every prior thread — agents that generate, a harness that evaluates, orchestration that runs the loop reliably, and a sandbox that executes generated code safely. It is also the clearest demonstration that *evaluation is everything*: in this paradigm the eval harness literally *is* the selective pressure, so its quality directly determines whether the search discovers science or learns to cheat.
@@ -29,7 +29,7 @@ Run a minimal generate→evaluate→select loop (a small OpenEvolve-style script
 - Spine 2 (context engineering): retrieval/domain knowledge (**C3**) can be injected into mutation prompts to bias the LLM toward physically plausible forms.
 
 ## Further reading
-- The FunSearch paper (Romera-Paredes et al., Nature 2024).
+- The FunSearch paper (Romera-Paredes et al., Nature 2023).
 - AlphaEvolve (DeepMind) write-up on evolving code/algorithms with LLMs.
 - The OpenEvolve open-source project as a runnable starting point.
 - Literature on reward hacking / specification gaming in optimization and RL.

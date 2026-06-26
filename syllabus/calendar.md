@@ -23,9 +23,9 @@ To be detailed in S2. Working assumption: a mix of **lecture / lab / studio**, w
 
 ## Assessment (distributed — set at S5)
 
-Per D-014, there is no sit-down exam. Four components: **Presentations** (Tutorials), **Quizzes**,
-**Comparative performance** (leaderboard scoring on Challenges/Project), and the **Capstone** (the
-final). Weights TBD at S5.
+Per D-014, there is no sit-down exam. Four components: **Capstone** (the summative, 40%),
+**Challenges** (rubric + comparative leaderboard, 20%), **Presentations** (Tutorials, 20%), and
+**Quizzes** (20%). Full detail in [`assessment.md`](assessment.md).
 
 ## Notes
 
