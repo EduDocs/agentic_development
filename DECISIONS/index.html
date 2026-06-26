@@ -1,0 +1,4997 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="A project-based graduate course on building agentic AI systems for research, culminating in agentic evolutionary frameworks that automate discovery.">
+      
+      
+        <meta name="author" content="Agentic Development in Research">
+      
+      
+      
+        <link rel="prev" href="../resources/claude-cli-workshop/lessons/INDEX/">
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>Governance Ledger (Decisions) - Agentic Development in Research</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:300,300i,400,400i,700,700i%7CJetBrains+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Inter";--md-code-font:"JetBrains Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../stylesheets/tamu.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#decisions-ledger" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="Agentic Development in Research" class="md-header__button md-logo" aria-label="Agentic Development in Research" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19.5 17c-.14 0-.26 0-.39.04L17.5 13.8c.45-.45.75-1.09.75-1.8a2.5 2.5 0 0 0-2.5-2.5c-.14 0-.25 0-.4.04L13.74 6.3c.47-.46.76-1.09.76-1.8a2.5 2.5 0 0 0-5 0c0 .7.29 1.34.76 1.79L8.65 9.54c-.15-.04-.26-.04-.4-.04a2.5 2.5 0 0 0-2.5 2.5c0 .71.29 1.34.75 1.79l-1.61 3.25C4.76 17 4.64 17 4.5 17a2.5 2.5 0 0 0 0 5A2.5 2.5 0 0 0 7 19.5c0-.7-.29-1.34-.76-1.79l1.62-3.25c.14.04.26.04.39.04s.25 0 .38-.04l1.63 3.25c-.47.45-.76 1.09-.76 1.79a2.5 2.5 0 0 0 5 0A2.5 2.5 0 0 0 12 17c-.13 0-.26 0-.39.04L10 13.8c.45-.45.75-1.09.75-1.8 0-.7-.29-1.33-.75-1.79l1.61-3.25c.13.04.26.04.39.04s.26 0 .39-.04L14 10.21a2.5 2.5 0 0 0 1.75 4.29c.13 0 .25 0 .38-.04l1.63 3.25c-.47.45-.76 1.09-.76 1.79a2.5 2.5 0 0 0 5 0 2.5 2.5 0 0 0-2.5-2.5m-15 3.5c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1m8.5-1c0 .55-.45 1-1 1s-1-.45-1-1 .45-1 1-1 1 .45 1 1M7.25 12c0-.55.45-1 1-1s1 .45 1 1-.45 1-1 1-1-.45-1-1M11 4.5c0-.55.45-1 1-1s1 .45 1 1-.45 1-1 1-1-.45-1-1m3.75 7.5c0-.55.45-1 1-1s1 .45 1 1-.45 1-1 1-1-.45-1-1m4.75 8.5c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Agentic Development in Research
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Governance Ledger (Decisions)
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m14.3 16-.7-2h-3.2l-.7 2H7.8L11 7h2l3.2 9zM20 8.69V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12zm-9.15 3.96h2.3L12 9z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_2" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to system preference"  type="radio" name="__palette" id="__palette_2">
+    
+      <label class="md-header__button md-icon" title="Switch to system preference" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+          <a href="javascript:void(0)" class="md-search__icon md-icon" title="Share" aria-label="Share" data-clipboard data-clipboard-text="" data-md-component="search-share" tabindex="-1">
+            
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9a3 3 0 0 0-3 3 3 3 0 0 0 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.15c-.05.21-.08.43-.08.66 0 1.61 1.31 2.91 2.92 2.91s2.92-1.3 2.92-2.91A2.92 2.92 0 0 0 18 16.08"/></svg>
+          </a>
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+    
+      
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href=".." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../syllabus/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Course
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../tasks/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Tasks
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../challenges/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Challenges
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../projects/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Capstone
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../tutorials/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Tutorials
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../assessment/rubric-tutorials/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+    
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="Agentic Development in Research" class="md-nav__button md-logo" aria-label="Agentic Development in Research" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19.5 17c-.14 0-.26 0-.39.04L17.5 13.8c.45-.45.75-1.09.75-1.8a2.5 2.5 0 0 0-2.5-2.5c-.14 0-.25 0-.4.04L13.74 6.3c.47-.46.76-1.09.76-1.8a2.5 2.5 0 0 0-5 0c0 .7.29 1.34.76 1.79L8.65 9.54c-.15-.04-.26-.04-.4-.04a2.5 2.5 0 0 0-2.5 2.5c0 .71.29 1.34.75 1.79l-1.61 3.25C4.76 17 4.64 17 4.5 17a2.5 2.5 0 0 0 0 5A2.5 2.5 0 0 0 7 19.5c0-.7-.29-1.34-.76-1.79l1.62-3.25c.14.04.26.04.39.04s.25 0 .38-.04l1.63 3.25c-.47.45-.76 1.09-.76 1.79a2.5 2.5 0 0 0 5 0A2.5 2.5 0 0 0 12 17c-.13 0-.26 0-.39.04L10 13.8c.45-.45.75-1.09.75-1.8 0-.7-.29-1.33-.75-1.79l1.61-3.25c.13.04.26.04.39.04s.26 0 .39-.04L14 10.21a2.5 2.5 0 0 0 1.75 4.29c.13 0 .25 0 .38-.04l1.63 3.25c-.47.45-.76 1.09-.76 1.79a2.5 2.5 0 0 0 5 0 2.5 2.5 0 0 0-2.5-2.5m-15 3.5c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1m8.5-1c0 .55-.45 1-1 1s-1-.45-1-1 .45-1 1-1 1 .45 1 1M7.25 12c0-.55.45-1 1-1s1 .45 1 1-.45 1-1 1-1-.45-1-1M11 4.5c0-.55.45-1 1-1s1 .45 1 1-.45 1-1 1-1-.45-1-1m3.75 7.5c0-.55.45-1 1-1s1 .45 1 1-.45 1-1 1-1-.45-1-1m4.75 8.5c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1"/></svg>
+
+    </a>
+    Agentic Development in Research
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../syllabus/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Course
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--draft"></span>
+  
+
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2" id="__nav_2_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Course
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../syllabus/outcomes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Learning Outcomes
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--draft"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../syllabus/calendar/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Calendar (14 weeks)
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--draft"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../syllabus/assessment/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Assessment & Weights
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--draft"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../syllabus/assessment-map/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Outcome → Evidence Map
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--draft"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../PROGRESSION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Skill Progression
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../benchmarks/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Shared Substrate (Benchmarks)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../tasks/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tasks
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3" id="__nav_3_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Tasks
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tasks/task-1-rig-setup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    1 · Rig Setup
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--draft"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tasks/task-2-version-control/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2 · Version Control
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--draft"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tasks/task-3-prompts-and-permissions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3 · Prompts & Permissions
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--draft"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tasks/task-4-context-engineering/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    4 · Context Engineering
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--draft"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tasks/task-5-automated-context/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    5 · Automated Context
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--draft"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tasks/task-6-api-and-models/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    6 · API & Models
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--draft"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../challenges/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Challenges
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4" id="__nav_4_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Challenges
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_2" id="__nav_4_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Challenge 1 · Agentic Coding
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Challenge 1 · Agentic Coding
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../challenges/challenge-1-agentic-coding/brief/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Brief
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--draft"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../challenges/challenge-1-agentic-coding/rubric/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Rubric
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--draft"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_3" id="__nav_4_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Challenge 2 · Research Agent
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Challenge 2 · Research Agent
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../challenges/challenge-2-research-agent/brief/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Brief
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--draft"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../challenges/challenge-2-research-agent/rubric/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Rubric
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--draft"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_4" id="__nav_4_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Challenge 3 · Retrieval & Grounding
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Challenge 3 · Retrieval & Grounding
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../challenges/challenge-3-retrieval-grounding/brief/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Brief
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--draft"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../challenges/challenge-3-retrieval-grounding/rubric/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Rubric
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--draft"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_5" id="__nav_4_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Challenge 4 · Orchestration
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Challenge 4 · Orchestration
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../challenges/challenge-4-orchestration/brief/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Brief
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--draft"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../challenges/challenge-4-orchestration/rubric/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Rubric
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--draft"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../projects/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Capstone
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Capstone
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../projects/capstone/brief/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Brief
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--draft"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../projects/capstone/evolution-pivot/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Evolution Pivot
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--draft"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../projects/capstone/proposal-template/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Proposal Template
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--draft"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../projects/capstone/milestones/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Milestones
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--draft"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../projects/capstone/rubric/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Rubric
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--draft"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../projects/capstone/report-template/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Report Template
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--draft"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../tutorials/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tutorials
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_6" id="__nav_6_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Tutorials
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_6_2" id="__nav_6_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    1 · Foundations — the rig & toolchain
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    1 · Foundations — the rig & toolchain
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/tutorial-01-shell-and-terminal/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    01 · Shell & Terminal
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--draft"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/tutorial-02-git-version-control/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    02 · Git & Version Control
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--draft"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/tutorial-03-python-environments/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    03 · Python Environments
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--draft"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/tutorial-36-package-managers-and-distribution/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    36 · Package Managers & Distribution
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--draft"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/tutorial-35-just-command-runner/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    35 · Just Command Runner
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--draft"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/tutorial-34-markdown-and-pandoc/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    34 · Markdown & Pandoc
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--draft"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/tutorial-28-vscode-for-agentic-dev/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    28 · VS Code for Agentic Dev
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--draft"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/tutorial-29-cowork-and-codex/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    29 · Cowork & Codex
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--draft"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/tutorial-27-agent-instruction-files/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    27 · Agent Instruction Files
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--draft"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_6_3" id="__nav_6_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2 · LLMs, APIs & models
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    2 · LLMs, APIs & models
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/tutorial-32-llm-fundamentals/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    32 · LLM Fundamentals
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--draft"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/tutorial-04-llm-api-call/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    04 · Anatomy of an LLM API Call
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--draft"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/tutorial-33-huggingface-ecosystem/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    33 · The Hugging Face Ecosystem
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--draft"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/tutorial-05-local-open-weights-models/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    05 · Local Open-Weights Models
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--draft"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_6_4" id="__nav_6_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3 · Prompting & context engineering
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    3 · Prompting & context engineering
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/tutorial-06-prompt-engineering/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    06 · Prompt Engineering
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--draft"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/tutorial-07-context-engineering/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    07 · Context Engineering
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--draft"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/tutorial-08-automated-context-management/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    08 · Automated Context Management
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--draft"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/tutorial-10-structured-outputs/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    10 · Structured Outputs
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--draft"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_6_5" id="__nav_6_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    4 · Retrieval & vector stores
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    4 · Retrieval & vector stores
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/tutorial-09-rag-and-embeddings/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    09 · RAG & Embeddings
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--draft"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/tutorial-30-sqlite-and-vector-search/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    30 · SQLite & Vector Search
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--draft"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/tutorial-31-postgres-pgvector/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    31 · Postgres & pgvector
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--draft"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6_6" id="__nav_6_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    5 · Building & orchestrating agents
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    5 · Building & orchestrating agents
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/tutorial-11-agent-loop-react/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    11 · The Agent Loop (ReAct)
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--draft"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/tutorial-12-tool-use-function-calling/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    12 · Tool Use & Function Calling
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--draft"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/tutorial-13-model-context-protocol/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    13 · Model Context Protocol (MCP)
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--draft"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/tutorial-26-agent-skills/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    26 · Agent Skills
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--draft"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/tutorial-16-agent-memory-and-state/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    16 · Agent Memory & State
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--draft"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/tutorial-17-planning-and-decomposition/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    17 · Planning & Decomposition
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--draft"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/tutorial-18-verification-and-critics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    18 · Verification & Critics
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--draft"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/tutorial-14-multi-agent-orchestration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    14 · Multi-Agent Orchestration
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--draft"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/tutorial-15-subagents-and-teams/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    15 · Sub-Agents & Agent Teams
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--draft"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_6_7" id="__nav_6_7_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    6 · Evaluation, reliability & safety
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    6 · Evaluation, reliability & safety
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/tutorial-19-evaluation-harnesses/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    19 · Evaluation Harnesses
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--draft"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/tutorial-20-llm-as-judge/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    20 · LLM-as-a-Judge
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--draft"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/tutorial-21-model-benchmarking/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    21 · Model Benchmarking
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--draft"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/tutorial-22-reproducibility-and-observability/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    22 · Reproducibility & Observability
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--draft"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/tutorial-23-permissions-and-sandboxing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    23 · Permissions & Sandboxing
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--draft"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_6_8" id="__nav_6_8_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    7 · Evolutionary frameworks
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    7 · Evolutionary frameworks
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/tutorial-24-symbolic-regression-gp/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    24 · Symbolic Regression & GP
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--draft"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/tutorial-25-llm-evolutionary-search/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    25 · LLM-Driven Evolutionary Search
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--draft"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../assessment/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_7" id="__nav_7_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../assessment/rubric-tutorials/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tutorial Rubric
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--draft"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../resources/claude-cli-workshop/lessons/INDEX/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Claude Code Workshop
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Governance Ledger (Decisions)
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Governance Ledger (Decisions)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#d-001-course-identity-format-2026-06-25-ideation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        D-001 Course identity &amp; format [2026-06-25, ideation]
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#d-002-two-themes-taught-sequentially-foundations-first-2026-06-25-ideation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        D-002 Two themes, taught sequentially (foundations first) [2026-06-25, ideation]
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#d-003-evolutionary-frameworks-evolutionary-search-of-artifacts-sr-is-the-vehicle-2026-06-25-ideation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        D-003 Evolutionary frameworks = evolutionary search of artifacts; SR is the vehicle [2026-06-25, ideation]
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#d-004-cohort-starts-from-zero-tooling-2026-06-25-ideation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        D-004 Cohort starts from zero tooling [2026-06-25, ideation]
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#d-005-grounding-shared-early-own-domain-at-the-capstone-2026-06-25-ideation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        D-005 Grounding: shared early → own domain at the capstone [2026-06-25, ideation]
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#d-006-foundations-tooling-source-vendored-claude-code-workshop-2026-06-25-ideation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        D-006 Foundations tooling source = vendored Claude Code workshop [2026-06-25, ideation]
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#d-007-adopt-the-tasks-challenges-project-tutorials-skeleton-2026-06-25-s0" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        D-007 Adopt the Tasks → Challenges → Project → Tutorials skeleton [2026-06-25, S0]
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#d-008-tutorials-peer-teaching-track-included-and-graded-2026-06-25-s0" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        D-008 Tutorials peer-teaching track included and graded [2026-06-25, S0]
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#d-009-modernization-swap-leaderboard-scoring-2026-06-25-s0" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        D-009 Modernization swap: leaderboard scoring [2026-06-25, S0]
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#d-010-final-exam-included-net-new-2026-06-25-s0" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        D-010 Final exam included (net-new) [2026-06-25, S0]
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#d-011-build-process-tight-sessions-open-co-ideation-structure-first-2026-06-25-s0" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        D-011 Build process: tight sessions, open co-ideation, structure-first [2026-06-25, S0]
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#d-012-the-final-project-is-the-summative-calendar-carries-slack-2026-06-25-s1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        D-012 The final Project IS the summative; calendar carries slack [2026-06-25, S1]
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#d-013-four-challenges-capstone-evolution-lives-in-the-pivot-capstone-overlapping-cadence-2026-06-25-s1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        D-013 Four Challenges + capstone; evolution lives in the pivot + capstone; overlapping cadence [2026-06-25, S1]
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#d-014-assessment-is-distributed-across-four-components-no-sit-down-exam-2026-06-25-s1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        D-014 Assessment is distributed across four components (no sit-down exam) [2026-06-25, S1]
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#d-015-week-1-onboarding-is-concept-forward-not-just-setup-2026-06-25-s1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        D-015 Week-1 onboarding is concept-forward, not just setup [2026-06-25, S1]
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#d-016-progression-locked-two-spines-4-challenge-decomposition-2026-06-25-s6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        D-016 Progression locked: two spines + 4-Challenge decomposition [2026-06-25, S6]
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#d-017-tool-and-model-plural-for-accessibility-and-didactics-2026-06-25-s7" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        D-017 Tool- and model-plural, for accessibility and didactics [2026-06-25, S7]
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#d-018-substrate-single-sr-task-easy-data-first-baseline-ladder-2026-06-25-s7" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        D-018 Substrate = single SR task; easy data first; baseline ladder [2026-06-25, S7]
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#d-019-include-a-model-benchmarking-activity-2026-06-25-s7" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        D-019 Include a model-benchmarking activity [2026-06-25, S7]
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#d-020-benchmarking-placement-methods-in-c2-models-in-c4-2026-06-25-s8bc" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        D-020 Benchmarking placement: methods in C2, models in C4 [2026-06-25, S8b/c]
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#d-021-folder-names-are-lowercase-2026-06-25-s8" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        D-021 Folder names are lowercase [2026-06-25, S8]
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#d-022-objectives-9-measurable-learning-outcomes-2026-06-25-s3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        D-022 Objectives + 9 measurable learning outcomes [2026-06-25, S3]
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#d-023-presentations-broadened-pre-shared-md-qa-certifies-conceptual-grasp-2026-06-25-s5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        D-023 Presentations broadened: pre-shared md + Q&amp;A, certifies conceptual grasp [2026-06-25, S5]
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#d-024-assessment-weights-policies-2026-06-25-s5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        D-024 Assessment weights &amp; policies [2026-06-25, S5]
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#d-025-severed-the-external-reference-the-course-is-standalone-2026-06-25-s12" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        D-025 Severed the external reference — the course is standalone [2026-06-25, S12]
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#d-026-per-challenge-rubrics-authored-2026-06-25-s9" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        D-026 Per-Challenge rubrics authored [2026-06-25, S9]
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#d-027-lightweight-yaml-front-matter-on-content-files-2026-06-25-s12" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        D-027 Lightweight YAML front matter on content files [2026-06-25, S12]
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#d-028-pandoc-just-build-pipeline-2026-06-25-s12" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        D-028 Pandoc + just build pipeline [2026-06-25, S12]
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#d-001-course-identity-format-2026-06-25-ideation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        D-001 Course identity &amp; format [2026-06-25, ideation]
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#d-002-two-themes-taught-sequentially-foundations-first-2026-06-25-ideation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        D-002 Two themes, taught sequentially (foundations first) [2026-06-25, ideation]
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#d-003-evolutionary-frameworks-evolutionary-search-of-artifacts-sr-is-the-vehicle-2026-06-25-ideation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        D-003 Evolutionary frameworks = evolutionary search of artifacts; SR is the vehicle [2026-06-25, ideation]
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#d-004-cohort-starts-from-zero-tooling-2026-06-25-ideation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        D-004 Cohort starts from zero tooling [2026-06-25, ideation]
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#d-005-grounding-shared-early-own-domain-at-the-capstone-2026-06-25-ideation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        D-005 Grounding: shared early → own domain at the capstone [2026-06-25, ideation]
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#d-006-foundations-tooling-source-vendored-claude-code-workshop-2026-06-25-ideation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        D-006 Foundations tooling source = vendored Claude Code workshop [2026-06-25, ideation]
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#d-007-adopt-the-tasks-challenges-project-tutorials-skeleton-2026-06-25-s0" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        D-007 Adopt the Tasks → Challenges → Project → Tutorials skeleton [2026-06-25, S0]
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#d-008-tutorials-peer-teaching-track-included-and-graded-2026-06-25-s0" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        D-008 Tutorials peer-teaching track included and graded [2026-06-25, S0]
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#d-009-modernization-swap-leaderboard-scoring-2026-06-25-s0" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        D-009 Modernization swap: leaderboard scoring [2026-06-25, S0]
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#d-010-final-exam-included-net-new-2026-06-25-s0" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        D-010 Final exam included (net-new) [2026-06-25, S0]
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#d-011-build-process-tight-sessions-open-co-ideation-structure-first-2026-06-25-s0" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        D-011 Build process: tight sessions, open co-ideation, structure-first [2026-06-25, S0]
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#d-012-the-final-project-is-the-summative-calendar-carries-slack-2026-06-25-s1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        D-012 The final Project IS the summative; calendar carries slack [2026-06-25, S1]
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#d-013-four-challenges-capstone-evolution-lives-in-the-pivot-capstone-overlapping-cadence-2026-06-25-s1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        D-013 Four Challenges + capstone; evolution lives in the pivot + capstone; overlapping cadence [2026-06-25, S1]
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#d-014-assessment-is-distributed-across-four-components-no-sit-down-exam-2026-06-25-s1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        D-014 Assessment is distributed across four components (no sit-down exam) [2026-06-25, S1]
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#d-015-week-1-onboarding-is-concept-forward-not-just-setup-2026-06-25-s1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        D-015 Week-1 onboarding is concept-forward, not just setup [2026-06-25, S1]
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#d-016-progression-locked-two-spines-4-challenge-decomposition-2026-06-25-s6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        D-016 Progression locked: two spines + 4-Challenge decomposition [2026-06-25, S6]
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#d-017-tool-and-model-plural-for-accessibility-and-didactics-2026-06-25-s7" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        D-017 Tool- and model-plural, for accessibility and didactics [2026-06-25, S7]
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#d-018-substrate-single-sr-task-easy-data-first-baseline-ladder-2026-06-25-s7" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        D-018 Substrate = single SR task; easy data first; baseline ladder [2026-06-25, S7]
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#d-019-include-a-model-benchmarking-activity-2026-06-25-s7" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        D-019 Include a model-benchmarking activity [2026-06-25, S7]
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#d-020-benchmarking-placement-methods-in-c2-models-in-c4-2026-06-25-s8bc" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        D-020 Benchmarking placement: methods in C2, models in C4 [2026-06-25, S8b/c]
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#d-021-folder-names-are-lowercase-2026-06-25-s8" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        D-021 Folder names are lowercase [2026-06-25, S8]
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#d-022-objectives-9-measurable-learning-outcomes-2026-06-25-s3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        D-022 Objectives + 9 measurable learning outcomes [2026-06-25, S3]
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#d-023-presentations-broadened-pre-shared-md-qa-certifies-conceptual-grasp-2026-06-25-s5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        D-023 Presentations broadened: pre-shared md + Q&amp;A, certifies conceptual grasp [2026-06-25, S5]
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#d-024-assessment-weights-policies-2026-06-25-s5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        D-024 Assessment weights &amp; policies [2026-06-25, S5]
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#d-025-severed-the-external-reference-the-course-is-standalone-2026-06-25-s12" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        D-025 Severed the external reference — the course is standalone [2026-06-25, S12]
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#d-026-per-challenge-rubrics-authored-2026-06-25-s9" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        D-026 Per-Challenge rubrics authored [2026-06-25, S9]
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#d-027-lightweight-yaml-front-matter-on-content-files-2026-06-25-s12" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        D-027 Lightweight YAML front matter on content files [2026-06-25, S12]
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#d-028-pandoc-just-build-pipeline-2026-06-25-s12" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        D-028 Pandoc + just build pipeline [2026-06-25, S12]
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="decisions-ledger">Decisions Ledger<a class="headerlink" href="#decisions-ledger" title="Permanent link">&para;</a></h1>
+<blockquote>
+<p>Append-only governance log for the course build. Each binding decision is one numbered
+block. This is the <strong>governance</strong> record (what we chose and why); <code>PROGRESSION.md</code> is the
+<strong>conceptual</strong> spine (skills and their dependencies); <code>CLAUDE.md</code> is the identity + pointer.</p>
+<p>Entries are numbered in the order they were logged; the session tags (SX) may appear out of
+numeric order because sessions were executed non-sequentially (e.g. unit build-out before
+finalizing outcomes and weights).</p>
+<p>Block format:
+<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>## D-0NN  &lt;short title&gt;   [YYYY-MM-DD, Session SX]
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>Decision: &lt;one or two sentences&gt;
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>Supersedes: &lt;D-0MM or —&gt;
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>Touches: &lt;paths/areas affected&gt;
+</span></code></pre></div></p>
+</blockquote>
+<hr />
+<h2 id="d-001-course-identity-format-2026-06-25-ideation">D-001  Course identity &amp; format   [2026-06-25, ideation]<a class="headerlink" href="#d-001-course-identity-format-2026-06-25-ideation" title="Permanent link">&para;</a></h2>
+<p>Decision: A project-based, 3-credit graduate course — "Agentic Development in Research →
+Agentic Evolutionary Frameworks" — running <strong>14 weeks × 3 contact hours plus a final exam</strong>.
+Audience: mostly-PhD, cross-disciplinary, mostly-quantitative students.
+Supersedes: —
+Touches: CLAUDE.md, syllabus/</p>
+<h2 id="d-002-two-themes-taught-sequentially-foundations-first-2026-06-25-ideation">D-002  Two themes, taught sequentially (foundations first)   [2026-06-25, ideation]<a class="headerlink" href="#d-002-two-themes-taught-sequentially-foundations-first-2026-06-25-ideation" title="Permanent link">&para;</a></h2>
+<p>Decision: Part I = Agentic Development in Research (the foundations weeks); Part II = Agentic
+Evolutionary Frameworks, introduced later and concurrent with the capstone. Precise week
+placement is set in S1/S2.
+Supersedes: —
+Touches: syllabus/calendar.md, PROGRESSION.md</p>
+<h2 id="d-003-evolutionary-frameworks-evolutionary-search-of-artifacts-sr-is-the-vehicle-2026-06-25-ideation">D-003  Evolutionary frameworks = evolutionary search of artifacts; SR is the vehicle   [2026-06-25, ideation]<a class="headerlink" href="#d-003-evolutionary-frameworks-evolutionary-search-of-artifacts-sr-is-the-vehicle-2026-06-25-ideation" title="Permanent link">&para;</a></h2>
+<p>Decision: The evolutionary half means agents that evolve artifacts via
+generate→evaluate→select→mutate (FunSearch / AlphaEvolve / OpenEvolve lineage). The teaching
+vehicle is <strong>symbolic regression / model-discovery-from-data</strong> (clean automatic fitness,
+re-skins across quantitative disciplines).
+Supersedes: —
+Touches: benchmarks/, challenges/, projects/</p>
+<h2 id="d-004-cohort-starts-from-zero-tooling-2026-06-25-ideation">D-004  Cohort starts from zero tooling   [2026-06-25, ideation]<a class="headerlink" href="#d-004-cohort-starts-from-zero-tooling-2026-06-25-ideation" title="Permanent link">&para;</a></h2>
+<p>Decision: Assume <em>some</em> Python and high general ability, but <strong>no</strong> prior experience with
+agents, git, the shell, or professional tooling. Week-1 onboarding installs the rig, git, and
+shell from scratch.
+Supersedes: —
+Touches: tasks/, CLAUDE.md</p>
+<h2 id="d-005-grounding-shared-early-own-domain-at-the-capstone-2026-06-25-ideation">D-005  Grounding: shared early → own domain at the capstone   [2026-06-25, ideation]<a class="headerlink" href="#d-005-grounding-shared-early-own-domain-at-the-capstone-2026-06-25-ideation" title="Permanent link">&para;</a></h2>
+<p>Decision: Tasks and Challenges use shared scaffolding / common datasets so the cohort can
+compare; the Project (capstone) moves to each student's own dissertation domain.
+Supersedes: —
+Touches: challenges/, projects/, benchmarks/</p>
+<h2 id="d-006-foundations-tooling-source-vendored-claude-code-workshop-2026-06-25-ideation">D-006  Foundations tooling source = vendored Claude Code workshop   [2026-06-25, ideation]<a class="headerlink" href="#d-006-foundations-tooling-source-vendored-claude-code-workshop-2026-06-25-ideation" title="Permanent link">&para;</a></h2>
+<p>Decision: Week-1+ tooling content draws from the vendored workshop in
+<code>resources/claude-cli-workshop/</code> (upstream <code>../../claude-cli</code>, commit <code>dd479ab</code>). Tasks wrap
+its lessons/appendices; drift is tracked in that folder's <code>PROVENANCE.md</code>.
+Supersedes: —
+Touches: resources/claude-cli-workshop/, tasks/</p>
+<h2 id="d-007-adopt-the-tasks-challenges-project-tutorials-skeleton-2026-06-25-s0">D-007  Adopt the Tasks → Challenges → Project → Tutorials skeleton   [2026-06-25, S0]<a class="headerlink" href="#d-007-adopt-the-tasks-challenges-project-tutorials-skeleton-2026-06-25-s0" title="Permanent link">&para;</a></h2>
+<p>Decision: Use a proven project-based structural vocabulary — <strong>Tasks → Challenges → Project →
+Tutorials</strong> — and conventions (GitHub as source of truth, Markdown rubrics, roster CSV,
+per-student/per-team folders, biweekly cadence), re-skinning content for agentic development.
+The original "4×2-week projects + 1×5-week capstone" maps to <strong>Challenges + Project</strong>.
+Supersedes: —
+Touches: whole repo layout, CLAUDE.md</p>
+<h2 id="d-008-tutorials-peer-teaching-track-included-and-graded-2026-06-25-s0">D-008  Tutorials peer-teaching track included and graded   [2026-06-25, S0]<a class="headerlink" href="#d-008-tutorials-peer-teaching-track-included-and-graded-2026-06-25-s0" title="Permanent link">&para;</a></h2>
+<p>Decision: Include a student-led Tutorials track (peer-taught talks on agent patterns / tools),
+graded as participation, distributed across the term.
+Supersedes: —
+Touches: tutorials/, syllabus/assessment.md, syllabus/calendar.md</p>
+<h2 id="d-009-modernization-swap-leaderboard-scoring-2026-06-25-s0">D-009  Modernization swap: leaderboard scoring   [2026-06-25, S0]<a class="headerlink" href="#d-009-modernization-swap-leaderboard-scoring-2026-06-25-s0" title="Permanent link">&para;</a></h2>
+<p>Decision: Use a <strong>shared eval-harness / internal leaderboard</strong> for objective scoring of agent and
+SR outputs (rather than an external competition platform). Concrete harness finalized at S7.
+Supersedes: —
+Touches: benchmarks/, challenges/</p>
+<h2 id="d-010-final-exam-included-net-new-2026-06-25-s0">D-010  Final exam included (net-new)   [2026-06-25, S0]<a class="headerlink" href="#d-010-final-exam-included-net-new-2026-06-25-s0" title="Permanent link">&para;</a></h2>
+<p>Decision: The course has a <strong>final exam</strong> — a net-new addition. Its purpose, format, and weight
+are open and decided at S5; the instrument is built at S11. <em>(Later resolved by D-012: the
+capstone is the summative; there is no separate exam.)</em>
+Supersedes: —
+Touches: syllabus/assessment.md, syllabus/exam.md</p>
+<h2 id="d-011-build-process-tight-sessions-open-co-ideation-structure-first-2026-06-25-s0">D-011  Build process: tight sessions, open co-ideation, structure-first   [2026-06-25, S0]<a class="headerlink" href="#d-011-build-process-tight-sessions-open-co-ideation-structure-first-2026-06-25-s0" title="Permanent link">&para;</a></h2>
+<p>Decision: Converge via ~14 tight sessions, each producing one artifact; default mode is open
+co-ideation (assistant brings a thinking scaffold, not a finished draft); design discipline is
+structure-first (calendar before outcomes), with outcomes+assessment locked before unit
+content. Decisions are logged here in <code>DECISIONS.md</code>.
+Supersedes: —
+Touches: process (the build protocol is recorded in this ledger)</p>
+<h2 id="d-012-the-final-project-is-the-summative-calendar-carries-slack-2026-06-25-s1">D-012  The final Project IS the summative; calendar carries slack   [2026-06-25, S1]<a class="headerlink" href="#d-012-the-final-project-is-the-summative-calendar-carries-slack-2026-06-25-s1" title="Permanent link">&para;</a></h2>
+<p>Decision: The course runs <strong>14 teaching weeks + a week-15 finals slot</strong>; the <strong>final Project is
+due in week 15 and serves as the summative ("final exam")</strong> — there is no separate exam
+instrument. The calendar is kept deliberately loose (Challenge boundaries are soft); the
+progression is protected over the exact grid. Term shape: Tasks (wk 1) → Challenges 1–4
+foundations (wks 1–8) → evolution pivot + capstone launch (~wk 9) → Project (~wks 10–14, due
+wk 15); Tutorials throughout.
+Refines: D-010 (exam now = the Project, not a net-new instrument), D-001 (term shape)
+Touches: syllabus/calendar.md, projects/, syllabus/assessment.md; collapses old S11 into S10</p>
+<h2 id="d-013-four-challenges-capstone-evolution-lives-in-the-pivot-capstone-overlapping-cadence-2026-06-25-s1">D-013  Four Challenges + capstone; evolution lives in the pivot + capstone; overlapping cadence   [2026-06-25, S1]<a class="headerlink" href="#d-013-four-challenges-capstone-evolution-lives-in-the-pivot-capstone-overlapping-cadence-2026-06-25-s1" title="Permanent link">&para;</a></h2>
+<p>Decision: <strong>Four foundations Challenges + one capstone Project</strong> (no 5<sup>th</sup> Challenge). Agentic
+<strong>evolutionary frameworks are taught in the pivot lectures and practiced inside the capstone</strong>,
+not as a separate Challenge. Units may <strong>overlap</strong> — the capstone can launch ~week 9 and run
+concurrently with the tail of foundations rather than strictly after.
+Refines: D-012; resolves the "Challenge 5" question (dropped)
+Touches: syllabus/calendar.md, challenges/, projects/, PROGRESSION.md</p>
+<h2 id="d-014-assessment-is-distributed-across-four-components-no-sit-down-exam-2026-06-25-s1">D-014  Assessment is distributed across four components (no sit-down exam)   [2026-06-25, S1]<a class="headerlink" href="#d-014-assessment-is-distributed-across-four-components-no-sit-down-exam-2026-06-25-s1" title="Permanent link">&para;</a></h2>
+<p>Decision: Because agentic development makes a traditional exam ill-fitting, assessment is
+distributed across: <strong>(1) Presentations</strong> (the student-led Tutorials track), <strong>(2) Quizzes</strong>
+(periodic concept/reading checks), <strong>(3) Comparative performance</strong> (objective leaderboard
+scoring on Challenges/Project), and <strong>(4) the Capstone Project</strong> (the summative final, D-012).
+Weights are open and set at S5.
+Refines: D-008 (Tutorials = the Presentations component), D-009 (leaderboard = the Comparative
+component), D-010/D-012 (capstone = the final)
+Touches: syllabus/assessment.md, tutorials/, assessment/, benchmarks/</p>
+<h2 id="d-015-week-1-onboarding-is-concept-forward-not-just-setup-2026-06-25-s1">D-015  Week-1 onboarding is concept-forward, not just setup   [2026-06-25, S1]<a class="headerlink" href="#d-015-week-1-onboarding-is-concept-forward-not-just-setup-2026-06-25-s1" title="Permanent link">&para;</a></h2>
+<p>Decision: Week-1 onboarding (Tasks) leads with <strong>concepts</strong> — <strong>prompt engineering, context
+engineering, automated context management</strong> — as the key notions, with <strong>mechanics</strong> (API
+calls, version control / git, rig install) as supporting scaffolding. The conceptual vocabulary
+of the course is established in week 1, not deferred to later Challenges.
+Refines: D-004, D-006
+Touches: tasks/, PROGRESSION.md</p>
+<h2 id="d-016-progression-locked-two-spines-4-challenge-decomposition-2026-06-25-s6">D-016  Progression locked: two spines + 4-Challenge decomposition   [2026-06-25, S6]<a class="headerlink" href="#d-016-progression-locked-two-spines-4-challenge-decomposition-2026-06-25-s6" title="Permanent link">&para;</a></h2>
+<p>Decision: The course is organized around <strong>two spines</strong> — (1) <em>evaluation becomes fitness</em> (the
+eval harness built in Challenge 2 becomes the capstone's fitness function) and (2) <em>context
+engineering</em> (week-1 concept → retrieval → memory → domain-knowledge-as-context). Foundations
+decompose as <strong>C1 agentic coding → C2 build a research agent (eval harness born) → C3
+retrieval/grounding → C4 orchestration &amp; reliability (seeds generate→eval→select)</strong>; the
+evolutionary pivot reaches back to C2 (eval) and C4 (the loop). Captured in <code>PROGRESSION.md</code>.
+Supersedes: —
+Touches: PROGRESSION.md, challenges/, projects/</p>
+<h2 id="d-017-tool-and-model-plural-for-accessibility-and-didactics-2026-06-25-s7">D-017  Tool- and model-plural, for accessibility and didactics   [2026-06-25, S7]<a class="headerlink" href="#d-017-tool-and-model-plural-for-accessibility-and-didactics-2026-06-25-s7" title="Permanent link">&para;</a></h2>
+<p>Decision: The course teaches <strong>transferable</strong> agentic-development concepts across <strong>multiple
+tools and models</strong>, not a single vendor. In play: Claude (CLI, VSCode extension, Cowork), Codex
+(+ VSCode extension), Gemini (API), and <strong>open-source agentic tools</strong> (e.g. OpenCode, Hermes)
+chosen for accessibility so no student is gated by paid access. <strong>Optional:</strong> download an
+open-weights model from Hugging Face and run it locally (accessibility + understanding the
+stack). Tool/model plurality doubles as <strong>benchmarking targets</strong> (D-019).
+Supersedes: refines D-004 ("most capable current Claude models" → default, not exclusive)
+Touches: benchmarks/, tasks/, challenges/, tutorials/</p>
+<h2 id="d-018-substrate-single-sr-task-easy-data-first-baseline-ladder-2026-06-25-s7">D-018  Substrate = single SR task; easy data first; baseline ladder   [2026-06-25, S7]<a class="headerlink" href="#d-018-substrate-single-sr-task-easy-data-first-baseline-ladder-2026-06-25-s7" title="Permanent link">&para;</a></h2>
+<p>Decision: One shared substrate — <strong>scientific model discovery from data (symbolic regression)</strong>,
+spanning foundations → capstone. Begin with <strong>easy, intuitive datasets</strong> and grow. Methods are a
+<strong>baseline ladder</strong>: (1) <strong>linear regression</strong> (trivial, defines "fitness") → (2) <strong>PySR /
+classical symbolic regression</strong> (genetic programming — itself evolutionary, previews the
+capstone; the baseline to beat) → (3) <strong>agentic/evolutionary</strong> (LLM-as-mutation + Agent SDK).
+Supersedes: makes D-003 concrete
+Touches: benchmarks/, challenges/, projects/</p>
+<h2 id="d-019-include-a-model-benchmarking-activity-2026-06-25-s7">D-019  Include a model-benchmarking activity   [2026-06-25, S7]<a class="headerlink" href="#d-019-include-a-model-benchmarking-activity-2026-06-25-s7" title="Permanent link">&para;</a></h2>
+<p>Decision: The course includes a <strong>benchmarking activity</strong> where students compare <strong>methods</strong>
+(linear → PySR → agentic) and/or <strong>models/agents</strong> (Claude vs Gemini vs open-weights as the
+proposal/mutation operator) on the shared substrate, scored by the eval harness/leaderboard.
+Produces the leaderboard data behind the <strong>comparative-performance</strong> grade (D-014) and exercises
+Spine 1. Exact placement in the 4-Challenge sequence: open (S8/S9).
+Supersedes: —
+Touches: benchmarks/, challenges/, syllabus/assessment.md</p>
+<h2 id="d-020-benchmarking-placement-methods-in-c2-models-in-c4-2026-06-25-s8bc">D-020  Benchmarking placement: methods in C2, models in C4   [2026-06-25, S8b/c]<a class="headerlink" href="#d-020-benchmarking-placement-methods-in-c2-models-in-c4-2026-06-25-s8bc" title="Permanent link">&para;</a></h2>
+<p>Decision: Resolves D-019's open placement. <strong>Method benchmarking</strong> (linear → PySR → agentic) lives
+in <strong>Challenge 2</strong>, where the eval harness is born. <strong>Model benchmarking</strong> (different LLMs/agents
+as the proposal operator, on score and cost) lives in <strong>Challenge 4</strong>, where multi-proposer
+orchestration already exists — a natural, cheap home that also exercises tool plurality (D-017).
+Refines: D-019
+Touches: challenges/challenge-2-research-agent/, challenges/challenge-4-orchestration/</p>
+<h2 id="d-021-folder-names-are-lowercase-2026-06-25-s8">D-021  Folder names are lowercase   [2026-06-25, S8]<a class="headerlink" href="#d-021-folder-names-are-lowercase-2026-06-25-s8" title="Permanent link">&para;</a></h2>
+<p>Decision: All top-level course folders are <strong>lowercase</strong> (<code>tasks</code>, <code>challenges</code>, <code>projects</code>,
+<code>tutorials</code>, <code>assessment</code>, <code>resources</code>, <code>benchmarks</code>, <code>syllabus</code>, <code>scratch</code>). Path references and
+links use lowercase; <strong>unit-type names in prose</strong> (the Tasks, Challenges, the Project, Tutorials)
+remain capitalized as proper nouns.
+Supersedes: the capitalized-folder rationale in D-007 (vocabulary kept; casing dropped)
+Touches: whole repo, CLAUDE.md</p>
+<h2 id="d-022-objectives-9-measurable-learning-outcomes-2026-06-25-s3">D-022  Objectives + 9 measurable learning outcomes   [2026-06-25, S3]<a class="headerlink" href="#d-022-objectives-9-measurable-learning-outcomes-2026-06-25-s3" title="Permanent link">&para;</a></h2>
+<p>Decision: Four course objectives (A research-instrument, B evaluation-centered, C
+development→discovery bridge, D transferable/reproducible/tool-plural) and <strong>nine measurable
+learning outcomes</strong> (LO1–LO9), each with an observable verb and gradeable evidence, mapped to the
+capability ladder and the two spines. <strong>LO9 = critical use and transparency</strong> (judge / verify /
+disclose / name failure modes) — framed as critical thinking, <em>not</em> ethics, at the instructor's
+direction. Captured in <code>syllabus/outcomes.md</code>.
+Supersedes: —
+Touches: syllabus/outcomes.md, syllabus/assessment-map.md (S4), rubrics (S9–S10)</p>
+<h2 id="d-023-presentations-broadened-pre-shared-md-qa-certifies-conceptual-grasp-2026-06-25-s5">D-023  Presentations broadened: pre-shared md + Q&amp;A, certifies conceptual grasp   [2026-06-25, S5]<a class="headerlink" href="#d-023-presentations-broadened-pre-shared-md-qa-certifies-conceptual-grasp-2026-06-25-s5" title="Permanent link">&para;</a></h2>
+<p>Decision: The Presentations component's deliverable is a <strong>tutorial markdown file shared with the
+cohort ahead of time</strong>, plus a ~15-min talk and <strong>open Q&amp;A in which the presenter fields questions
+beyond the prepared material</strong>. The rubric is broadened to assess <strong>conceptual mastery</strong> and honest
+question-handling, mapping the component to LO2 and LO9 (not just LO8). Rubric at
+<code>assessment/rubric-tutorials.md</code>.
+Refines: D-008, D-022
+Touches: tutorials/, assessment/rubric-tutorials.md, syllabus/assessment.md, syllabus/assessment-map.md</p>
+<h2 id="d-024-assessment-weights-policies-2026-06-25-s5">D-024  Assessment weights &amp; policies   [2026-06-25, S5]<a class="headerlink" href="#d-024-assessment-weights-policies-2026-06-25-s5" title="Permanent link">&para;</a></h2>
+<p>Decision: Weights — <strong>Capstone 40% · Challenges (comparative) 20% · Presentations 20% · Quizzes 20%</strong>
+(= 100%). Capstone is the dominant single weight; the three supporting components are equal at 20%
+each (leaderboard kept from dominating; quizzes given real stakes; presentations broadened).
+Policies: individual/team scaling (quizzes &amp; presentations individual or
+pair; Challenges C1 individual → C4 team; capstone team-or-individual); the leaderboard <em>informs but
+does not solely determine</em> Challenge grades (rubric weighs correctness, reproducibility, honest
+analysis); <strong>AI-use disclosure required on every submission</strong> and scored in the capstone (LO9),
+framed as transparency/critical-thinking, not ethics.
+Refines: D-014; resolves the S4 weighting observations
+Touches: syllabus/assessment.md</p>
+<h2 id="d-025-severed-the-external-reference-the-course-is-standalone-2026-06-25-s12">D-025  Severed the external reference — the course is standalone   [2026-06-25, S12]<a class="headerlink" href="#d-025-severed-the-external-reference-the-course-is-standalone-2026-06-25-s12" title="Permanent link">&para;</a></h2>
+<p>Decision: Now that the harvested structure is fully internalized, <strong>all references to the external
+prior course are removed</strong> from the repo. The unit vocabulary (Tasks → Challenges → Project →
+Tutorials), the rubrics, and the conventions remain — they are now simply the course's own, with no
+external attribution or path dependency. The two projects are separated completely.
+Refines: drops the external attribution in D-007, D-009, D-010, D-021
+Touches: whole repo</p>
+<h2 id="d-026-per-challenge-rubrics-authored-2026-06-25-s9">D-026  Per-Challenge rubrics authored   [2026-06-25, S9]<a class="headerlink" href="#d-026-per-challenge-rubrics-authored-2026-06-25-s9" title="Permanent link">&para;</a></h2>
+<p>Decision: Each of the four Challenges now has a <code>rubric.md</code> next to its <code>brief.md</code>. Each rubric
+has a tailored <strong>primary criterion</strong> (C1 reproducibility, C2 the eval harness, C3 retrieval/context
+engineering, C4 orchestration &amp; the loop) plus correctness, comparative performance, and analysis
+criteria; every criterion traces to a learning outcome. The leaderboard <em>informs</em> but does not
+<em>determine</em> the grade, and <strong>honest analysis is graded</strong>. This closes S9.
+Refines: D-014, D-022, D-024
+Touches: challenges/*/rubric.md</p>
+<h2 id="d-027-lightweight-yaml-front-matter-on-content-files-2026-06-25-s12">D-027  Lightweight YAML front matter on content files   [2026-06-25, S12]<a class="headerlink" href="#d-027-lightweight-yaml-front-matter-on-content-files-2026-06-25-s12" title="Permanent link">&para;</a></h2>
+<p>Decision: Content markdown files carry a minimal front-matter block — <code>title</code>, <code>status</code>
+(draft | review | final), <code>updated</code>, <code>unit</code> — plus <code>outcomes: [LO…]</code> on briefs and rubrics.
+Applied to the <strong>62 content files</strong> (tasks, challenge briefs + rubrics, capstone docs, the 36
+tutorials, syllabus content, the tutorial rubric). <strong>Excluded</strong> (kept clean): governance/index
+files — <code>CLAUDE.md</code>, <code>README.md</code>, <code>DECISIONS.md</code>, <code>PROGRESSION.md</code>, the folder READMEs — plus
+<code>LICENSE</code> and <code>scratch/</code>. New content files should follow suit; this future-proofs a pandoc build
+and a <code>just check</code> staleness/validation step.
+Supersedes: —
+Touches: tasks/, challenges/, projects/capstone/, tutorials/, syllabus/, assessment/rubric-tutorials.md</p>
+<h2 id="d-028-pandoc-just-build-pipeline-2026-06-25-s12">D-028  Pandoc + just build pipeline   [2026-06-25, S12]<a class="headerlink" href="#d-028-pandoc-just-build-pipeline-2026-06-25-s12" title="Permanent link">&para;</a></h2>
+<p>Decision: A <code>justfile</code> (+ <code>pandoc/defaults.yaml</code>, lualatex) assembles the course markdown into
+PDFs in <code>output/</code> (gitignored). Recipes: <code>pdf</code> (full packet), <code>handbook</code> (core docs, no
+tutorials), <code>tutorials</code> (catalog), <code>clean</code>. Each strips per-file YAML front matter (D-027),
+concatenates in reading order with page breaks, and renders with a TOC. Verified building end to
+end. Plain symbols (<code>✓</code>, <code>×</code>) replace emoji that lualatex can't render, so output is clean in both
+PDF and on GitHub.
+Supersedes: —
+Touches: justfile, pandoc/defaults.yaml, .gitignore (output/)</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../resources/claude-cli-workshop/lessons/INDEX/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Claude Code Workshop">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                Claude Code Workshop
+              </div>
+            </div>
+          </a>
+        
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Dedicated to the public domain under CC0 1.0 Universal.
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.tabs", "navigation.tabs.sticky", "navigation.sections", "navigation.indexes", "navigation.top", "navigation.tracking", "navigation.footer", "toc.follow", "search.suggest", "search.highlight", "search.share", "content.code.copy", "content.tooltips"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>

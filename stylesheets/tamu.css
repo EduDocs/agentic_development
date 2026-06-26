@@ -1,0 +1,33 @@
+/* Texas A&M University brand colors for Material for MkDocs.
+ * Source: https://marcomm.tamu.edu/creative-platform/visual-style/web-branding/
+ *   Aggie Maroon #500000 (primary) · Brand Dark #3c001c · Brand Light #732f2f
+ * Keyed on the color scheme so light and dark both stay on-brand; in dark mode
+ * the body link/accent maroons are lightened for legibility on a dark surface. */
+
+:root {
+  --tamu-maroon:       #500000;
+  --tamu-maroon-dark:  #3c001c;
+  --tamu-maroon-light: #732f2f;
+}
+
+/* ── Light mode ─────────────────────────────────────────────────────────── */
+[data-md-color-scheme="default"] {
+  --md-primary-fg-color:        var(--tamu-maroon);
+  --md-primary-fg-color--light: var(--tamu-maroon-light);
+  --md-primary-fg-color--dark:  var(--tamu-maroon-dark);
+  --md-primary-bg-color:        #ffffff;
+
+  --md-accent-fg-color:         var(--tamu-maroon-light);
+  --md-typeset-a-color:         var(--tamu-maroon);
+}
+
+/* ── Dark mode (slate) ──────────────────────────────────────────────────── */
+[data-md-color-scheme="slate"] {
+  --md-primary-fg-color:        var(--tamu-maroon);
+  --md-primary-fg-color--light: var(--tamu-maroon-light);
+  --md-primary-fg-color--dark:  var(--tamu-maroon-dark);
+
+  /* Lighten interactive maroons so they read on a dark background. */
+  --md-accent-fg-color:         #c97f7f;
+  --md-typeset-a-color:         #e0a3a3;
+}
