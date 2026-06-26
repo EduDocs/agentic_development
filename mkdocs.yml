@@ -1,0 +1,190 @@
+site_name: Agentic Development in Research
+site_description: >-
+  A project-based graduate course on building agentic AI systems for research,
+  culminating in agentic evolutionary frameworks that automate discovery.
+site_author: Agentic Development in Research
+copyright: Dedicated to the public domain under CC0 1.0 Universal.
+
+# Single source of truth: docs/ holds the homepage plus directory symlinks to the
+# real course folders, so the site renders the same markdown the PDF build uses
+# without duplicating any content. Rebuild the symlinks with `just site-links`.
+docs_dir: docs
+site_dir: site
+
+theme:
+  name: material
+  language: en
+  icon:
+    logo: material/graph-outline
+    repo: fontawesome/brands/git-alt
+  font:
+    text: Inter
+    code: JetBrains Mono
+  palette:
+    - media: "(prefers-color-scheme)"
+      toggle:
+        icon: material/brightness-auto
+        name: Switch to light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      toggle:
+        icon: material/brightness-4
+        name: Switch to system preference
+  features:
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.sections
+    - navigation.indexes
+    - navigation.top
+    - navigation.tracking
+    - navigation.footer
+    - toc.follow
+    - search.suggest
+    - search.highlight
+    - search.share
+    - content.code.copy
+    - content.tooltips
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - md_in_html
+  - def_list
+  - footnotes
+  - tables
+  - toc:
+      permalink: true
+      toc_depth: 3
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.details
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.smartsymbols
+  - pymdownx.caret
+  - pymdownx.tilde
+
+extra_css:
+  - stylesheets/tamu.css
+
+plugins:
+  - search
+
+# Workshop source files are built and reachable from their INDEX, but kept out of
+# the main nav; CLAUDE.md is maintainer-facing. Silence the not-in-nav notices.
+not_in_nav: |
+  /CLAUDE.md
+  /resources/
+
+validation:
+  omitted_files: ignore
+  absolute_links: ignore
+  unrecognized_links: ignore
+  nav:
+    not_found: warn
+
+nav:
+  - Home: index.md
+  - Course:
+      - Overview: syllabus/README.md
+      - Learning Outcomes: syllabus/outcomes.md
+      - Calendar (14 weeks): syllabus/calendar.md
+      - Assessment & Weights: syllabus/assessment.md
+      - Outcome → Evidence Map: syllabus/assessment-map.md
+      - Skill Progression: PROGRESSION.md
+      - Shared Substrate (Benchmarks): benchmarks/README.md
+  - Tasks:
+      - Onboarding Overview: tasks/README.md
+      - 1 · Rig Setup: tasks/task-1-rig-setup.md
+      - 2 · Version Control: tasks/task-2-version-control.md
+      - 3 · Prompts & Permissions: tasks/task-3-prompts-and-permissions.md
+      - 4 · Context Engineering: tasks/task-4-context-engineering.md
+      - 5 · Automated Context: tasks/task-5-automated-context.md
+      - 6 · API & Models: tasks/task-6-api-and-models.md
+  - Challenges:
+      - Challenges Overview: challenges/README.md
+      - "Challenge 1 · Agentic Coding":
+          - Brief: challenges/challenge-1-agentic-coding/brief.md
+          - Rubric: challenges/challenge-1-agentic-coding/rubric.md
+      - "Challenge 2 · Research Agent":
+          - Brief: challenges/challenge-2-research-agent/brief.md
+          - Rubric: challenges/challenge-2-research-agent/rubric.md
+      - "Challenge 3 · Retrieval & Grounding":
+          - Brief: challenges/challenge-3-retrieval-grounding/brief.md
+          - Rubric: challenges/challenge-3-retrieval-grounding/rubric.md
+      - "Challenge 4 · Orchestration":
+          - Brief: challenges/challenge-4-orchestration/brief.md
+          - Rubric: challenges/challenge-4-orchestration/rubric.md
+  - Capstone:
+      - Project Overview: projects/README.md
+      - Brief: projects/capstone/brief.md
+      - Evolution Pivot: projects/capstone/evolution-pivot.md
+      - Proposal Template: projects/capstone/proposal-template.md
+      - Milestones: projects/capstone/milestones.md
+      - Rubric: projects/capstone/rubric.md
+      - Report Template: projects/capstone/report-template.md
+  - Tutorials:
+      - Tutorials Overview: tutorials/README.md
+      - "1 · Foundations — the rig & toolchain":
+          - 01 · Shell & Terminal: tutorials/tutorial-01-shell-and-terminal.md
+          - 02 · Git & Version Control: tutorials/tutorial-02-git-version-control.md
+          - 03 · Python Environments: tutorials/tutorial-03-python-environments.md
+          - 36 · Package Managers & Distribution: tutorials/tutorial-36-package-managers-and-distribution.md
+          - 35 · Just Command Runner: tutorials/tutorial-35-just-command-runner.md
+          - 34 · Markdown & Pandoc: tutorials/tutorial-34-markdown-and-pandoc.md
+          - 28 · VS Code for Agentic Dev: tutorials/tutorial-28-vscode-for-agentic-dev.md
+          - 29 · Cowork & Codex: tutorials/tutorial-29-cowork-and-codex.md
+          - 27 · Agent Instruction Files: tutorials/tutorial-27-agent-instruction-files.md
+      - "2 · LLMs, APIs & models":
+          - 32 · LLM Fundamentals: tutorials/tutorial-32-llm-fundamentals.md
+          - 04 · Anatomy of an LLM API Call: tutorials/tutorial-04-llm-api-call.md
+          - 33 · The Hugging Face Ecosystem: tutorials/tutorial-33-huggingface-ecosystem.md
+          - 05 · Local Open-Weights Models: tutorials/tutorial-05-local-open-weights-models.md
+      - "3 · Prompting & context engineering":
+          - 06 · Prompt Engineering: tutorials/tutorial-06-prompt-engineering.md
+          - 07 · Context Engineering: tutorials/tutorial-07-context-engineering.md
+          - 08 · Automated Context Management: tutorials/tutorial-08-automated-context-management.md
+          - 10 · Structured Outputs: tutorials/tutorial-10-structured-outputs.md
+      - "4 · Retrieval & vector stores":
+          - 09 · RAG & Embeddings: tutorials/tutorial-09-rag-and-embeddings.md
+          - 30 · SQLite & Vector Search: tutorials/tutorial-30-sqlite-and-vector-search.md
+          - 31 · Postgres & pgvector: tutorials/tutorial-31-postgres-pgvector.md
+      - "5 · Building & orchestrating agents":
+          - 11 · The Agent Loop (ReAct): tutorials/tutorial-11-agent-loop-react.md
+          - 12 · Tool Use & Function Calling: tutorials/tutorial-12-tool-use-function-calling.md
+          - 13 · Model Context Protocol (MCP): tutorials/tutorial-13-model-context-protocol.md
+          - 26 · Agent Skills: tutorials/tutorial-26-agent-skills.md
+          - 16 · Agent Memory & State: tutorials/tutorial-16-agent-memory-and-state.md
+          - 17 · Planning & Decomposition: tutorials/tutorial-17-planning-and-decomposition.md
+          - 18 · Verification & Critics: tutorials/tutorial-18-verification-and-critics.md
+          - 14 · Multi-Agent Orchestration: tutorials/tutorial-14-multi-agent-orchestration.md
+          - 15 · Sub-Agents & Agent Teams: tutorials/tutorial-15-subagents-and-teams.md
+      - "6 · Evaluation, reliability & safety":
+          - 19 · Evaluation Harnesses: tutorials/tutorial-19-evaluation-harnesses.md
+          - 20 · LLM-as-a-Judge: tutorials/tutorial-20-llm-as-judge.md
+          - 21 · Model Benchmarking: tutorials/tutorial-21-model-benchmarking.md
+          - 22 · Reproducibility & Observability: tutorials/tutorial-22-reproducibility-and-observability.md
+          - 23 · Permissions & Sandboxing: tutorials/tutorial-23-permissions-and-sandboxing.md
+      - "7 · Evolutionary frameworks":
+          - 24 · Symbolic Regression & GP: tutorials/tutorial-24-symbolic-regression-gp.md
+          - 25 · LLM-Driven Evolutionary Search: tutorials/tutorial-25-llm-evolutionary-search.md
+  - Reference:
+      - Tutorial Rubric: assessment/rubric-tutorials.md
+      - Assessment Infrastructure: assessment/README.md
+      - Claude Code Workshop: resources/claude-cli-workshop/lessons/INDEX.md
+      - Governance Ledger (Decisions): DECISIONS.md
