@@ -37,7 +37,7 @@ By the end of the course, a student can:
 | **LO3** | **Implement** a research agent with tool definitions, a control loop, and structured outputs that completes a research task end-to-end. | Create | C2 | build |
 | **LO4** | **Design** an automatic, leakage-resistant **evaluation harness** and **use** it to compare methods and models on held-out data. | Create / Evaluate | C2–C4, leaderboard | Spine 1 |
 | **LO5** | **Compose** reliable multi-step / multi-agent workflows with verification, retries, memory, and logging, and **report** failures honestly. | Create | C4 | orchestrate |
-| **LO6** | **Implement** an agentic **evolutionary search** that extends an evaluation loop with a mutation operator to evolve artifacts, managing fitness design, diversity, and cost. | Create | capstone | evolve (Spine 1 ✕ 2) |
+| **LO6** | **Implement** an agentic **evolutionary search** that extends an evaluation loop with a mutation operator to evolve artifacts, managing fitness design, diversity, and cost. | Create | capstone | evolve (Spine 1 × 2) |
 | **LO7** | **Scope, build, evolve, and critically analyze** a discovery system on a problem in the student's **own research domain**. | Create / Evaluate | capstone | transfer |
 | **LO8** | **Teach** an agentic-development topic to peers and **document** reproducible results in a paper-style report. | Create / Evaluate | Tutorials, capstone report | communicate |
 | **LO9** | **Use AI critically and transparently**: **judge** when to trust an agent's output, **verify** its claims against ground truth, **disclose** AI's role in the work, and recognize and name failure modes. | Evaluate | C2–C4 verification, honest failure reports, AI-use disclosure, quizzes | cross-cutting |

@@ -244,3 +244,13 @@ and a `just check` staleness/validation step.
 Supersedes: —
 Touches: tasks/, challenges/, projects/capstone/, tutorials/, syllabus/, assessment/rubric-tutorials.md
 
+## D-028  Pandoc + just build pipeline   [2026-06-25, S12]
+Decision: A `justfile` (+ `pandoc/defaults.yaml`, lualatex) assembles the course markdown into
+PDFs in `output/` (gitignored). Recipes: `pdf` (full packet), `handbook` (core docs, no
+tutorials), `tutorials` (catalog), `clean`. Each strips per-file YAML front matter (D-027),
+concatenates in reading order with page breaks, and renders with a TOC. Verified building end to
+end. Plain symbols (`✓`, `×`) replace emoji that lualatex can't render, so output is clean in both
+PDF and on GitHub.
+Supersedes: —
+Touches: justfile, pandoc/defaults.yaml, .gitignore (output/)
+

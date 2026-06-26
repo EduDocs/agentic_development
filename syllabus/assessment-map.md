@@ -53,7 +53,7 @@ unit (Tasks → LO1/2/9 formatively; Quizzes → LO2/9; Tutorials → LO8).
 - **Comparative performance is the workhorse** — it carries LO1–LO5 and part of LO9. Its weight must
   be large enough to honor that breadth, but **capped** so the leaderboard doesn't dominate grading
   (and so a student who reasons well but scores mid-pack isn't sunk — recall "honesty is graded").
-- **Presentations map narrowly to LO8.** ✅ *Resolved (D-023):* broadened — a pre-shared md + open
+- **Presentations map narrowly to LO8.** ✓ *Resolved (D-023):* broadened — a pre-shared md + open
   Q&A beyond the talk now certify conceptual grasp (LO2) and honest question-handling (LO9), shown
   by the new ○ marks above.
 - **Quizzes are the primary check on LO2's conceptual *vocabulary*** (alongside the Challenges, which
@@ -61,7 +61,7 @@ unit (Tasks → LO1/2/9 formatively; Quizzes → LO2/9; Tutorials → LO8).
   than dropping them.
 - **The Capstone is the sole grader of LO6 and LO7** (evolve + transfer). As the summative, it should
   carry the largest single weight — consistent with D-012.
-- **LO9 is diffuse** (Quizzes ○, Comparative ○, Capstone ●). ✅ *Resolved:* the capstone's AI-use
+- **LO9 is diffuse** (Quizzes ○, Comparative ○, Capstone ●). ✓ *Resolved:* the capstone's AI-use
   disclosure + honest-failure analysis is its anchor and the capstone rubric scores it explicitly
   (S10).
 
