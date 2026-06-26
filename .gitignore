@@ -1,0 +1,91 @@
+# ─────────────────────────────────────────────────────────────
+# Course working area — ephemeral (keep the folder's README only)
+# ─────────────────────────────────────────────────────────────
+scratch/*
+!scratch/README.md
+
+# ─────────────────────────────────────────────────────────────
+# Secrets & credentials — never commit
+# ─────────────────────────────────────────────────────────────
+.env
+.env.*
+*.local
+*.pem
+*.key
+secrets/
+credentials.json
+service-account*.json
+.anthropic/
+.api_keys
+
+# ─────────────────────────────────────────────────────────────
+# OS & editor cruft
+# ─────────────────────────────────────────────────────────────
+.DS_Store
+.DS_Store?
+._*
+Thumbs.db
+Desktop.ini
+*~
+*.swp
+*.swo
+.idea/
+.vscode/
+*.code-workspace
+
+# ─────────────────────────────────────────────────────────────
+# Python (substrate / benchmarks / agent code)
+# ─────────────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.eggs/
+.venv/
+venv/
+env/
+.python-version
+.ipynb_checkpoints/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+
+# ─────────────────────────────────────────────────────────────
+# Data & model artifacts — large binaries belong outside git
+# (commit small sample datasets; keep big dumps & weights out)
+# ─────────────────────────────────────────────────────────────
+*.ckpt
+*.safetensors
+*.gguf
+*.bin
+*.pt
+*.onnx
+*.parquet
+*.h5
+# data/            # uncomment if you stage large datasets here
+
+# ─────────────────────────────────────────────────────────────
+# Build outputs — markdown is the source of truth; PDFs/slides derive
+# ─────────────────────────────────────────────────────────────
+build/
+dist/
+output/
+_site/
+*.aux
+*.toc
+*.out
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+# *.pdf            # uncomment to keep built PDFs out (docs-as-source)
+
+# ─────────────────────────────────────────────────────────────
+# Logs & run artifacts (agent runs, leaderboard temp, traces)
+# ─────────────────────────────────────────────────────────────
+*.log
+logs/
+runs/
+.cache/
+tmp/

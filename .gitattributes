@@ -1,0 +1,26 @@
+# Normalize line endings: treat everything as text with LF in the repo,
+# and let git infer text vs binary by default.
+* text=auto eol=lf
+
+# Explicit text types (course is markdown-source)
+*.md     text
+*.py     text
+*.toml   text
+*.yaml   text
+*.yml    text
+*.json   text
+*.bib    text
+*.tex    text
+*.csv    text
+
+# Binary types — never normalize
+*.png            binary
+*.jpg            binary
+*.jpeg           binary
+*.gif            binary
+*.pdf            binary
+*.ckpt           binary
+*.bin            binary
+*.safetensors    binary
+*.gguf           binary
+*.parquet        binary
