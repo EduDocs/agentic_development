@@ -224,3 +224,23 @@ external attribution or path dependency. The two projects are separated complete
 Refines: drops the external attribution in D-007, D-009, D-010, D-021
 Touches: whole repo
 
+## D-026  Per-Challenge rubrics authored   [2026-06-25, S9]
+Decision: Each of the four Challenges now has a `rubric.md` next to its `brief.md`. Each rubric
+has a tailored **primary criterion** (C1 reproducibility, C2 the eval harness, C3 retrieval/context
+engineering, C4 orchestration & the loop) plus correctness, comparative performance, and analysis
+criteria; every criterion traces to a learning outcome. The leaderboard *informs* but does not
+*determine* the grade, and **honest analysis is graded**. This closes S9.
+Refines: D-014, D-022, D-024
+Touches: challenges/*/rubric.md
+
+## D-027  Lightweight YAML front matter on content files   [2026-06-25, S12]
+Decision: Content markdown files carry a minimal front-matter block — `title`, `status`
+(draft | review | final), `updated`, `unit` — plus `outcomes: [LO…]` on briefs and rubrics.
+Applied to the **62 content files** (tasks, challenge briefs + rubrics, capstone docs, the 36
+tutorials, syllabus content, the tutorial rubric). **Excluded** (kept clean): governance/index
+files — `CLAUDE.md`, `README.md`, `DECISIONS.md`, `PROGRESSION.md`, the folder READMEs — plus
+`LICENSE` and `scratch/`. New content files should follow suit; this future-proofs a pandoc build
+and a `just check` staleness/validation step.
+Supersedes: —
+Touches: tasks/, challenges/, projects/capstone/, tutorials/, syllabus/, assessment/rubric-tutorials.md
+

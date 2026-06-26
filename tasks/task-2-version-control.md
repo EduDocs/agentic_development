@@ -1,3 +1,10 @@
+---
+title: "Task 2 — Version Control From Day One"
+status: draft
+updated: 2026-06-25
+unit: task
+---
+
 # Task 2 — Version Control From Day One
 
 **Pillar:** versioning.

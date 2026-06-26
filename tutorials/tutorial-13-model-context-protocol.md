@@ -1,3 +1,10 @@
+---
+title: "Tutorial 13 — The Model Context Protocol (MCP)"
+status: draft
+updated: 2026-06-25
+unit: tutorial
+---
+
 # Tutorial 13 — The Model Context Protocol (MCP)
 
 > Student-led tutorial (~15 min). A USB-C port for plugging tools and data into any agent.

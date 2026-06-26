@@ -1,6 +1,14 @@
+---
+title: "Challenge 3 — Retrieval & Grounding (Context Engineering at Scale)"
+status: draft
+updated: 2026-06-25
+unit: challenge
+outcomes: [LO2, LO3, LO4, LO9]
+---
+
 # Challenge 3 — Retrieval & Grounding (Context Engineering at Scale)
 
-**Weeks:** ~5–6 · **Mode:** individual or team (set at S9) · **Substrate:** Tier 1
+**Weeks:** ~5–6 · **Mode:** individual or team · **Substrate:** Tier 1
 
 ## The capability you're building
 Ground the agent in *domain knowledge* so it proposes **better** models. You'll give the agent
@@ -30,7 +38,8 @@ Extend your Challenge 2 research agent so it:
 
 ## How it's scored
 Comparative leaderboard performance — does grounding **measurably** beat the ungrounded C2 agent? —
-plus the quality of the retrieval design and the honesty of the ablation. (Rubric: S9.)
+plus the quality of the retrieval design and the honesty of the ablation. (See
+[`rubric.md`](rubric.md).)
 
 ## Reading
 - Workshop **Lesson 02** revisited at depth (context, instruction layers) + **Lesson 04** intro.

@@ -1,3 +1,10 @@
+---
+title: "Tutorial 27 — AGENTS.md & CLAUDE.md: Agent Instruction Files"
+status: draft
+updated: 2026-06-25
+unit: tutorial
+---
+
 # Tutorial 27 — AGENTS.md & CLAUDE.md: Agent Instruction Files
 
 > Student-led tutorial (~15 min). The single highest-leverage file in your repo is the one that tells the agent how *your* project works.

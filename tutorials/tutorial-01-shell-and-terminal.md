@@ -1,3 +1,10 @@
+---
+title: "Tutorial 01 — The Unix Shell & Terminal for Agentic Work"
+status: draft
+updated: 2026-06-25
+unit: tutorial
+---
+
 # Tutorial 01 — The Unix Shell & Terminal for Agentic Work
 
 > Student-led tutorial (~15 min). The shell is the agent's hands — learn it and you learn how every coding agent actually touches your machine.

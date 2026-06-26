@@ -1,3 +1,10 @@
+---
+title: "Assessment"
+status: draft
+updated: 2026-06-25
+unit: syllabus
+---
+
 # Assessment
 
 > Why this looks unusual: in an agentic-development course a traditional sit-down exam tests the

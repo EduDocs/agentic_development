@@ -1,3 +1,10 @@
+---
+title: "Tutorial 12 — Tool Use & Function Calling"
+status: draft
+updated: 2026-06-25
+unit: tutorial
+---
+
 # Tutorial 12 — Tool Use & Function Calling
 
 > Student-led tutorial (~15 min). How a text model reaches out and *does* things.

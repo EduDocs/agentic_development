@@ -1,3 +1,10 @@
+---
+title: "Tutorial 15 — Sub-Agents & Agent Teams"
+status: draft
+updated: 2026-06-25
+unit: tutorial
+---
+
 # Tutorial 15 — Sub-Agents & Agent Teams
 
 > Student-led tutorial (~15 min). Delegate work to focused helpers without drowning in context.

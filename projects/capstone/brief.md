@@ -1,3 +1,11 @@
+---
+title: "Capstone Project — Agentic Evolutionary Research in Your Own Domain"
+status: draft
+updated: 2026-06-25
+unit: capstone
+outcomes: [LO1, LO3, LO4, LO6, LO7, LO8, LO9]
+---
+
 # Capstone Project — Agentic Evolutionary Research in Your Own Domain
 
 **Weeks:** ~9–15 (launches at the pivot) · **Mode:** team or individual (set at S9) · **The

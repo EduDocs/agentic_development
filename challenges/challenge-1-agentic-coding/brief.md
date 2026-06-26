@@ -1,3 +1,11 @@
+---
+title: "Challenge 1 — Agentic Coding & the Reproducible Repo"
+status: draft
+updated: 2026-06-25
+unit: challenge
+outcomes: [LO1, LO2, LO4]
+---
+
 # Challenge 1 — Agentic Coding & the Reproducible Repo
 
 **Weeks:** ~1–2 · **Mode:** individual · **Substrate:** model discovery from data (Tier 0)
@@ -32,7 +40,8 @@ at checkpoints, and you can reproduce the run on a clean machine.
 ## How it's scored
 A comparative leaderboard entry (the linear baseline) — but the weight here is mostly on
 **process**: reproducibility, a clean git history, and a working one-command run. Getting a great
-score is easy with linear data; doing it *reproducibly and legibly* is the point. (Rubric: S9.)
+score is easy with linear data; doing it *reproducibly and legibly* is the point. (See
+[`rubric.md`](rubric.md).)
 
 ## Reading
 - Workshop **Lessons 01–02** (prompting, context, `CLAUDE.md`, sessions) and **Appendices B/C**

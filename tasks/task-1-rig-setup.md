@@ -1,3 +1,10 @@
+---
+title: "Task 1 — Set Up Your Rig"
+status: draft
+updated: 2026-06-25
+unit: task
+---
+
 # Task 1 — Set Up Your Rig
 
 **Pillar:** mechanics (do this before week 1 if you can).

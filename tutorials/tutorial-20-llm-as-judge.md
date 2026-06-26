@@ -1,3 +1,10 @@
+---
+title: "Tutorial 20 — LLM-as-a-Judge & Its Pitfalls"
+status: draft
+updated: 2026-06-25
+unit: tutorial
+---
+
 # Tutorial 20 — LLM-as-a-Judge & Its Pitfalls
 
 > Student-led tutorial (~15 min). Asking a model to grade outputs is seductively easy and quietly dangerous — learn where it helps and where it lies.

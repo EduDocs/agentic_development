@@ -1,3 +1,10 @@
+---
+title: "Capstone Report — Template"
+status: draft
+updated: 2026-06-25
+unit: capstone
+---
+
 # Capstone Report — Template
 
 > Paper-style, ~8 pages, IEEE-style. Markdown or LaTeX. The

@@ -1,3 +1,10 @@
+---
+title: "Task 5 — Automated Context Management"
+status: draft
+updated: 2026-06-25
+unit: task
+---
+
 # Task 5 — Automated Context Management
 
 **Pillar:** automated context management.

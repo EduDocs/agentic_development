@@ -1,3 +1,10 @@
+---
+title: "Tutorial 21 — Model Benchmarking & Leaderboards"
+status: draft
+updated: 2026-06-25
+unit: tutorial
+---
+
 # Tutorial 21 — Model Benchmarking & Leaderboards
 
 > Student-led tutorial (~15 min). How do you say one model or agent is "better" without fooling yourself?

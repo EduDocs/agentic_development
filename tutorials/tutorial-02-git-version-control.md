@@ -1,3 +1,10 @@
+---
+title: "Tutorial 02 — Git & Version Control as an Agent Safety Net"
+status: draft
+updated: 2026-06-25
+unit: tutorial
+---
+
 # Tutorial 02 — Git & Version Control as an Agent Safety Net
 
 > Student-led tutorial (~15 min). Commit before you let it loose — Git is the undo button that makes trusting an autonomous agent rational.

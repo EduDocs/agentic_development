@@ -1,6 +1,14 @@
+---
+title: "Challenge 4 — Orchestration, Reliability & the Loop That Becomes Evolution"
+status: draft
+updated: 2026-06-25
+unit: challenge
+outcomes: [LO4, LO5, LO9]
+---
+
 # Challenge 4 — Orchestration, Reliability & the Loop That Becomes Evolution
 
-**Weeks:** ~7–8 · **Mode:** team (likely; set at S9) · **Substrate:** Tier 1
+**Weeks:** ~7–8 · **Mode:** team (likely) · **Substrate:** Tier 1
 
 ## The capability you're building
 Turn a single agent into a **reliable, multi-step workflow** — and, in doing so, build the exact
@@ -39,7 +47,8 @@ the tool plurality (D-017).
 
 ## How it's scored
 Leaderboard performance of the full pipeline; the rigor of the ablation and model-benchmark; and
-the reliability engineering — does it log, retry, reproduce, and report failure honestly? (S9.)
+the reliability engineering — does it log, retry, reproduce, and report failure honestly? (See
+[`rubric.md`](rubric.md).)
 
 ## Reading
 - Workshop **Lesson 04** (MCP, sub-agents, agent teams, headless, worktrees).

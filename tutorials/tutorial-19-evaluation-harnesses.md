@@ -1,3 +1,10 @@
+---
+title: "Tutorial 19 — Building Evaluation Harnesses for Agents"
+status: draft
+updated: 2026-06-25
+unit: tutorial
+---
+
 # Tutorial 19 — Building Evaluation Harnesses for Agents
 
 > Student-led tutorial (~15 min). The harness you build here is the same object that becomes your fitness function in the capstone — build it like it matters, because it does.

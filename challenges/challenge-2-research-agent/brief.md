@@ -1,6 +1,14 @@
+---
+title: "Challenge 2 — Build a Research Agent (the eval harness is born)"
+status: draft
+updated: 2026-06-25
+unit: challenge
+outcomes: [LO3, LO4, LO9]
+---
+
 # Challenge 2 — Build a Research Agent (the eval harness is born)
 
-**Weeks:** ~3–4 · **Mode:** individual or team (set at S9) · **Substrate:** model discovery (Tier 0–1)
+**Weeks:** ~3–4 · **Mode:** individual or team · **Substrate:** model discovery (Tier 0–1)
 
 ## The capability you're building
 *Construct* an agent rather than just use one. Build something that does a real research move
@@ -33,7 +41,7 @@ leaderboard.
 ## How it's scored
 Comparative leaderboard performance (your agent's best model vs. the baselines) **and** the
 correctness/legibility of the eval harness and the report. A flashy score on a leaking harness
-fails. (Rubric: S9.)
+fails. (See [`rubric.md`](rubric.md).)
 
 ## Reading
 - Workshop **Lesson 03** (tools, models, flags) — the machinery for giving an agent capability.

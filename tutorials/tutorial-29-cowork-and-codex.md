@@ -1,3 +1,10 @@
+---
+title: "Tutorial 29 — Cowork & Codex: Agentic Coding Environments"
+status: draft
+updated: 2026-06-25
+unit: tutorial
+---
+
 # Tutorial 29 — Cowork & Codex: Agentic Coding Environments
 
 > Student-led tutorial (~15 min). What changes when you stop driving the agent keystroke-by-keystroke and start *delegating whole tasks*?

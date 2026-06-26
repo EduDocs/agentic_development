@@ -1,3 +1,10 @@
+---
+title: "Tutorial 35 — Just: A Command Runner"
+status: draft
+updated: 2026-06-25
+unit: tutorial
+---
+
 # Tutorial 35 — Just: A Command Runner
 
 > Student-led tutorial (~15 min). Turn "the long command someone remembers" into `just run`.

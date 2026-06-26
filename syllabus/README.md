@@ -1,3 +1,10 @@
+---
+title: "Syllabus — Agentic Development in Research → Agentic Evolutionary Frameworks"
+status: draft
+updated: 2026-06-25
+unit: syllabus
+---
+
 # Syllabus — Agentic Development in Research → Agentic Evolutionary Frameworks
 
 A project-based graduate course on building agentic AI systems for research, culminating in

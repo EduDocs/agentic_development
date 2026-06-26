@@ -1,3 +1,10 @@
+---
+title: "Tutorial 03 — Python Environments & Reproducibility"
+status: draft
+updated: 2026-06-25
+unit: tutorial
+---
+
 # Tutorial 03 — Python Environments & Reproducibility
 
 > Student-led tutorial (~15 min). "Works on my machine" is the enemy of science — environments are how you make an agent run reproducible.

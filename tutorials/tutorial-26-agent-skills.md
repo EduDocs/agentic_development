@@ -1,3 +1,10 @@
+---
+title: "Tutorial 26 — Agent Skills"
+status: draft
+updated: 2026-06-25
+unit: tutorial
+---
+
 # Tutorial 26 — Agent Skills
 
 > Student-led tutorial (~15 min). Stop re-explaining the same procedure to your agent every session — package it once as a skill.

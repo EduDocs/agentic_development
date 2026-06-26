@@ -1,3 +1,10 @@
+---
+title: "Tutorial 36 — Software Distribution: Homebrew, uv & Friends"
+status: draft
+updated: 2026-06-25
+unit: tutorial
+---
+
 # Tutorial 36 — Software Distribution: Homebrew, uv & Friends
 
 > Student-led tutorial (~15 min). Where software comes from, and how to make your rig reproducible.

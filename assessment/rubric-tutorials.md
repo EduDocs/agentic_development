@@ -1,3 +1,11 @@
+---
+title: "Tutorial / Presentation Rubric"
+status: draft
+updated: 2026-06-25
+unit: assessment
+outcomes: [LO2, LO8, LO9]
+---
+
 # Tutorial / Presentation Rubric
 
 > The **Presentations** assessment component (D-014), **broadened** (D-023) so it certifies

@@ -1,3 +1,10 @@
+---
+title: "Tutorial 04 — Anatomy of an LLM API Call"
+status: draft
+updated: 2026-06-25
+unit: tutorial
+---
+
 # Tutorial 04 — Anatomy of an LLM API Call
 
 > Student-led tutorial (~15 min). Under every shiny CLI is one HTTP request — open it up and the whole agent stack stops being magic.

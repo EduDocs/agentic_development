@@ -1,3 +1,10 @@
+---
+title: "Tutorial 17 — Planning & Task Decomposition for Agents"
+status: draft
+updated: 2026-06-25
+unit: tutorial
+---
+
 # Tutorial 17 — Planning & Task Decomposition for Agents
 
 > Student-led tutorial (~15 min). Sometimes the smartest thing an agent can do is stop and write down the plan before touching anything.

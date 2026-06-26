@@ -1,3 +1,10 @@
+---
+title: "Tutorial 14 — Multi-Agent Orchestration Patterns"
+status: draft
+updated: 2026-06-25
+unit: tutorial
+---
+
 # Tutorial 14 — Multi-Agent Orchestration Patterns
 
 > Student-led tutorial (~15 min). When one agent isn't enough, how do you wire several together?

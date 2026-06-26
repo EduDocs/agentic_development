@@ -1,3 +1,11 @@
+---
+title: "Capstone Rubric"
+status: draft
+updated: 2026-06-25
+unit: capstone
+outcomes: [LO1, LO3, LO4, LO6, LO7, LO8, LO9]
+---
+
 # Capstone Rubric
 
 > A Project rubric and a Teamwork rubric, **modernized for build → evolve → write up**.

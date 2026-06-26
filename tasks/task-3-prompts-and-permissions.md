@@ -1,3 +1,10 @@
+---
+title: "Task 3 — Prompts, Permissions & the Agentic Loop"
+status: draft
+updated: 2026-06-25
+unit: task
+---
+
 # Task 3 — Prompts, Permissions & the Agentic Loop
 
 **Pillar:** prompt engineering.

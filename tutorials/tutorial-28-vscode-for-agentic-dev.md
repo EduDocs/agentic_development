@@ -1,3 +1,10 @@
+---
+title: "Tutorial 28 — VS Code as an Agentic IDE"
+status: draft
+updated: 2026-06-25
+unit: tutorial
+---
+
 # Tutorial 28 — VS Code as an Agentic IDE
 
 > Student-led tutorial (~15 min). The terminal is great until you need to *see* a fifteen-file diff — that's when the editor earns its keep.

@@ -1,3 +1,10 @@
+---
+title: "Tutorial 10 — Structured Outputs & Schema-Constrained Generation"
+status: draft
+updated: 2026-06-25
+unit: tutorial
+---
+
 # Tutorial 10 — Structured Outputs & Schema-Constrained Generation
 
 > Student-led tutorial (~15 min). If you're parsing prose to extract an answer, you've already lost — make the model emit structure you can trust.

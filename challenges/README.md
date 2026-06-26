@@ -8,4 +8,4 @@ capstone, not as a fifth Challenge (D-013).
 **Anatomy:** `brief.md` · data/scaffold · `rubric.md` · submission template · objective score via
 the shared eval-harness/leaderboard (see `../benchmarks/`).
 
-*Populated in sessions S8b–S8d; briefs + rubrics in S9.*
+*Each challenge folder holds a `brief.md` and a `rubric.md`.*

@@ -1,3 +1,10 @@
+---
+title: "Tutorial 25 — LLM-Driven Evolutionary Search"
+status: draft
+updated: 2026-06-25
+unit: tutorial
+---
+
 # Tutorial 25 — LLM-Driven Evolutionary Search
 
 > Student-led tutorial (~15 min). What if the mutation operator could *read the code* and propose smart edits?

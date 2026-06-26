@@ -1,3 +1,10 @@
+---
+title: "Tutorial 30 — SQLite & Vector Search (sqlite-vec)"
+status: draft
+updated: 2026-06-25
+unit: tutorial
+---
+
 # Tutorial 30 — SQLite & Vector Search (sqlite-vec)
 
 > Student-led tutorial (~15 min). The database that ships inside your app — and now does vector search too.

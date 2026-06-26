@@ -1,3 +1,10 @@
+---
+title: "Tutorial 09 — Retrieval-Augmented Generation & Embeddings"
+status: draft
+updated: 2026-06-25
+unit: tutorial
+---
+
 # Tutorial 09 — Retrieval-Augmented Generation & Embeddings
 
 > Student-led tutorial (~15 min). Retrieval is how you put the right knowledge in the window automatically — and, for us, how you constrain a search space.

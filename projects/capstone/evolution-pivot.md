@@ -1,3 +1,10 @@
+---
+title: "The Pivot — From Orchestrated Loop to Evolutionary Search"
+status: draft
+updated: 2026-06-25
+unit: capstone
+---
+
 # The Pivot — From Orchestrated Loop to Evolutionary Search
 
 **Week ~9 teaching module.** This is where Agentic Development becomes Agentic *Evolutionary*

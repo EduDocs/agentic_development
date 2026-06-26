@@ -1,3 +1,10 @@
+---
+title: "Outcome → Evidence Matrix"
+status: draft
+updated: 2026-06-25
+unit: syllabus
+---
+
 # Outcome → Evidence Matrix
 
 > Checks, in both directions, that every learning outcome ([`outcomes.md`](outcomes.md)) is

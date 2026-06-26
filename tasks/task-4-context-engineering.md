@@ -1,3 +1,10 @@
+---
+title: "Task 4 — Context Engineering & CLAUDE.md"
+status: draft
+updated: 2026-06-25
+unit: task
+---
+
 # Task 4 — Context Engineering & CLAUDE.md
 
 **Pillar:** context engineering.

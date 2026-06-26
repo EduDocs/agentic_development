@@ -1,3 +1,10 @@
+---
+title: "Tutorial 08 — Automated Context Management"
+status: draft
+updated: 2026-06-25
+unit: tutorial
+---
+
 # Tutorial 08 — Automated Context Management
 
 > Student-led tutorial (~15 min). When the window fills, something has to give — compaction, memory, and knowing when to clear vs. continue keep long sessions coherent.

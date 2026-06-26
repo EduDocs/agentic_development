@@ -1,3 +1,10 @@
+---
+title: "Tutorial 18 — Verification, Critics & Self-Correction"
+status: draft
+updated: 2026-06-25
+unit: tutorial
+---
+
 # Tutorial 18 — Verification, Critics & Self-Correction
 
 > Student-led tutorial (~15 min). A generator that can't check its own work is a slot machine; pair it with a critic and you get a system that improves.

@@ -1,3 +1,10 @@
+---
+title: "Capstone Proposal"
+status: draft
+updated: 2026-06-25
+unit: capstone
+---
+
 # Capstone Proposal
 
 > Submit at the pivot (~week 9). ~2 pages. The goal is a **scoped, feasible** project, not a final

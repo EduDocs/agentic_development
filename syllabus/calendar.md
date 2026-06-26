@@ -1,3 +1,10 @@
+---
+title: "Course Calendar — Skeleton"
+status: draft
+updated: 2026-06-25
+unit: syllabus
+---
+
 # Course Calendar — Skeleton
 
 > **Deliberately loose.** 14 teaching weeks + a week-15 finals slot. The cadence carries slack:

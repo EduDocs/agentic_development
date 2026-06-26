@@ -1,3 +1,10 @@
+---
+title: "Tutorial 22 — Reproducibility, Logging & Observability for Agent Runs"
+status: draft
+updated: 2026-06-25
+unit: tutorial
+---
+
 # Tutorial 22 — Reproducibility, Logging & Observability for Agent Runs
 
 > Student-led tutorial (~15 min). If you can't replay a run, you can't trust, debug, or publish it.

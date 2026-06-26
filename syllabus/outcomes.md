@@ -1,3 +1,10 @@
+---
+title: "Course Objectives & Learning Outcomes"
+status: draft
+updated: 2026-06-25
+unit: syllabus
+---
+
 # Course Objectives & Learning Outcomes
 
 > Objectives are the broad aims (the *why*); learning outcomes are **measurable** statements of

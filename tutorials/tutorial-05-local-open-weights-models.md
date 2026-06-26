@@ -1,3 +1,10 @@
+---
+title: "Tutorial 05 — Running Open-Weights Models Locally"
+status: draft
+updated: 2026-06-25
+unit: tutorial
+---
+
 # Tutorial 05 — Running Open-Weights Models Locally
 
 > Student-led tutorial (~15 min). When the weights live on your laptop, the model is yours — no API key, no per-token bill, no data leaving the room.

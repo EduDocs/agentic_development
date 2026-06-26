@@ -1,3 +1,10 @@
+---
+title: "Tutorial 24 — Symbolic Regression & Genetic Programming"
+status: draft
+updated: 2026-06-25
+unit: tutorial
+---
+
 # Tutorial 24 — Symbolic Regression & Genetic Programming
 
 > Student-led tutorial (~15 min). Don't fit parameters to a fixed equation — discover the equation itself.

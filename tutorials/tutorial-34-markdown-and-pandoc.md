@@ -1,3 +1,10 @@
+---
+title: "Tutorial 34 — Markdown & Pandoc: Docs as Source"
+status: draft
+updated: 2026-06-25
+unit: tutorial
+---
+
 # Tutorial 34 — Markdown & Pandoc: Docs as Source
 
 > Student-led tutorial (~15 min). Write once in plain text, build PDFs, slides, and Word docs from the same source.

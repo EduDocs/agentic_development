@@ -1,3 +1,10 @@
+---
+title: "Tutorial 32 — LLM Fundamentals"
+status: draft
+updated: 2026-06-25
+unit: tutorial
+---
+
 # Tutorial 32 — LLM Fundamentals
 
 > Student-led tutorial (~15 min). What is actually happening inside the box when an agent "thinks."

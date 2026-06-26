@@ -1,3 +1,10 @@
+---
+title: "Tutorial 33 — The Hugging Face Ecosystem"
+status: draft
+updated: 2026-06-25
+unit: tutorial
+---
+
 # Tutorial 33 — The Hugging Face Ecosystem
 
 > Student-led tutorial (~15 min). The "GitHub for machine learning" — where models, datasets, and demos are shared and reused.

@@ -1,3 +1,10 @@
+---
+title: "Tutorial 23 — Permissions, Sandboxing & Safe Autonomy"
+status: draft
+updated: 2026-06-25
+unit: tutorial
+---
+
 # Tutorial 23 — Permissions, Sandboxing & Safe Autonomy
 
 > Student-led tutorial (~15 min). The more autonomous the agent, the more it matters what it *can't* do.

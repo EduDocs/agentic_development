@@ -1,3 +1,10 @@
+---
+title: "Task 6 — API Calls & Model Plurality"
+status: draft
+updated: 2026-06-25
+unit: task
+---
+
 # Task 6 — API Calls & Model Plurality
 
 **Pillar:** API calls (and tool plurality, D-017).

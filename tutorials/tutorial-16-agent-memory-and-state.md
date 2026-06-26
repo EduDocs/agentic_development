@@ -1,3 +1,10 @@
+---
+title: "Tutorial 16 — Agent Memory & State"
+status: draft
+updated: 2026-06-25
+unit: tutorial
+---
+
 # Tutorial 16 — Agent Memory & State
 
 > Student-led tutorial (~15 min). An agent with no memory re-derives everything from scratch every turn — memory is what turns a chatbot into a collaborator.

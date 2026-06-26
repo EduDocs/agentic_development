@@ -1,3 +1,10 @@
+---
+title: "Tutorial 11 — The Agent Loop (ReAct: Reason–Act–Observe)"
+status: draft
+updated: 2026-06-25
+unit: tutorial
+---
+
 # Tutorial 11 — The Agent Loop (ReAct: Reason–Act–Observe)
 
 > Student-led tutorial (~15 min). The single loop that turns a chatbot into an agent.

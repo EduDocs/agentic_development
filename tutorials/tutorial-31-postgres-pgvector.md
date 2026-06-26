@@ -1,3 +1,10 @@
+---
+title: "Tutorial 31 — Postgres & pgvector"
+status: draft
+updated: 2026-06-25
+unit: tutorial
+---
+
 # Tutorial 31 — Postgres & pgvector
 
 > Student-led tutorial (~15 min). When your single file stops scaling, graduate to a real database — without giving up SQL or vectors.

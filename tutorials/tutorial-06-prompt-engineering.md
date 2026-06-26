@@ -1,3 +1,10 @@
+---
+title: "Tutorial 06 — Prompt Engineering Patterns"
+status: draft
+updated: 2026-06-25
+unit: tutorial
+---
+
 # Tutorial 06 — Prompt Engineering Patterns
 
 > Student-led tutorial (~15 min). A handful of reusable patterns turn a vague request into a reliable instruction the model can actually execute.

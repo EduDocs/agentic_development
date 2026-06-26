@@ -1,3 +1,10 @@
+---
+title: "Capstone Milestones"
+status: draft
+updated: 2026-06-25
+unit: capstone
+---
+
 # Capstone Milestones
 
 > The capstone runs ~weeks 9–15 and overlaps the tail of foundations (D-013). Dates are **soft**

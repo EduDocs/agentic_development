@@ -1,3 +1,10 @@
+---
+title: "Tutorial 07 — Context Engineering & the Context Window"
+status: draft
+updated: 2026-06-25
+unit: tutorial
+---
+
 # Tutorial 07 — Context Engineering & the Context Window
 
 > Student-led tutorial (~15 min). The model only knows what is in the window right now — context engineering is deciding what that is, and when.
