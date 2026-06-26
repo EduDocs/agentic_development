@@ -75,6 +75,11 @@ output/
 _site/
 site/
 .venv-site/
+# Website source: ignore the generated symlinks (regenerate with `just site-links`),
+# but keep the real, hand-authored files (the homepage and the brand stylesheet).
+site-src/*
+!site-src/index.md
+!site-src/stylesheets/
 *.aux
 *.toc
 *.out

@@ -29,9 +29,10 @@ tutorials:
     @just _pdf "Agentic Development in Research — Tutorial Catalog" course-tutorials.pdf tutorials/README.md tutorials/tutorial-*.md
 
 # ── Website (MkDocs Material) ──────────────────────────────────────────────
-# The site renders the same markdown as the PDF build. docs/ holds the homepage
-# plus directory symlinks to the real folders (no content is duplicated).
-# Requires: uv. First run `just site-setup` to create the local environment.
+# The site renders the same markdown as the PDF build. site-src/ holds the
+# homepage plus directory symlinks to the real folders (no content is duplicated).
+# The symlinks are NOT committed — they regenerate via `site-links`, which the
+# serve/site recipes run automatically. Requires: uv (run `just site-setup` once).
 
 VENV := ".venv-site"
 
@@ -41,25 +42,25 @@ site-setup:
     VIRTUAL_ENV={{VENV}} uv pip install mkdocs-material
     @just site-links
 
-# (Re)create docs/ and its symlinks — run after a fresh clone or on Windows
+# (Re)create site-src/ symlinks — idempotent; runs after a fresh clone or on Windows
 site-links:
     #!/usr/bin/env bash
     set -euo pipefail
-    mkdir -p docs
+    mkdir -p site-src
     for d in syllabus tasks challenges projects tutorials benchmarks assessment resources; do
-      ln -sfn "../$d" "docs/$d"
+      ln -sfn "../$d" "site-src/$d"
     done
     for f in PROGRESSION.md DECISIONS.md CLAUDE.md; do
-      ln -sfn "../$f" "docs/$f"
+      ln -sfn "../$f" "site-src/$f"
     done
-    echo "docs/ symlinks ready"
+    echo "site-src/ symlinks ready"
 
 # Live-preview the site at http://127.0.0.1:8000 (auto-reloads on save)
-serve:
+serve: site-links
     {{VENV}}/bin/mkdocs serve
 
 # Build the static site into site/ (gitignored)
-site:
+site: site-links
     {{VENV}}/bin/mkdocs build --strict
     @echo "Built site/ — open site/index.html"
 

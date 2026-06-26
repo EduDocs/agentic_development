@@ -5,10 +5,11 @@ site_description: >-
 site_author: Agentic Development in Research
 copyright: Dedicated to the public domain under CC0 1.0 Universal.
 
-# Single source of truth: docs/ holds the homepage plus directory symlinks to the
-# real course folders, so the site renders the same markdown the PDF build uses
-# without duplicating any content. Rebuild the symlinks with `just site-links`.
-docs_dir: docs
+# Single source of truth: site-src/ holds the homepage plus directory symlinks to
+# the real course folders, so the site renders the same markdown the PDF build uses
+# without duplicating any content. The symlinks are not committed — they regenerate
+# via `just site-links` (which the serve/site recipes run automatically).
+docs_dir: site-src
 site_dir: site
 
 theme:
