@@ -1,0 +1,234 @@
+\chapter{The Agentic Rig}
+\label{chapter:AgenticRig}
+
+Before writing a single tool definition or system prompt, a researcher needs a working \emph{rig}: a set of interlocking tools that together make agentic work possible, legible, and reproducible.\index{Agentic rig}
+The rig is not glamorous — it is the terminal, the version control system, the API key, the editor — but it is the surface on which everything else rests.
+A shaky rig means untrustworthy results: work that cannot be reproduced, history that cannot be inspected, changes that cannot be understood.
+
+This chapter covers the components of the rig in the order a new user encounters them.
+
+\section{The Terminal and Shell}
+\label{section:Terminal}
+
+The \emph{terminal}\index{Terminal} is a text interface to the operating system.
+The \emph{shell}\index{Shell} is the program running inside the terminal that interprets commands.
+For agentic work, the terminal is indispensable: agents invoke tools by running shell commands, and the agent builder inspects outputs, launches processes, and manages files through the same interface.
+
+A handful of commands handle the vast majority of terminal interactions.
+
+\begin{example}
+The following commands form a minimal vocabulary for navigating a project.
+\begin{lstlisting}[language=bash]
+ls -la          # list files with permissions and hidden files
+cd path/to/dir  # change working directory
+pwd             # print current directory
+cat file.txt    # print file contents
+mkdir new_dir   # create a directory
+cp src dst      # copy a file
+mv src dst      # move or rename a file
+rm file         # delete a file (irreversible — use with care)
+\end{lstlisting}
+These commands are the same on macOS and Linux.
+\end{example}
+
+\begin{remark}
+The shell is case-sensitive and path-sensitive.
+A missing slash, a misplaced space, or a wrong file extension produces a silent failure or an error that looks unrelated to the actual mistake.
+Reading error messages carefully and running commands in small steps is more reliable than composing long pipelines until they happen to work.
+\end{remark}
+
+\subsection{Process Management and Piping}
+
+Beyond navigation, the shell provides \emph{process management} (running, stopping, and inspecting programs) and \emph{piping} (routing the output of one command into the input of another).
+
+\begin{example}
+Running a Python module, stopping it, and inspecting running processes:
+\begin{lstlisting}[language=bash]
+python -m mymodule       # run a Python module
+Ctrl-C                   # interrupt a running process
+ps aux | grep python     # list processes containing 'python'
+kill 12345               # send termination signal to process 12345
+\end{lstlisting}
+\end{example}
+
+Agents routinely launch subprocesses, capture their output, and pass it to subsequent steps.
+The researcher must be comfortable reading process output, distinguishing standard output from standard error, and recognizing common exit codes.
+
+\section{Version Control with Git}
+\label{section:Git}
+
+\emph{Version control}\index{Version control} is the practice of recording the history of changes to a body of work so that any past state can be recovered.
+\emph{Git}\index{Git} is the dominant version control system for software and is the tool used throughout this course.
+Without version control, agentic work is fundamentally untrustworthy: the agent may silently overwrite a correct intermediate state, and there is no way to recover it.
+
+\subsection{The Repository and the Commit}
+
+A \emph{repository}\index{Repository} is a directory that git tracks.
+A \emph{commit}\index{Commit} is a snapshot of the repository at a point in time, together with a message describing what changed and why.
+Commits are the atoms of a project's history.
+
+\begin{example}
+The minimal git workflow for recording a change:
+\begin{lstlisting}[language=bash]
+git init                       # create a new repository
+git status                     # see which files have changed
+git add path/to/file           # stage a specific file for the next commit
+git commit -m "Add loader for Tier-0 dataset"   # record the snapshot
+git log --oneline              # view the commit history
+\end{lstlisting}
+The commit message is addressed to a future reader who must understand what changed and why.
+\end{example}
+
+\subsection{Reproducibility through History}
+
+A clean commit history makes a project \emph{reproducible}: any reviewer can check out any commit and re-run the code at that point.
+This is especially important in agentic work, where the agent makes many small changes and the researcher must be able to distinguish a beneficial change from an accidental regression.
+
+\begin{principle}
+\label{principle:CleanHistory}
+Commit at every meaningful checkpoint — after loading data, after a passing test, after a model first scores correctly.
+Each commit should be a state the project can return to.
+A single commit that contains all work since the beginning of a project is not a history; it is a backup.
+\end{principle}
+
+\subsection{Remote Repositories}
+
+A \emph{remote repository}\index{Remote repository} is a copy of the repository hosted on a server (commonly GitHub).
+Pushing to a remote serves two purposes: it provides an off-machine backup, and it makes work shareable with collaborators and evaluators.
+
+\begin{lstlisting}[language=bash]
+git push origin main           # push local commits to the remote
+git pull origin main           # fetch and merge remote commits
+git clone <url>                # create a local copy of a remote repository
+\end{lstlisting}
+
+For the course, each student's work lives in a versioned repository that can be cloned and run from scratch on a clean machine.
+If it cannot, the work is not reproducible.
+
+\section{Models and the API}
+\label{section:Models}
+
+An agent requires a \emph{model} — a function that maps a context to an action.
+For the purposes of this course, the model is a large language model accessed through an \emph{API}\index{API} (Application Programming Interface).
+The model itself runs on the provider's servers; the researcher interacts with it by sending HTTP requests containing the context and receiving responses containing the model's output.
+
+\subsection{API Access}
+
+API access requires an \emph{API key}\index{API key} — a credential that authenticates the request and ties usage to a billing account.
+The key should be stored in an environment variable, never in source code.
+
+\begin{example}
+Setting an API key in the shell environment:
+\begin{lstlisting}[language=bash]
+export ANTHROPIC_API_KEY="sk-ant-..."   # set for the current session
+\end{lstlisting}
+In project code, the key is read from the environment:
+\begin{lstlisting}[language=python]
+import os
+api_key = os.environ["ANTHROPIC_API_KEY"]
+\end{lstlisting}
+A key committed to version control is a security incident.
+\end{example}
+
+\subsection{Model Families and Capabilities}
+
+Model providers offer model families at different capability and cost tiers.
+The dimensions that matter most for agentic work are:
+\begin{itemize}
+\item \textbf{Context window.} The maximum number of tokens the model can read in one call.
+A larger window allows more history, more retrieved knowledge, and longer reasoning traces.
+\item \textbf{Tool-use quality.} How reliably the model calls the right tool with the right arguments.
+Weaker models hallucinate tool arguments or call tools in the wrong order.
+\item \textbf{Instruction following.} How precisely the model adheres to system-prompt constraints on output format, tone, and behavior.
+\item \textbf{Cost.} API pricing is per token (input and output separately).
+A long evolutionary run with many model calls can be expensive; cost-aware model selection matters.
+\end{itemize}
+
+For the shared benchmarks in this course, the default stack favors the most capable available Claude models.
+Challenge~4 introduces multi-model benchmarking, where different models serve as proposers and their costs are compared explicitly.
+
+\subsection{Rate Limits and Latency}
+
+The API imposes \emph{rate limits}\index{Rate limits}: caps on the number of tokens or requests per unit time.
+An orchestrated workflow that fires many parallel model calls may hit these limits; the agent must handle the resulting errors gracefully with retries and backoff.
+Chapter~\ref{chapter:Orchestration} treats rate-limit handling as part of reliability engineering.
+
+\section{Instruction Files and Sessions}
+\label{section:InstructionFiles}
+
+A \emph{system prompt}\index{System prompt} is the permanent instruction the model reads before every user message.
+It describes the agent's role, constraints, tools, and behavioral norms.
+The system prompt is to an agent what source code is to a program: it defines behavior.
+
+\subsection{CLAUDE.md and Instruction Hierarchies}
+
+When using Claude Code (the CLI tool used throughout this course), the system prompt is assembled from a hierarchy of \emph{instruction files}: a global user-level file, a project-level \code{CLAUDE.md}, and optionally directory-level overrides.\index{CLAUDE.md}
+Each layer narrows or extends the instructions of the layer above it.
+
+\begin{example}
+A minimal project-level \code{CLAUDE.md}:
+\begin{lstlisting}[language=markdown]
+# MyProject
+
+## Role
+You are a research assistant helping with symbolic regression experiments.
+
+## Conventions
+- All code in src/ is Python 3.11.
+- Run tests with: just test
+- Never modify data/raw/ — use data/processed/ for all outputs.
+
+## Context
+The eval harness lives in src/eval.py and has a stable interface.
+\end{lstlisting}
+This file tells the agent what project it is in, how to run code, and which files are off-limits.
+\end{example}
+
+\subsection{Sessions and Memory}
+
+A \emph{session}\index{Session} is a conversation with the agent that has a persistent context — the agent remembers earlier messages within the session.
+Between sessions, the context is reset.
+The instruction file compensates for this: it provides the invariant context the agent needs regardless of when the session starts.
+
+Automated context management takes this further by prepopulating the context with relevant files and tool results before the researcher issues the first command.
+Chapter~\ref{chapter:ContextEngineering} develops this idea.
+
+\section{Permissions and Safety}
+\label{section:Permissions}
+
+An agent that can execute shell commands, write files, and call external APIs has a significant blast radius.
+A mistaken tool call can delete data, post to an external service, or commit incorrect changes.
+\emph{Permissions}\index{Permissions} constrain what the agent is allowed to do without explicit confirmation.
+
+\subsection{The Permission Model}
+
+Modern agentic CLIs (including Claude Code) expose a layered permission model:
+\begin{enumerate}
+\item \textbf{Allowlisted operations} run without prompting — typically read-only operations such as listing files or reading a file the agent has been explicitly pointed to.
+\item \textbf{Permissioned operations} require the researcher to approve each invocation — typically write operations, shell commands, or network calls.
+\item \textbf{Forbidden operations} the agent cannot perform regardless of what it is asked — operations ruled out in the permission configuration.
+\end{enumerate}
+
+\begin{principle}
+\label{principle:LeastPrivilege}
+Grant the agent the minimum permissions required to do its task.
+Broad permissions make dangerous mistakes easier; narrow permissions make dangerous mistakes auditable.
+A permission configuration that requires approval for every write operation is slower but safer than one that allows all writes silently.
+\end{principle}
+
+\subsection{The Human in the Loop}
+
+No permission model eliminates the need for human judgment.
+The researcher is responsible for every change the agent makes.
+In practice, this means reading tool call arguments before approving them, reviewing diffs before committing, and stopping the agent when its actions diverge from intent.
+Chapter~\ref{chapter:AgenticCoding} develops the habit of \emph{reading every diff} as a professional discipline.
+
+\section*{Further Reading}
+
+\begin{small}
+\begin{enumerate}
+\item Chacon, S., and Straub, B., \emph{Pro Git}, 2nd edition, Apress, 2014 — available free at \href{https://git-scm.com/book}{git-scm.com/book}.
+\item Anthropic, \emph{Claude Code Documentation} — covers the CLI, permission model, instruction files, and sessions; available at \href{https://docs.anthropic.com/claude-code}{docs.anthropic.com/claude-code}.
+\item The workshop materials in \code{resources/claude-cli-workshop/} — the primary onboarding reference for the rig used in this course.
+\end{enumerate}
+\end{small}

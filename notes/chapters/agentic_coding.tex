@@ -1,0 +1,206 @@
+\chapter{Agentic Coding}
+\label{chapter:AgenticCoding}
+
+Agentic coding is the practice of directing an AI agent to write, run, and revise code on your behalf.\index{Agentic coding}
+It is not passive: the researcher is not a bystander watching the agent write a program.
+The researcher is the author who has contracted out the typing.
+Every file the agent creates, every function it writes, every import it adds belongs to the researcher and will be submitted, graded, and eventually run again on a clean machine.
+
+This distinction matters because agentic tools can produce large volumes of plausible-looking code very quickly.
+The risk is not that the agent writes bad code — it is that the researcher stops reading.
+The moment the researcher outsources \emph{comprehension} to the agent, the work ceases to be reproducible, auditable, or defensible.
+
+\section{The Agentic Coding Loop}
+\label{section:AgenticCodingLoop}
+
+Agentic coding proceeds in a cycle that alternates between researcher direction and agent execution.\index{Agentic coding loop}
+
+\begin{enumerate}
+\item \textbf{Specify.} State clearly what the agent should produce — a function, a script, a test — with explicit constraints on interface, style, and correctness criteria.
+\item \textbf{Execute.} The agent writes the code, runs it if appropriate, and reports the result.
+\item \textbf{Read.} The researcher reads every change the agent made — every diff, every new file, every modified function.
+\item \textbf{Commit or revise.} If the change is correct and understood, commit it. If not, provide corrective direction and return to step~1.
+\end{enumerate}
+
+The loop is deliberately incremental.
+Each cycle should produce a small, reviewable change — not a thousand-line scaffolding dump.
+A change the researcher cannot fully read is a change the researcher cannot own.
+
+\begin{principle}
+\label{principle:IncrementalDevelopment}
+Prefer small, reviewable changes over large, opaque ones.
+An instruction that says ``implement the entire pipeline'' will produce code faster than ``implement the data loader, then stop'' — but the former is harder to verify and harder to correct.
+Small steps compound correctly; large steps compound errors.
+\end{principle}
+
+\section{Directing the Agent Effectively}
+
+The quality of an agent's code output is strongly predicted by the quality of the researcher's direction.
+Vague instructions produce vague implementations; incomplete specifications produce code that solves the wrong problem.
+
+\subsection{Specify the Interface First}
+
+Before asking the agent to implement a function, state its interface: name, parameters, return type, and any invariants.
+A well-specified interface constrains the implementation space and makes correctness easier to verify.
+
+\begin{example}
+A poor specification:
+\begin{lstlisting}[language=python]
+# "write a function to score a model"
+\end{lstlisting}
+A good specification:
+\begin{lstlisting}[language=python]
+def score(model, X_test, y_test):
+    """Return mean squared error of model.predict(X_test) vs y_test.
+    Both X_test and y_test are numpy arrays.
+    The return value is a non-negative float.
+    Raise ValueError if arrays have incompatible shapes."""
+\end{lstlisting}
+The second version leaves the agent no room to misunderstand the task.
+\end{example}
+
+\subsection{Cite the Files That Matter}
+
+When the implementation must interact with existing code, name the files explicitly.
+``Extend the loader to support CSV files'' is less precise than ``modify \code{src/loader.py}, specifically the \code{load\_dataset} function, to accept files with a \code{.csv} extension as well as \code{.npz}.''
+The agent may otherwise modify a different file, or write new code that duplicates existing functionality.
+
+\subsection{One Task per Instruction}
+
+Compound instructions that ask for several things at once produce compound diffs that are harder to review and harder to revert if one part is wrong.
+
+\begin{remark}
+``Add a CSV loader, write tests for it, and update the \code{CLAUDE.md} to document it'' is three tasks.
+If the tests are wrong, reverting them also reverts the loader.
+Three separate instructions — loader, then tests, then documentation — each produce a single-purpose commit that can be independently reviewed, accepted, or reverted.
+\end{remark}
+
+\section{Reading the Diff}
+\label{section:ReadingDiff}
+
+A \emph{diff}\index{Diff} is a compact representation of the changes between two versions of a file: lines added are prefixed with~\code{+}; lines removed with~\code{-}.
+Reading every diff before committing is the single most important habit in agentic coding.
+
+\begin{example}
+A minimal diff showing the addition of a CSV branch to a loader:
+\begin{lstlisting}[language=diff]
+--- a/src/loader.py
++++ b/src/loader.py
+@@ -12,6 +12,10 @@ def load_dataset(path):
+     if path.endswith('.npz'):
+         data = np.load(path)
+         return data['X'], data['y']
++    elif path.endswith('.csv'):
++        df = pd.read_csv(path)
++        X = df.drop(columns=['target']).values
++        y = df['target'].values
++        return X, y
+     raise ValueError(f"Unsupported format: {path}")
+\end{lstlisting}
+Reading this diff reveals that the CSV branch assumes the target column is named \code{'target'} and that the remaining columns are all features.
+Neither of these constraints appears in the instruction; both affect correctness on real data.
+\end{example}
+
+Reading diffs develops two habits.
+The first is \emph{catching errors}: agents make mistakes — wrong assumptions, missing edge cases, subtle logic errors — that are invisible in the running output but legible in the diff.
+The second is \emph{maintaining ownership}: a researcher who reads every diff understands their own codebase; one who does not is dependent on the agent to remember what was done and why.
+
+\section{Reproducible Environments}
+\label{section:ReproducibleEnvironments}
+
+A piece of code is reproducible when anyone can clone the repository, follow the documented procedure, and obtain the same result.\index{Reproducible environment}
+For Python projects, reproducibility requires that the exact versions of all dependencies be recorded and restorable.
+
+\subsection{Dependency Pinning}
+
+A \emph{pinned dependency}\index{Dependency pinning} specifies an exact package version, not a version range.
+
+\begin{example}
+A loosely specified dependency and its pinned equivalent:
+\begin{lstlisting}[language=toml]
+# pyproject.toml — imprecise
+[project]
+dependencies = ["numpy", "scikit-learn"]
+
+# requirements.txt — pinned
+numpy==2.1.3
+scikit-learn==1.6.1
+scipy==1.14.1
+\end{lstlisting}
+The loose specification allows a collaborator to install a different version than the author used, potentially changing numerical results.
+The pinned specification guarantees the same environment.
+\end{example}
+
+\subsection{Virtual Environments}
+
+A \emph{virtual environment}\index{Virtual environment} is an isolated Python installation that contains only the packages a specific project requires.
+This prevents conflicts between projects that require different versions of the same package and ensures that the installed packages are exactly the ones listed in the requirements file.
+
+\begin{lstlisting}[language=bash]
+python -m venv .venv               # create a virtual environment
+source .venv/bin/activate          # activate it (macOS / Linux)
+pip install -r requirements.txt    # install pinned dependencies
+\end{lstlisting}
+
+Modern projects often use tools like \code{uv} or \code{poetry} to manage virtual environments and pin dependencies automatically.
+
+\subsection{One-Command Run}
+
+The final requirement for reproducibility is a single command that installs dependencies, loads data, runs the pipeline, and reports the result — with no manual steps in between.
+
+\begin{example}
+Using \code{just} as a command runner:
+\begin{lstlisting}[language=bash]
+# justfile
+run:
+    uv run python -m challenge1
+
+# the researcher (or evaluator) runs:
+just run
+\end{lstlisting}
+If an evaluator cannot reproduce the result with one command, the work is not reproducible.
+\end{example}
+
+\section{Clean Version History}
+
+A clean version history is one where each commit has a single purpose, a clear message, and represents a state the project can return to.
+An agent that is given broad latitude will often produce long sessions of changes; the researcher's job is to organize those changes into coherent commits.
+
+\subsection{Atomic Commits}
+
+An \emph{atomic commit}\index{Atomic commit} is a commit that contains exactly one conceptual change.
+Atomic commits make the history navigable: each commit can be understood, reverted, or cherry-picked independently.
+
+\begin{principle}
+\label{principle:AtomicCommits}
+Before committing, ask: ``If I need to undo \emph{just this one thing}, can I?''
+If the answer is no — because the commit combines two unrelated changes — split it.
+A commit history is a journal; each entry should have exactly one topic.
+\end{principle}
+
+\subsection{Commit Messages}
+
+A commit message should describe \emph{why} the change was made, not just what changed (the diff already shows what changed).
+
+\begin{example}
+Uninformative and informative commit messages for the same change:
+\begin{lstlisting}[language=bash]
+# poor
+git commit -m "fix bug"
+
+# better
+git commit -m "Score on test split, not full dataset (was leaking into eval)"
+\end{lstlisting}
+The second message names the bug and explains why it matters.
+Six months later, the author will be grateful for it.
+\end{example}
+
+\section*{Further Reading}
+
+\begin{small}
+\begin{enumerate}
+\item The workshop materials, \code{resources/claude-cli-workshop/} Lessons~01--02 — the primary reference for agentic coding with Claude Code.
+\item Chacon, S., and Straub, B., \emph{Pro Git}, 2nd edition, Chapter~2 — git basics and best practices.
+\item Kleppmann, M., \emph{Designing Data-Intensive Applications}, Chapter~1 — on reproducibility and reliability as design goals; a formative text for thinking about systems rather than scripts.
+\end{enumerate}
+\end{small}

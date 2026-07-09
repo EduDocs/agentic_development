@@ -1,0 +1,235 @@
+\chapter{Tool Use and the Agent Loop}
+\label{chapter:AgentLoop}
+
+The loop described in Chapter~1 becomes concrete when the researcher must actually implement it.
+Building a research agent means writing tool definitions, choosing how to structure the control loop, specifying what the agent should return, and anticipating the ways the loop can fail.
+This chapter develops each of these in turn.
+
+\section{Tool Definitions}
+\label{section:ToolDefinitions}
+
+A \emph{tool}\index{Tool!definition} is defined by three things: a name, a natural-language description, and a parameter schema.
+The model reads all three when deciding which tool to call and how to call it.
+Tool definitions are therefore as much a form of documentation as they are a programmatic contract.
+
+\subsection{The Tool Schema}
+
+In the Anthropic API, a tool is specified as a JSON object with the following structure:
+
+\begin{lstlisting}[language=json]
+{
+  "name": "fit_model",
+  "description": "Fit a candidate symbolic expression to the training
+    data and return the mean squared error on the held-out test set.
+    The expression must be a Python-evaluable string using variables
+    x0, x1, ... corresponding to the feature columns.",
+  "input_schema": {
+    "type": "object",
+    "properties": {
+      "expression": {
+        "type": "string",
+        "description": "A Python expression, e.g. 'x0 * x1 + x0**2'"
+      }
+    },
+    "required": ["expression"]
+  }
+}
+\end{lstlisting}
+
+The description field is the most consequential.
+It tells the model \emph{when to call the tool} (what preconditions must hold), \emph{what the tool expects} (the semantics of each parameter), and \emph{what the tool returns} (what the model should do with the result).
+A vague description produces inconsistent tool-call behavior; a precise description produces reliable behavior.
+
+\subsection{Tool Design Principles}
+
+Several principles guide the design of a useful tool set.
+
+\begin{enumerate}
+\item \textbf{One tool, one responsibility.}
+Each tool should do one thing and do it well.
+A tool that both fits a model \emph{and} plots the residuals is harder for the model to invoke correctly than two separate tools.
+Smaller, focused tools compose more reliably.
+
+\item \textbf{Tools are safe to call in isolation.}
+A tool that has side effects (writes a file, posts to an API, spends money) should say so explicitly in its description, and the researcher should consider whether the agent should be able to call it without approval.
+
+\item \textbf{Return only what the model needs.}
+A tool that returns a hundred lines of raw data when the model only needs a score fills the context window unnecessarily.
+Post-process tool output to the informative essentials before returning it.
+
+\item \textbf{Return informative errors.}
+When a tool fails, its error message becomes the model's next observation.
+An error that says \code{"ValueError: shapes (30,) and (40,) not aligned"} enables the model to self-correct; one that says \code{"error"} does not.
+\end{enumerate}
+
+\subsection{The Tool Call in Practice}
+
+When the model invokes a tool, the loop executes the corresponding function, collects the result, and appends it to the context as a \emph{tool result message}.
+The model reads this result alongside the prior context and decides whether to call another tool or produce a final response.
+
+\begin{example}
+A typical two-step tool use sequence:
+\begin{lstlisting}[language=python]
+# Turn 1 — model proposes a candidate and calls fit_model
+# [model output]:
+#   I'll try a quadratic form first.
+#   <tool_use name="fit_model">
+#     {"expression": "x0**2 + x1"}
+#   </tool_use>
+
+# Turn 2 — loop appends the tool result
+# [tool_result]: MSE = 0.0023
+
+# Turn 3 — model reads the result and acts
+# [model output]:
+#   The quadratic fit is very good (MSE = 0.0023).
+#   I'll also try x0**2 * x1 to see if an interaction helps.
+#   <tool_use name="fit_model">
+#     {"expression": "x0**2 * x1"}
+#   </tool_use>
+\end{lstlisting}
+\end{example}
+
+\section{The ReAct Pattern}
+\label{section:ReAct}
+
+\emph{ReAct}\index{ReAct} (Reasoning + Acting) is a specific formulation of the agent loop that makes the model's intermediate reasoning explicit before each action.
+In a ReAct agent, the model alternates between \emph{thought} steps (natural-language reasoning about what to do next) and \emph{action} steps (tool calls or final responses).
+
+\begin{figure}[htb!]
+\begin{center}
+\begin{tikzpicture}[
+    node distance=1.5cm,
+    step/.style={draw, rounded corners=3pt, minimum width=3.2cm,
+                 minimum height=0.75cm, align=center, font=\small},
+    arr/.style={->, >=stealth', thick},
+    ctx/.style={draw, dashed, rounded corners=2pt, fill=gray!8,
+                minimum width=6.8cm, minimum height=0.55cm,
+                align=center, font=\scriptsize}
+]
+\node[step, fill=yellow!25]   (t1) {Thought};
+\node[step, fill=blue!20,  right=1.6cm of t1] (a1) {Action (tool call)};
+\node[ctx,  below=0.7cm of a1] (ob) {Observation (tool result)};
+\node[step, fill=yellow!25, below=0.7cm of ob] (t2) {Thought};
+\node[step, fill=green!20,  right=1.6cm of t2] (fin) {Final Answer};
+
+\draw[arr] (t1) -- (a1);
+\draw[arr] (a1) -- (ob);
+\draw[arr] (ob) -- (t2);
+\draw[arr] (t2) -- (fin);
+\draw[arr] (t2.west) -- ++(-0.5,0) |- (a1.west)
+    node[pos=0.6, left, font=\scriptsize] {more calls};
+\end{tikzpicture}
+\caption{The ReAct pattern.
+The model alternates between \emph{thought} (explicit reasoning) and \emph{action} (a tool call or final answer).
+Each tool result becomes an observation that informs the next thought.
+The loop exits when the model produces a final answer rather than another tool call.}
+\label{figure:ReAct}
+\end{center}
+\end{figure}
+
+The explicit thought step serves two purposes.
+First, it conditions the subsequent action on intermediate reasoning, reducing errors that arise from the model jumping directly from context to action without an intermediate planning step.
+Second, it produces an \emph{audit trail}: by reading the thought steps, the researcher can understand exactly why the agent made each tool call.
+
+\begin{remark}
+Modern frontier models frequently use chain-of-thought-like reasoning internally (visible as \emph{extended thinking} in some APIs) even without being explicitly prompted to reason before acting.
+Whether or not this internal reasoning is visible, the tool-call sequence itself constitutes an auditable record of the agent's decision-making.
+\end{remark}
+
+\section{Structured Outputs}
+\label{section:StructuredOutputs}
+
+An agent that produces unstructured text is an endpoint; an agent that produces \emph{structured output}\index{Structured output} is a component that can be composed with other components.
+Structured outputs allow the result of one agent to serve as the input of the next without brittle string parsing.
+
+\subsection{Output Schemas}
+
+The output of the agent's final action should conform to a schema known in advance.
+In Python, this is most naturally expressed as a typed dictionary, a dataclass, or a Pydantic model.
+
+\begin{example}
+A structured output for a model discovery result:
+\begin{lstlisting}[language=python]
+from pydantic import BaseModel
+
+class ModelResult(BaseModel):
+    expression: str          # the discovered expression
+    mse: float               # mean squared error on the test set
+    complexity: int          # number of nodes in the expression tree
+    score: float             # composite score (accuracy + parsimony)
+    justification: str       # one-paragraph rationale
+\end{lstlisting}
+The agent is instructed to produce output conforming to this schema, and the schema is enforced by the calling code.
+\end{example}
+
+\subsection{Enforcing Structure}
+
+Two mechanisms enforce structured output.
+
+\begin{enumerate}
+\item \textbf{JSON mode / tool-use pattern.}
+The model is given a tool called \code{submit\_result} whose input schema is the desired output schema.
+The model must call this tool (with correctly typed arguments) to produce its final answer.
+Since the tool-calling layer validates arguments against the schema, malformed outputs are automatically rejected and the model is asked to try again.
+
+\item \textbf{Response parsing with retries.}
+The model is instructed to produce JSON matching a schema, and the calling code parses and validates the output.
+If validation fails, the calling code returns the validation error to the model and requests a corrected response.
+\end{enumerate}
+
+The first mechanism is preferable when the API supports it, because validation happens before the model commits to an output.
+
+\section{Failure Modes}
+\label{section:FailureModes}
+
+Agents fail.
+Understanding the common failure modes enables the researcher to design more robust loops and to recognize failures before they propagate.
+
+\subsection{Hallucinated Tool Arguments}
+
+The model may produce tool calls with arguments that look plausible but are incorrect — for example, referencing a column name that does not exist in the dataset, or using a function from a library that is not installed.
+These calls fail at execution and return error messages; the model must recover by correcting the argument or choosing a different action.
+
+Good tool descriptions reduce the frequency of hallucinated arguments.
+Tool schemas with \code{enum} constraints for categorical parameters are particularly effective: the model is restricted to valid choices by the schema itself.
+
+\subsection{Loops Without Progress}
+
+The agent loop can enter a cycle: the model calls a tool, receives an error, attempts to fix it, receives the same error, and repeats.
+A loop that does not progress must be detected and terminated.
+The most common causes are:
+\begin{itemize}
+\item a systematic mismatch between the tool's behavior and the model's mental model of it,
+\item an error message that the model consistently misinterprets, or
+\item a constraint in the task that the model cannot satisfy with the available tools.
+\end{itemize}
+The loop should have a maximum step count; if it is exceeded without producing a final answer, the loop should exit and report the failure.
+
+\subsection{Context Overrun}
+
+If the context window fills before the agent produces a final answer, the model cannot proceed.
+The loop must either truncate the history (losing information) or terminate.
+Long tool results — stack traces, raw data dumps, verbose API responses — are the most common cause.
+Truncating tool results to their informative essentials is the primary mitigation.
+
+\subsection{Cascading Errors}
+
+A mistake in an early step propagates silently through subsequent steps.
+The model fits a model to the wrong data, reports a score on that data, and selects the model as the best — but the score is meaningless because the data was wrong from the start.
+Defense against cascading errors requires:
+\begin{itemize}
+\item validation at each tool boundary (verify that the data loaded correctly before fitting),
+\item explicit checks in the loop for known failure conditions (is the test set non-empty?), and
+\item inspection of intermediate outputs, not just final results.
+\end{itemize}
+
+\section*{Further Reading}
+
+\begin{small}
+\begin{enumerate}
+\item Yao, S., et al., ``ReAct: Synergizing Reasoning and Acting in Language Models,'' \emph{ICLR}, 2023 — the original formulation of the thought–action–observation pattern.
+\item Anthropic, \emph{Tool Use Guide} — the Anthropic API reference for tool definitions, tool-use messages, and enforcing structured outputs.
+\item Shinn, N., et al., ``Reflexion: Language Agents with Verbal Reinforcement Learning,'' \emph{NeurIPS}, 2023 — on agents that detect and recover from their own failures.
+\end{enumerate}
+\end{small}

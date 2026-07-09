@@ -1,0 +1,345 @@
+\chapter{Agentic Evolutionary Frameworks}
+\label{chapter:EvolutionaryFrameworks}
+
+The pivot from orchestration to evolution is a single conceptual step.\index{Evolutionary framework}
+Across the foundations half of the course, a loop was assembled: generate candidates, evaluate them with the shared harness, select the best, and repeat.
+The Generate–Evaluate–Select (GES) loop of Chapter~\ref{chapter:Orchestration} is already an optimization procedure — a search over the space of candidate models driven by the evaluation score.
+
+One ingredient distinguishes a random search from an evolutionary search: \emph{mutation}.\index{Mutation operator}
+A mutation operator derives new candidates from survivors by making structured, small edits to them.
+Survivors that score well carry structure worth preserving; mutation explores variations on that structure.
+Over generations, the population improves because good structure is inherited and refined.
+
+This chapter formalizes the evolutionary loop, develops the components that make it work, and traces the lineage from classical genetic programming through FunSearch and AlphaEvolve to the systems students build in the capstone.
+
+\section{The Evolutionary Loop}
+\label{section:EvolutionaryLoop}
+
+\begin{definition}
+\label{definition:EvolutionaryLoop}
+An \emph{agentic evolutionary framework} is a tuple $(\Artifacts, \Fitness, \Mutate, \Select, \Population_0)$ where
+\begin{itemize}
+\item $\Artifacts$ is the space of artifacts (expressions, programs, designs),
+\item $\Fitness : \Artifacts \to \RealNumbers$ is the fitness function (lower is better, following the convention of the course harness),
+\item $\Mutate : \Artifacts \to \Artifacts$ is the mutation operator that derives a variant from a survivor,
+\item $\Select : 2^{\Artifacts} \to 2^{\Artifacts}$ is the selection rule that retains the best members of a population, and
+\item $\Population_0 \subset \Artifacts$ is the initial population (the set of candidates before any evolution begins).
+\end{itemize}
+Starting from $\Population_0$, the loop produces generations $\Population_1, \Population_2, \ldots$ according to
+\begin{equation}
+\Population_{t+1} = \Select(\Population_t \cup \{\Mutate(a) : a \in \Select(\Population_t)\}) .
+\label{equation:EvolutionaryLoop}
+\end{equation}
+\end{definition}
+
+The key insight from~\eqref{equation:EvolutionaryLoop} is that the next generation is drawn from the union of (a) the survivors of the current generation (the \emph{elite}), and (b) mutations of those survivors.
+Good structure is not discarded — it is carried forward and explored around.
+
+\begin{figure}[htb!]
+\begin{center}
+\begin{tikzpicture}[
+    node distance=1.5cm and 2.0cm,
+    box/.style={draw, rounded corners=4pt, minimum width=2.8cm,
+                minimum height=0.85cm, align=center, font=\small},
+    arr/.style={->, >=stealth', thick}
+]
+\node[box, fill=blue!15]   (gen)  {Generate / Mutate};
+\node[box, fill=green!20,  right=of gen]  (fit)  {Evaluate (Fitness)};
+\node[box, fill=orange!20, right=of fit]  (sel)  {Select};
+\node[box, fill=yellow!20, below=of gen]  (pop)  {Population $\Population_t$};
+
+\draw[arr] (gen) -- node[above,font=\scriptsize]{candidates}  (fit);
+\draw[arr] (fit) -- node[above,font=\scriptsize]{scored}      (sel);
+\draw[arr] (sel) -- ++( 0,-2.25) -| node[pos=0.25,below,font=\scriptsize]{survivors $\Population_{t+1}$} (gen);
+\draw[arr] (pop) -- (gen);
+\end{tikzpicture}
+\caption{The agentic evolutionary loop.
+The population is mutated to produce candidates; candidates are scored by the fitness function; survivors are selected to form the next generation.
+The fitness function is the evaluation harness built in Challenge~2.}
+\label{figure:EvolutionaryLoop}
+\end{center}
+\end{figure}
+
+\section{Mutation Operators}
+\label{section:MutationOperators}
+
+\subsection{Classical Mutation in Genetic Programming}
+
+Classical \emph{genetic programming}\index{Genetic programming} (GP) represents expressions as trees and mutates them by subtree operations:
+\begin{itemize}
+\item \textbf{Subtree mutation}: replace a randomly chosen subtree with a randomly generated one.
+\item \textbf{Point mutation}: replace an operator or terminal at a randomly chosen node.
+\item \textbf{Crossover}: swap subtrees between two parent expressions.
+\end{itemize}
+These operations are \emph{blind}: they apply random changes regardless of whether the change is likely to improve fitness.
+GP is effective when the search space is smooth enough that random perturbations frequently produce useful variation.
+
+\subsection{LLM as Mutation Operator}
+
+A large language model as the mutation operator replaces blind tree operations with \emph{knowledge-guided variation}.\index{LLM mutation operator}
+Instead of choosing a random subtree to replace, the LLM reads the current best expression, the data, and domain context, and proposes a specific, motivated variant.
+
+\begin{example}
+A mutation prompt:
+\begin{lstlisting}[language=markdown]
+The current best model is:
+    expression: "x0 * exp(-x1)"
+    MSE: 0.0045, complexity: 4, score: 0.0055
+
+The dataset appears to describe exponential decay with a rate that
+varies between samples (column x1). Retrieved domain note:
+  "Decay rates in biological systems often follow Arrhenius kinetics:
+   rate ~ exp(-Ea / (k * T)), where T is temperature."
+
+Propose one mutation of the current expression that might better
+capture this behavior. Return the expression as a Python string
+using variables x0, x1, x2.
+\end{lstlisting}
+The LLM might return \code{"x0 * exp(-x1 / x2)"} — a motivated variation informed by domain knowledge that a blind mutation would find only by chance.
+\end{example}
+
+This is the advantage that separates LLM-guided evolution from 1990s GP: the mutation operator has \emph{priors} about which variations are likely to be meaningful, and it can use \emph{domain context} to make those priors specific.
+
+\subsection{Context Engineering for the Mutator}
+
+The quality of the LLM mutation operator is directly determined by the quality of its context.
+The mutator's context should include:
+\begin{enumerate}
+\item The current best expression and its score.
+\item The history of what has been tried and why it did or did not work.
+\item Retrieved domain knowledge relevant to the data (reusing the retrieval system from Challenge~3).
+\item The population's diversity — if all survivors are variations of the same form, the mutator should be told to explore a different region.
+\end{enumerate}
+This is the convergence of the two spines: \emph{evaluation becomes fitness} (Spine~1) and \emph{context engineering drives the mutator} (Spine~2).
+
+\section{Selection and Population Management}
+\label{section:Selection}
+
+\subsection{Elitism}
+
+\emph{Elitism}\index{Elitism} is the practice of always carrying the top-$k$ candidates from one generation to the next, regardless of what mutations are generated.
+Without elitism, a mutation round can accidentally reduce the best score in the population — a random regression.
+With elitism, the best score is monotonically non-increasing across generations.
+
+\subsection{Selection Strategies}
+
+Two selection strategies are commonly used.
+
+\begin{enumerate}
+\item \textbf{Tournament selection.}\index{Tournament selection}
+Draw $s$ candidates at random from the population; return the best among them.
+The parameter $s$ (the tournament size) controls selection pressure: a large $s$ selects the best more aggressively; a small $s$ preserves more diversity.
+
+\item \textbf{Top-$k$ selection.}\index{Top-$k$ selection}
+Rank all candidates by fitness and retain the top $k$.
+This is the simplest strategy and is the default in the course.
+\end{enumerate}
+
+\subsection{Population Collapse}
+
+\emph{Population collapse}\index{Population collapse} occurs when the population converges to a single candidate (or a cluster of nearly identical candidates), eliminating diversity.
+Diversity is the fuel of evolution: without variation, the mutation operator has nothing to vary on, and the search stagnates at a local optimum.
+
+\begin{remark}
+Population collapse is one of the most common failure modes in student implementations.
+If the leaderboard score of the evolutionary run does not improve over the GES loop (Challenge~4), the most likely cause is collapse: the population converged early, and the mutation operator is spinning on a single form without finding anything new.
+\end{remark}
+
+\section{Fitness Design}
+\label{section:FitnessDesign}
+
+The fitness function is the evaluation harness.
+In the evolutionary setting, the harness is the target of a persistent, tireless optimizer — and every weakness in the harness is an attack surface.
+
+\subsection{Multi-Objective Fitness}
+
+The course harness uses the composite score $\Score = \mathrm{MSE} + \lambda \cdot C$ defined in~\eqref{equation:CompositeScore}.
+In the evolutionary setting, a well-designed $\lambda$ prevents the optimizer from discovering that a trivially complex, trivially fitted expression scores as well as a genuinely discovered one.
+
+For long evolutionary runs, the optimizer often finds unexpected ways to minimize this score.
+Common exploits:
+\begin{enumerate}
+\item An expression of zero complexity: a constant fitted to the training data.
+If $\mathrm{MSE}$ is computed on the test set, a global constant performs worse than a simple model on diverse test points — but if $\lambda$ is too large relative to the MSE gap, the complexity reduction can dominate.
+\item Expressions that overfit the test set via extreme complexity: $10^6$-order polynomials.
+The parsimony term must scale to prevent this.
+\end{enumerate}
+
+\subsection{Fitness Landscapes and Local Optima}
+
+The \emph{fitness landscape}\index{Fitness landscape} is the surface of fitness values over the space of artifacts.
+A local optimum is a point where all nearby mutations produce worse fitness, even though a distant point might be better.
+The evolutionary algorithm can become trapped at local optima if selection pressure is too high (population collapse) or mutation step size is too small (unable to escape the basin).
+
+Strategies for avoiding local optima:
+\begin{itemize}
+\item Run multiple independent populations (islands) and periodically share the best candidates between them.
+\item Allow the mutator to make larger jumps — propose entirely new functional forms rather than just small edits to existing ones.
+\item Maintain explicit diversity pressure: penalize candidates that are too similar to existing survivors.
+\end{itemize}
+
+\section{Diversity and Exploration}
+\label{section:Diversity}
+
+\subsection{Islands}
+
+An \emph{island model}\index{Island model} runs several independent populations in parallel, each exploring a different region of the search space.
+Periodically, the best candidates from each island \emph{migrate} to other islands, injecting diversity.
+The island model prevents all populations from converging to the same local optimum.
+
+\begin{example}
+A four-island setup in pseudocode:
+\begin{lstlisting}[language=python]
+# Initialize four independent populations
+islands = [Population(seed=i) for i in range(4)]
+
+for generation in range(100):
+    # Each island evolves independently
+    for island in islands:
+        island.evolve(fitness_fn)
+
+    # Every 10 generations, share the best from each island
+    if generation % 10 == 0:
+        best_per_island = [island.best() for island in islands]
+        for island in islands:
+            island.inject(best_per_island)
+\end{lstlisting}
+\end{example}
+
+\subsection{Explore vs.\ Exploit}
+
+The \emph{explore–exploit tradeoff}\index{Explore--exploit tradeoff} is the fundamental tension in any search:
+\begin{itemize}
+\item \textbf{Exploit}: mutate the best survivors to find small improvements.
+\item \textbf{Explore}: generate new candidates far from the current population to discover new regions.
+\end{itemize}
+Too much exploitation leads to premature convergence; too much exploration wastes evaluation budget on low-quality candidates.
+
+A practical heuristic: maintain a diverse population (island model or explicit diversity penalty), use a proposer that mixes small mutations (exploit) with occasional large jumps (explore), and increase the exploration rate if the best score has not improved for several consecutive generations.
+
+\section{The Lineage: FunSearch, AlphaEvolve, OpenEvolve}
+\label{section:Lineage}
+
+The agentic evolutionary framework taught in this course has a direct intellectual lineage.
+
+\subsection{FunSearch}
+
+\emph{FunSearch}\index{FunSearch} (Romera-Paredes et al., DeepMind, 2023) is an LLM-guided evolutionary search over \emph{programs} (Python functions), scored by an automatic evaluator.
+The system evolved improved constructions for combinatorics problems (finding larger cap sets in $\mathbb{F}_3^8$) and better heuristics for online bin packing.
+
+The template introduced by FunSearch is:
+\begin{itemize}
+\item \textbf{Artifact}: a Python function.
+\item \textbf{Mutation}: the LLM rewrites the function, guided by examples of high-scoring past versions.
+\item \textbf{Fitness}: an automatic correctness and quality evaluator specific to the problem.
+\item \textbf{Infrastructure}: a population of functions, maintained and sampled across many parallel evaluations.
+\end{itemize}
+This is precisely the structure implemented in the capstone.
+
+\subsection{AlphaEvolve}
+
+\emph{AlphaEvolve}\index{AlphaEvolve} (DeepMind, 2025) scales the FunSearch template to evolve full algorithms using Gemini models.
+Results include improved matrix-multiplication procedures (beating the Strassen algorithm in certain settings) and real scheduling gains in data-center resource allocation.
+AlphaEvolve demonstrates that the approach scales: with sufficiently capable models and evaluators, the method finds results competitive with specialized mathematical research.
+
+\subsection{OpenEvolve}
+
+\emph{OpenEvolve}\index{OpenEvolve} is an open-source reimplementation of the AlphaEvolve approach.
+It is the primary reference implementation for the capstone: a hackable codebase that exposes the mutation operator, fitness function, and population management as modifiable components.
+The studio session at the pivot walks through OpenEvolve on a Tier-1 symbolic regression dataset, tracing each component to its corresponding concept in these notes.
+
+\subsection{The AI Scientist (Optional)}
+
+\emph{The AI Scientist} (Sakana AI, 2024) extends the evolutionary template to the full research cycle: automated literature review, hypothesis generation, experiment execution, and paper writing.
+It is more agentic-research than evolutionary-search in structure, and is included as a glimpse of the long-run trajectory rather than as a primary reference.
+
+\section{Symbolic Regression as the Teaching Vehicle}
+\label{section:SymbolicRegression}
+
+\subsection{The Model Discovery Problem}
+
+\emph{Symbolic regression}\index{Symbolic regression} (SR) is the task of discovering a mathematical expression $\hat{m}$ that describes the relationship between a set of features $X$ and a target $y$.
+Unlike conventional regression, the functional form of $\hat{m}$ is not fixed in advance; the search must explore a large, discrete space of possible expressions.
+
+\begin{definition}
+\label{definition:SymbolicRegression}
+Given a dataset $\mathcal{D} = \{(x_i, y_i)\}_{i=1}^{N}$ and a space of expressions $\Artifacts$, \emph{symbolic regression} seeks
+\begin{equation}
+\hat{m}^* = \operatorname*{argmin}_{a \in \Artifacts} \Score(a, \mathcal{D}_{\mathrm{test}})
+\end{equation}
+where $\Score$ is the composite fitness of Definition~\ref{definition:EvalHarness} and~\eqref{equation:CompositeScore}.
+\end{definition}
+
+SR is the teaching vehicle for the course because it is:
+\begin{enumerate}
+\item \textbf{Automatically evaluable.} The fitness is a number computed without human judgment.
+\item \textbf{Domain-portable.} A biologist can discover enzyme kinetics; a physicist can discover force laws; an economist can discover demand curves.
+The domain changes; the framework does not.
+\item \textbf{Interpretable.} The output is a symbolic expression, not a neural network.
+The researcher can read and critique the discovered model.
+\item \textbf{Has established baselines.} Linear regression (Challenge~1) and PySR (a mature GP-based SR library) provide calibration points against which the evolutionary agent must compete.
+\end{enumerate}
+
+\subsection{The Baseline Ladder}
+
+The course maintains a \emph{baseline ladder}\index{Baseline ladder}: a sequence of methods of increasing sophistication against which each student's agent is compared.
+
+\begin{table}[htb!]
+\begin{center}
+\begin{tabular}{lll}
+\toprule
+\textbf{Rung} & \textbf{Method} & \textbf{Challenge} \\
+\midrule
+1 & Linear regression & Challenge~1 \\
+2 & Research agent (LLM proposals) & Challenge~2 \\
+2b & PySR (classical GP-based SR) & Challenge~2 benchmark \\
+3 & Retrieval-grounded agent & Challenge~3 \\
+4 & Orchestrated multi-proposer & Challenge~4 \\
+5 & Evolutionary agent & Capstone \\
+\bottomrule
+\end{tabular}
+\caption{The baseline ladder for the course.
+Each rung represents a more capable method; the leaderboard shows all entries simultaneously.
+A stronger method is expected to score lower (better) than weaker methods on the same dataset.}
+\label{table:BaselineLadder}
+\end{center}
+\end{table}
+
+Beating the rung above is not required; being comparable to it, on a well-designed harness, is.
+
+\section{Cost-Aware Search}
+\label{section:CostAwareSearch}
+
+Every fitness evaluation and mutation is an API call that costs money and takes time.
+A long evolutionary run on a high-cost model can be expensive; a run on a cheap model may produce inferior mutations that the run cannot recover from.
+
+\begin{definition}
+The \emph{cost-adjusted fitness} of an artifact $a$ produced by a run of total cost $C$ is
+\begin{equation}
+\tilde{\Fitness}(a) = \Fitness(a) + \alpha \cdot C ,
+\label{equation:CostAdjustedFitness}
+\end{equation}
+where $\alpha > 0$ converts cost (in dollars) to the same scale as the fitness score.
+\end{definition}
+
+Cost-adjusted fitness rewards the same quality at lower cost.
+This connects the capstone to Challenge~4's model benchmarking: a cheaper proposer model that achieves comparable mutations is preferred by cost-adjusted fitness, even if the per-mutation quality is slightly lower.
+
+\begin{remark}
+The choice of $\alpha$ is a policy decision.
+For research purposes, the primary leaderboard uses unadjusted fitness so that discovery quality is the primary signal.
+The cost analysis is reported separately, enabling the reader to understand the resource requirements of each method.
+\end{remark}
+
+\section*{Further Reading}
+
+\begin{small}
+\begin{enumerate}
+\item Romera-Paredes, B., et al., ``Mathematical Discoveries from Program Search with Large Language Models,'' \emph{Nature}, 2023 — the FunSearch paper; the primary template for the capstone.
+\item DeepMind, ``AlphaEvolve: A Gemini-Powered Coding Agent for Designing Advanced Algorithms,'' technical report, 2025 — the scaled-up successor to FunSearch.
+\item OpenEvolve repository — open-source AlphaEvolve implementation; see \code{benchmarks/README.md} for the course-specific setup.
+\item Koza, J. R., \emph{Genetic Programming}, MIT Press, 1992 — the classical reference for GP and symbolic regression; Chapter~6 covers the baseline methods against which the course agents compete.
+\item Schmidt, M., and Lipson, H., ``Distilling Free-Form Natural Laws from Experimental Data,'' \emph{Science}, 2009 — the origin of modern SR; PySR's scientific lineage traces here.
+\item \texttt{projects/capstone/evolution-pivot.md} in the course repository — the pivot lecture notes, including the OpenEvolve studio walkthrough.
+\end{enumerate}
+\end{small}

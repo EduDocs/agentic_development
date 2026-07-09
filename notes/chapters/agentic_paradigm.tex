@@ -1,0 +1,195 @@
+\chapter{The Agentic Paradigm}
+
+An \emph{agent} is a system that perceives its environment, reasons about what to do, and acts — repeatedly, over time.\index{Agent}
+For most of computing history, this description applied mainly to robots and game-playing programs.
+The arrival of large language models with tool-calling capability changes the picture: a language model that can read files, execute code, browse the web, and call APIs is, in a meaningful sense, an agent that can do knowledge work.
+This chapter establishes the vocabulary and conceptual structure the rest of the notes build on.
+
+\section{What Is an Agent?}
+
+The core of an agentic system is the \emph{perceive–reason–act loop}.\index{Perceive–reason–act loop}
+At each step the agent receives some \emph{observation} from the environment — a file listing, a tool result, a user message — forms a \emph{plan} or \emph{reasoning trace}, and emits an \emph{action} — a tool call, a response, a file write.
+The action changes the environment, producing the next observation.
+The loop repeats until the task is complete or the agent determines it cannot proceed.
+
+\begin{definition}
+An \emph{agent} is a tuple $(M, \mathcal{T}, \mathcal{C}, L)$ where
+\begin{itemize}
+\item $M$ is a \emph{model} — a function from context to a distribution over actions,
+\item $\mathcal{T}$ is a finite set of \emph{tools} the model may invoke,
+\item $\mathcal{C}$ is the \emph{context} — the information the model is conditioned on at each step, and
+\item $L$ is the \emph{loop} — the procedure that sequences observations, invocations of $M$, and tool calls until a terminal condition is met.
+\end{itemize}
+\end{definition}
+
+The components interact in a specific way.
+The context $\mathcal{C}$ is assembled from the system prompt, the task description, a history of previous observations and actions, and any additional information injected by the loop.
+The model $M$ reads the full context and selects an action: either a \emph{tool call} (drawn from $\mathcal{T}$) or a \emph{final response}.
+The loop $L$ executes the tool call, appends the result to the context as a new observation, and invokes $M$ again.
+
+\begin{figure}[htb!]
+\begin{center}
+\begin{tikzpicture}[
+    node distance=1.8cm and 2.2cm,
+    box/.style={draw, rounded corners=4pt, minimum width=2.4cm,
+                minimum height=0.85cm, align=center, font=\small},
+    arr/.style={->, >=stealth', thick}
+]
+\node[box, fill=blue!15]  (obs)  {Observe};
+\node[box, fill=orange!20, right=of obs] (reason) {Reason};
+\node[box, fill=green!20,  right=of reason] (act) {Act};
+
+\draw[arr] (obs)    -- (reason) node[midway, above, font=\scriptsize] {context};
+\draw[arr] (reason) -- (act)    node[midway, above, font=\scriptsize] {action};
+\draw[arr] (act)    to[out=270,in=270,looseness=0.6]
+            node[below, font=\scriptsize] {tool result / new state} (obs);
+\end{tikzpicture}
+\caption{The perceive--reason--act loop.
+The agent observes the current state of the environment, reasons to select an action, executes the action via a tool call, and receives the result as the next observation.}
+\label{figure:AgentLoop}
+\end{center}
+\end{figure}
+
+\subsection{Tools}
+
+A \emph{tool}\index{Tool} is any capability the model can invoke as a discrete action: reading a file, running a shell command, calling a web API, querying a database, or invoking another model.
+Tools are described to the model as structured specifications (a name, a natural-language description, and a parameter schema), so the model knows what each tool does and how to call it.
+Chapter~\ref{chapter:AgentLoop} treats tool definitions in depth.
+
+The tool set $\mathcal{T}$ determines what the agent can \emph{do}, while the model $M$ determines what it \emph{chooses} to do.
+A capable model with a sparse tool set is limited by its reach; a rich tool set with a weak model produces unreliable actions.
+Designing the right tool set for a task is one of the first decisions in building an agent.
+
+\subsection{Context}
+
+The \emph{context window}\index{Context window} is the finite-length sequence of tokens the model reads at each invocation.
+Everything the agent knows at a given step — its instructions, its history, domain knowledge, tool results — must fit within this window.
+Context is not persistent: what the model does not read, it does not know.
+
+This constraint makes the management of context one of the central engineering problems in agentic systems.
+Chapter~\ref{chapter:ContextEngineering} develops context engineering as a discipline; Chapter~\ref{chapter:Retrieval} shows how retrieval extends the effective knowledge available within a fixed window.
+
+\begin{remark}
+A common misconception is that a larger context window reduces the need for context engineering.
+In practice, models exhibit \emph{position bias}: information at the beginning and end of the context tends to receive more attention than information buried in the middle.
+Choosing what to put in the window, and where, remains consequential even as windows grow.
+\end{remark}
+
+\section{The Capability Ladder}
+\label{section:CapabilityLadder}
+
+The course builds capability in a fixed order because each rung requires the one below it.\index{Capability ladder}
+A researcher cannot \emph{build} an agent they cannot \emph{drive}, cannot \emph{orchestrate} what they cannot \emph{build}, and cannot \emph{evolve} what they cannot \emph{evaluate}.
+The ladder has four rungs.
+
+\begin{figure}[htb!]
+\begin{center}
+\begin{tikzpicture}[
+    rung/.style={draw, rounded corners=3pt, minimum width=3cm, minimum height=0.75cm,
+                 align=center, font=\small\bfseries},
+    lbl/.style={font=\scriptsize, align=left, text width=3.8cm},
+    arr/.style={->, >=stealth', thick}
+]
+\node[rung, fill=gray!15]   (op)  at (0,0)   {Operate};
+\node[rung, fill=blue!15]   (bld) at (0,1.25) {Build};
+\node[rung, fill=orange!15] (orc) at (0,2.5)  {Orchestrate};
+\node[rung, fill=green!15]  (evl) at (0,3.75) {Evolve};
+
+\draw[arr] (op)  -- (bld);
+\draw[arr] (bld) -- (orc);
+\draw[arr] (orc) -- (evl);
+
+\node[lbl, right=0.6cm of op]  {Terminal, shell, git, API — Task week 1};
+\node[lbl, right=0.6cm of bld] {Tool definitions, agent loop, eval harness — Challenges 1–2};
+\node[lbl, right=0.6cm of orc] {Multi-agent workflows, retrieval, reliability — Challenges 3–4};
+\node[lbl, right=0.6cm of evl] {generate→evaluate→select→mutate — Capstone};
+\end{tikzpicture}
+\caption{The capability ladder of the course.
+Each rung is a prerequisite for the one above it.
+The arrows indicate this dependency order.}
+\label{figure:CapabilityLadder}
+\end{center}
+\end{figure}
+
+\paragraph{Operate.}
+The foundation is being able to drive an existing agent reliably and reproducibly.
+This means working from the terminal, using version control, accessing a model through an API, and giving the agent instructions that produce predictable, revisable results.
+Many researchers skip this rung and never develop the habit of \emph{reading every change} the agent makes — a deficit that grows more costly with each rung climbed.
+
+\paragraph{Build.}
+Building an agent means implementing the loop and the tools from scratch rather than simply configuring a pre-existing system.
+The student writes tool definitions, assembles a control loop, and decides how structured outputs will be formatted and validated.
+An evaluation harness is also introduced at this rung: the agent must be judged by something more reliable than intuition.
+
+\paragraph{Orchestrate.}
+Orchestrating an agent means composing multiple agents or steps into a reliable workflow.
+This rung introduces failure handling, logging, memory, and the \emph{proposer–critic} pattern, in which one agent generates candidates and a second verifies or scores them.
+A reliable orchestration that can run unattended for hours is a prerequisite for the next rung: an evolutionary search cannot be trusted if it fails silently.
+
+\paragraph{Evolve.}
+Evolution is orchestration plus a mutation operator and a fitness function.
+A system that generates candidates, evaluates them, and selects the best is an evolutionary algorithm — whether or not it is called that.
+The key insight developed at the capstone is that the evaluation harness built in Challenge~2, reused through Challenges 3 and 4, \emph{is} the fitness function of the evolutionary search.
+The student has been building toward evolution without necessarily knowing it.
+
+\section{The Two Spines}
+\label{section:TwoSpines}
+
+Two threads connect every rung of the ladder.\index{Two spines}
+They are called \emph{spines} because every unit hangs from them.
+
+\subsection{Spine 1 — Evaluation Becomes Fitness}
+
+You cannot trust an agent you cannot score, and you cannot evolve an artifact you cannot score automatically.
+Evaluation is therefore introduced when the student first builds an agent (Challenge~2) and reused in every subsequent unit.
+The key moment comes at the capstone pivot: the evaluation harness, which has been used to \emph{compare methods}, is now used to \emph{drive search}.
+Nothing about the harness changes; its role changes.
+This transition — evaluation becoming fitness — is the conceptual hinge of the course.
+
+\begin{principle}
+\label{principle:EvalFitness}
+Every evaluation harness built for comparison can, without modification, serve as a fitness function for evolutionary search.
+The prerequisite is that the harness be \emph{automatic} (it runs without human judgment) and \emph{leakage-resistant} (it cannot be gamed by artifacts that overfit the test set).
+\end{principle}
+
+\subsection{Spine 2 — Context Engineering}
+
+An LLM is a function of its context.
+What the model proposes, generates, or decides depends entirely on what it reads.
+Context engineering — the deliberate construction of what goes into the context window — is therefore the primary lever available to the agent builder.
+
+This thread begins in week~1 with prompt engineering and automated context management, deepens in Challenge~3 as retrieval-augmented grounding, and reaches its culmination in the evolutionary capstone: the LLM mutation operator is most effective when its context contains the lineage of what has been tried, the domain priors, and the current population's best candidates.
+Evolution is context engineering in a loop.
+
+\section{Why Now}
+
+Agentic AI systems have existed in various forms for decades — rule-based expert systems, reinforcement learning agents, robotic planning systems.
+What makes the current moment distinct is the arrival of \emph{general-purpose tool-using language models}: systems that can read natural language instructions for a new task, decide which tools to invoke, interpret unstructured results, and adapt mid-task without domain-specific engineering.
+
+Three capabilities combine to make this shift significant.
+
+\paragraph{Instruction following.}
+Modern language models follow complex, nuanced instructions expressed in natural language with high reliability.
+An agent builder need not program the model's behavior in code; they write a system prompt.
+This dramatically lowers the cost of specifying what an agent should do.
+
+\paragraph{Tool use.}
+Tool-calling capability, now standard in frontier models, allows a language model to take actions in the world — reading files, running code, searching the web — and incorporate the results into subsequent reasoning.
+The model can, in principle, perform the same actions a human researcher performs at a computer.
+
+\paragraph{Structured output.}
+Models can be constrained to produce output in a specified schema (JSON, typed records, code blocks), allowing the output of one agent to serve as the structured input of the next.
+This is the glue of multi-agent orchestration.
+
+Together, these capabilities make a language model a plausible substrate for a research assistant that can be directed, composed, and evaluated programmatically.
+The course is concerned with doing this \emph{well}: reliably, reproducibly, and honestly.
+
+\section*{Further Reading}
+
+\begin{small}
+\begin{enumerate}
+\item Yao, S., et al., ``ReAct: Synergizing Reasoning and Acting in Language Models,'' \emph{ICLR}, 2023 — the canonical formalization of the observe–reason–act loop.
+\item Anthropic, \emph{Claude's Tool Use Guide}, available at \href{https://docs.anthropic.com}{docs.anthropic.com} — the practical tool-calling interface used throughout the course.
+\item Wang, L., et al., ``A Survey on Large Language Model Based Autonomous Agents,'' \emph{Frontiers of Computer Science}, 2024 — a comprehensive taxonomy of agent architectures.
+\end{enumerate}
+\end{small}
