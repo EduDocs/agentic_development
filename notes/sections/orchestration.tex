@@ -1,0 +1,263 @@
+\chapter{Orchestration and Reliability}
+\label{chapter:Orchestration}
+% EVOLVE-BLOCK-START
+
+A single agent executing a single task is the simplest case of agentic work.\index{Orchestration}
+Real research tasks are more demanding: they require long, multi-step computations; they benefit from having one agent check another's work; they must run reliably for hours without supervision; and they must report failures honestly when they do fail.
+\emph{Orchestration} is the practice of composing multiple agents and operations into a trustworthy workflow.
+
+Challenge~4 builds an orchestrated pipeline that previews the evolutionary framework.
+The loop implemented here — \textbf{propose → evaluate → select → repeat} — is the same loop that becomes an evolutionary algorithm when a mutation operator is added at the pivot.
+
+\section{Multi-Step Workflows}
+\label{section:MultiStepWorkflows}
+
+A \emph{workflow}\index{Workflow} is a directed graph of operations: some operations depend on the outputs of others; some can run in parallel.
+The orchestrator's job is to schedule these operations correctly and collect their results.
+
+\subsection{Pipeline Composition}
+
+In the simplest case, a workflow is a \emph{pipeline}\index{Pipeline}: a linear sequence of operations where the output of each step is the input to the next.
+
+\begin{example}
+A three-step research pipeline:
+\begin{lstlisting}[language=python]
+def run_pipeline(dataset_path, k=5):
+    # Step 1: retrieve domain knowledge
+    context = retriever.query(dataset_path, k=k)
+
+    # Step 2: agent proposes and scores candidates
+    candidates = proposer.run(dataset_path, context=context)
+
+    # Step 3: select the best candidate
+    best = min(candidates, key=lambda c: c.score)
+    return best
+\end{lstlisting}
+Each step can be a model call, a tool invocation, or a subprocess; the pipeline connects them.
+\end{example}
+
+\subsection{Parallel Execution}
+
+Some operations are independent: multiple agents can propose candidates simultaneously, or a critic can score candidates in parallel with new proposals being generated.
+\emph{Parallel execution}\index{Parallel execution} reduces wall-clock time by running independent operations concurrently.
+
+\begin{example}
+Spawning multiple proposer agents in parallel (conceptual):
+\begin{lstlisting}[language=python]
+import concurrent.futures
+
+with concurrent.futures.ThreadPoolExecutor(max_workers=4) as pool:
+    futures = [pool.submit(proposer.run, dataset_path, seed=i)
+               for i in range(4)]
+    all_candidates = [f.result() for f in futures]
+\end{lstlisting}
+The four proposers run concurrently; the orchestrator collects and merges their outputs.
+\end{example}
+
+The principal hazard of parallel execution is \emph{non-determinism}\index{Non-determinism}: the order in which parallel operations complete is not predictable across runs.
+If the final selection depends on ordering (e.g., in case of a tie), the result may differ between runs.
+Always set seeds and record exactly which candidates were selected.
+
+\section{Multi-Agent Architectures}
+\label{section:MultiAgentArchitectures}
+
+\subsection{The Proposer--Critic Pattern}
+
+The most common multi-agent pattern in the course is the \emph{proposer--critic} pattern:\index{Proposer--critic pattern}
+\begin{itemize}
+\item A \emph{proposer} agent generates candidate artifacts: model expressions, hypotheses, experimental designs.
+Its goal is breadth — generating diverse, plausible candidates quickly.
+\item A \emph{critic} (or \emph{verifier}) agent examines each candidate for correctness, plausibility, or constraint satisfaction before the candidate is passed to the evaluator.
+Its goal is precision — filtering out candidates that are obviously wrong.
+\end{itemize}
+
+\begin{figure}[htb!]
+\begin{center}
+\begin{tikzpicture}[
+    node distance=1.5cm and 1.8cm,
+    box/.style={draw, rounded corners=4pt, minimum width=2.4cm,
+                minimum height=0.8cm, align=center, font=\small},
+    arr/.style={->, >=stealth', thick}
+]
+\node[box, fill=blue!15]   (prop) {Proposer};
+\node[box, fill=orange!20, right=of prop] (crit) {Critic};
+\node[box, fill=green!20,  right=of crit] (eval) {Evaluator};
+\node[box, fill=gray!15,   below=of eval] (sel)  {Selector};
+
+\draw[arr] (prop) -- node[above,font=\scriptsize]{candidates} (crit);
+\draw[arr] (crit) -- node[above,font=\scriptsize]{survivors}  (eval);
+\draw[arr] (eval) -- node[right,font=\scriptsize]{scores}     (sel);
+\draw[arr] (sel.west) -- ++(-3.8,0) |-
+    node[pos=0.25,below,font=\scriptsize]{iterate / report} (prop.west);
+\end{tikzpicture}
+\caption{The proposer--critic--evaluator architecture.
+The proposer generates candidates, the critic filters out obvious errors, the evaluator scores the survivors, and the selector feeds the best back to the proposer for the next round.}
+\label{figure:ProposerCritic}
+\end{center}
+\end{figure}
+
+The critic's role is to enforce constraints that the evaluation harness does not check.
+In the symbolic regression context, a critic might check:
+\begin{itemize}
+\item dimensional consistency of a proposed expression,
+\item whether the expression is syntactically valid Python,
+\item whether the expression is numerically stable on the training domain, and
+\item whether the expression has already been tried in a previous round (deduplication).
+\end{itemize}
+Filtering before evaluation saves evaluation cost — especially important when evaluation requires model calls or expensive computation.
+
+\subsection{Verifiers}
+
+A \emph{verifier}\index{Verifier} is an agent whose explicit task is to try to \emph{disprove} a claim or detect an error.
+Where a critic checks soft constraints, a verifier checks hard correctness properties.
+
+\begin{example}
+A verifier for a data analysis step:
+\begin{lstlisting}[language=markdown]
+You are a verification agent. The primary agent has made the following
+claim about the dataset:
+
+  "The features are all non-negative, so log-transforms are safe."
+
+Your job is to check this claim against the actual data. Run the
+following check and report whether the claim is true or false:
+
+  import numpy as np
+  X, y = load_dataset('data/tier1_growth.npz')
+  print(np.min(X), np.any(X <= 0))
+\end{lstlisting}
+The verifier can catch mistakes the proposer made silently — here, the possibility that some feature values are zero or negative.
+\end{example}
+
+\section{Memory and State}
+\label{section:MemoryState}
+
+A single-session agent remembers its history within the context window.
+An orchestrated workflow that runs many rounds, or that spawns parallel agents, needs explicit \emph{external memory}\index{External memory}: state stored outside any individual agent's context.
+
+\subsection{What Needs to Be Remembered}
+
+\begin{itemize}
+\item \textbf{Tried expressions.} The set of model forms already evaluated, so that the proposer does not waste budget on duplicates.
+\item \textbf{Best results.} The highest-scoring candidates, maintained across rounds, so that the selector can always return the best discovered so far.
+\item \textbf{Failure modes.} Candidates that crashed the evaluator (zero-division, overflow), along with the error, so the proposer can avoid similar forms.
+\item \textbf{Run configuration.} The random seed, model name, dataset version, and harness settings, so the run can be reproduced exactly.
+\end{itemize}
+
+\subsection{Memory in Practice}
+
+External memory is most simply a file — a JSON or CSV record updated after each round.
+
+\begin{lstlisting}[language=python]
+import json, pathlib
+
+class RunMemory:
+    def __init__(self, path):
+        self.path = pathlib.Path(path)
+        self.state = json.loads(self.path.read_text()) \
+            if self.path.exists() else {"tried": [], "best": None}
+
+    def record(self, expression, score):
+        self.state["tried"].append({"expression": expression,
+                                    "score": score})
+        if (self.state["best"] is None
+                or score < self.state["best"]["score"]):
+            self.state["best"] = {"expression": expression,
+                                  "score": score}
+        self.path.write_text(json.dumps(self.state, indent=2))
+
+    def already_tried(self, expression):
+        return any(t["expression"] == expression
+                   for t in self.state["tried"])
+\end{lstlisting}
+The memory file is the primary artifact of an orchestrated run: it records what was tried and what the best result was, enabling the run to be resumed if it is interrupted and reported honestly if it fails.
+
+\section{Reliability Engineering}
+\label{section:Reliability}
+
+An orchestrated pipeline that runs unattended for hours must be designed to fail gracefully.
+Every model call can return an error; every tool can produce an unexpected result; any network connection can drop.
+\emph{Reliability engineering}\index{Reliability} is the practice of anticipating these failures and building the system to handle them without losing state or producing incorrect results.
+
+\subsection{Retries with Backoff}
+
+A \emph{retry}\index{Retry} re-attempts a failed operation after a waiting period.
+\emph{Exponential backoff}\index{Exponential backoff} increases the waiting period after each successive failure, reducing the load on the server that produced the error.
+
+\begin{lstlisting}[language=python]
+import time, random
+
+def with_retry(fn, max_attempts=5, base_delay=1.0):
+    for attempt in range(max_attempts):
+        try:
+            return fn()
+        except (RateLimitError, APIError) as e:
+            if attempt == max_attempts - 1:
+                raise
+            delay = base_delay * (2 ** attempt) + random.uniform(0, 1)
+            time.sleep(delay)
+\end{lstlisting}
+
+\subsection{Logging}
+
+\emph{Logging}\index{Logging} records what the pipeline did, when, and with what results.
+A run without logs is a run that cannot be understood after the fact.
+
+Every orchestrated run should log:
+\begin{itemize}
+\item the start time and run configuration,
+\item every model call (model name, token counts, latency),
+\item every tool call and its result,
+\item every error and its resolution, and
+\item the final result and elapsed time.
+\end{itemize}
+
+\subsection{Honest Failure Reporting}
+
+An orchestrated pipeline fails more often than a single-step script.
+The response to failure is to \emph{surface it}, not to hide it.
+A pipeline that silently returns a fallback when it fails is worse than one that raises an exception: the former produces incorrect results that look correct; the latter produces no result but an informative error.
+
+\begin{principle}
+\label{principle:HonestFailure}
+Report failures explicitly.
+If the pipeline does not find a candidate better than the linear baseline, say so.
+If three of ten proposer calls failed due to rate limits, report the fraction.
+If the critic rejected every proposal in a round, report why.
+A failure report is not a sign of a bad system; a failure report that is absent is a sign of an untrustworthy one.
+\end{principle}
+
+\section{The Generate→Evaluate→Select Loop}
+\label{section:GenEvalSel}
+
+The orchestration assembled in Challenge~4 follows a pattern that recurs throughout the rest of the course.
+
+\begin{definition}
+\label{definition:GenEvalSel}
+The \emph{generate–evaluate–select} (GES) loop is the procedure:
+\begin{enumerate}
+\item \textbf{Generate.} Produce a set of candidate artifacts $C = \{a_1, \ldots, a_m\}$.
+\item \textbf{Evaluate.} Score each candidate: $s_i = \Score(a_i, \mathcal{D}_{\mathrm{test}})$.
+\item \textbf{Select.} Retain the top-$k$ candidates: $C^* = \mathrm{top\text{-}}k(C, \{s_i\})$.
+\item Repeat with $C^*$ informing the next round of generation.
+\end{enumerate}
+\end{definition}
+
+This loop is an evolutionary algorithm in all but name.
+The one ingredient missing is a \emph{mutation operator}: a procedure that derives new candidates from the survivors rather than proposing from scratch.
+Adding mutation transforms the GES loop into the full generate→evaluate→select→\textbf{mutate} evolutionary loop of Chapter~\ref{chapter:EvolutionaryFrameworks}.
+
+The student who understands the GES loop and its failure modes — why candidates are duplicated, why the evaluator can be fooled, why the proposer collapses to a single good candidate — is ready for the evolutionary framework.
+The pivot is not a new topic; it is an addition to a loop already understood.
+
+\section*{Further Reading}
+
+\begin{small}
+\begin{enumerate}
+\item Hong, S., et al., ``MetaGPT: Meta Programming for a Multi-Agent Collaborative Framework,'' \emph{ICLR}, 2024 — a framework for structured multi-agent communication.
+\item Wu, Q., et al., ``AutoGen: Enabling Next-Gen LLM Applications via Multi-Agent Conversation,'' \emph{arXiv}, 2023 — a widely used orchestration library for multi-agent conversations.
+\item Chase, H., \emph{LangChain Documentation} — a survey of pipeline and memory patterns for LLM applications; available at \href{https://python.langchain.com}{python.langchain.com}.
+\item Workshop materials, \code{resources/claude-cli-workshop/} Lesson~04 — sub-agents, agent teams, and headless operation with Claude Code.
+\end{enumerate}
+\end{small}
+% EVOLVE-BLOCK-END

@@ -1,0 +1,201 @@
+\chapter{Prompt and Context Engineering}
+\label{chapter:ContextEngineering}
+% EVOLVE-BLOCK-START
+
+A large language model is, at each invocation, a function of its context.\index{Context engineering}
+Its instructions, history, domain knowledge, and the results of previous tool calls are all encoded in the same token sequence the model reads.
+The model has no persistent state outside this sequence: what it does not read, it does not know.
+This constraint makes \emph{context engineering} — the deliberate construction of what enters the context window — the primary lever available to the agent builder.
+
+This chapter distinguishes two related but distinct disciplines.
+\emph{Prompt engineering}\index{Prompt engineering} concerns the wording and structure of instructions, especially at the level of a single message or request.
+\emph{Context engineering} is broader: it concerns the entire contents of the context window across a multi-step interaction, and the strategies for managing that window as the conversation evolves.
+
+\section{The LLM as a Context-Conditioned Function}
+\label{section:LLMContextFunction}
+
+Let $V^*$ denote the space of all finite token sequences, and let $\mathcal{A}$ denote the space of possible actions (tool calls plus text responses).
+A language model $M$ can be understood informally as a mapping
+\begin{equation}
+M : V^* \to \Delta(\mathcal{A}) ,
+\label{equation:ModelAsFunction}
+\end{equation}
+where $\Delta(\mathcal{A})$ is the set of probability distributions over actions.
+The context — the full token sequence including system prompt, prior turns, and any injected material — determines this distribution completely.
+
+This view has a direct practical consequence.
+
+\begin{principle}
+\label{principle:ContextDeterminesOutput}
+The model's output is entirely determined by its input.
+Two identical contexts produce identical distributions over outputs.
+If the agent behaves unexpectedly, the cause is in the context — either something unexpected is present, or something necessary is absent.
+\end{principle}
+
+\subsection{The Context Window}
+
+The \emph{context window}\index{Context window} is the finite-length sequence that $M$ receives at a single invocation.
+Window sizes for frontier models in 2025–2026 range from roughly 100,000 to 1,000,000 tokens.
+This is large but not unlimited: a single research paper is roughly 10,000 tokens; a large codebase can exceed any window.
+
+Even within the window, not all tokens are equal.
+Empirical studies consistently find \emph{recency bias} (later tokens receive more weight) and \emph{primacy bias} (early tokens, particularly system-prompt content, also receive elevated attention), with a \emph{lost-in-the-middle} effect where relevant information buried in the center of a long context is underused.
+
+\begin{remark}
+The lost-in-the-middle effect implies that simply extending the context window does not proportionally extend the effective working memory of the model.
+Structuring the context so that the most important information appears near the beginning or end — or citing it explicitly in the instruction — is more reliable than relying on a long window to make everything equally accessible.
+\end{remark}
+
+\subsection{Temperature and Sampling}
+
+The model samples an action from the distribution $M(\mathcal{C})$.
+The \emph{temperature}\index{Temperature} parameter scales the logits before sampling: a temperature of~0 produces deterministic (greedy) output; higher temperatures produce more varied output.
+
+For most agentic tasks, low temperature (0--0.3) is preferred: the agent should follow instructions precisely rather than improvising.
+Higher temperatures are appropriate when the goal is to generate diverse candidates — for example, during the proposal step of an evolutionary search (Chapter~\ref{chapter:EvolutionaryFrameworks}).
+
+\section{Prompt Engineering}
+\label{section:PromptEngineering}
+
+\emph{Prompt engineering}\index{Prompt engineering} is the practice of writing instructions that reliably elicit the desired model behavior.
+It is best understood as a form of specification: the prompt specifies what the model should do, just as source code specifies what a program should do, and clarity matters for the same reasons.
+
+\subsection{Principles of Effective Instructions}
+
+A small set of principles accounts for most of the variance in instruction quality.
+
+\begin{enumerate}
+\item \textbf{Be specific about the task.}
+Vague instructions produce vague outputs.
+``Analyze the data'' is worse than ``Fit a linear model to the data in \code{data.csv} and report the $R^2$ on the held-out test split.''
+Every ambiguity in the instruction is a degree of freedom the model fills in on its own.
+
+\item \textbf{Specify the output format.}
+Tell the model exactly what to produce: a JSON object with named fields, a Python function with a specific signature, a one-paragraph summary followed by a bullet list.
+Explicit format specifications reduce post-processing errors and enable structured pipelines.
+
+\item \textbf{Provide examples.}
+\emph{Few-shot prompting}\index{Few-shot prompting} places one or more worked examples in the context before the actual task.
+Examples are more reliable than abstract descriptions because they show the model what correct output looks like, not just what it should aim for.
+
+\item \textbf{State constraints explicitly.}
+If there are things the model must not do — modify certain files, use certain libraries, produce output longer than a certain length — state them as direct prohibitions rather than hoping the model infers them.
+
+\item \textbf{Decompose complex tasks.}
+A single instruction that asks the model to perform many steps is more error-prone than a sequence of instructions that each ask for one step.
+Where possible, break multi-part tasks into explicit stages.
+\end{enumerate}
+
+\subsection{Chain-of-Thought Prompting}
+
+\emph{Chain-of-thought prompting}\index{Chain-of-thought prompting} encourages the model to reason through a task step by step before producing a final answer.
+The instruction ``Think through this step by step before giving your final answer'' can substantially improve accuracy on tasks that require multi-step reasoning.
+The reasoning trace is not wasted computation: it conditions the final answer on intermediate conclusions, which reduces errors that arise from premature closure.
+
+In the context of the agent loop (Chapter~\ref{chapter:AgentLoop}), the model's scratchpad — the reasoning text before the first tool call — is an instance of chain-of-thought reasoning.
+
+\section{Context Engineering}
+\label{section:ContextEngineeringDetail}
+
+Prompt engineering focuses on how instructions are written.
+Context engineering focuses on what information is placed in the window, when it is placed there, and how it is organized.
+
+\subsection{The Instruction Stack}
+
+A well-engineered context for an agentic session has a layered structure.
+
+\begin{enumerate}
+\item \textbf{System prompt.} The invariant instructions that define the agent's role, tools, behavioral norms, and project-specific conventions.
+This content is static across sessions but should be reviewed and updated when the project's needs change.
+
+\item \textbf{Task description.} The specific goal of the current session, provided at the start of the conversation.
+This is where the researcher specifies what to accomplish today.
+
+\item \textbf{Injected context.} Relevant files, code snippets, prior results, or retrieved knowledge that the agent needs for the current task.
+Unlike the system prompt, this content changes with the task.
+
+\item \textbf{Conversation history.} The sequence of prior observations and actions within the session.
+This grows as the session proceeds and must be managed to avoid filling the window with irrelevant history.
+\end{enumerate}
+
+\begin{remark}
+A common failure mode is treating the system prompt as the only lever.
+Researchers who spend hours crafting a perfect system prompt but place nothing relevant in the injected-context layer often find the agent making avoidable mistakes — not because the instructions are unclear, but because the model lacks the specific information it needs to act correctly.
+\end{remark}
+
+\subsection{Selective Context Injection}
+
+Not everything that is \emph{relevant} should be placed in the context: filling the window with loosely related material can degrade performance as reliably as providing too little.
+The right question is not ``what is relevant to the project?'' but ``what does the agent need to know \emph{right now} to take the next action correctly?''
+
+\begin{principle}
+\label{principle:SelectiveContext}
+Inject the minimum context required for the current step.
+If the agent is fitting a model, inject the data schema and the eval harness interface — not the entire codebase.
+If the agent is proposing candidate functions, inject the domain notes and the current best result — not the fitting code.
+\end{principle}
+
+\subsection{Long-Context Strategies}
+
+When the necessary context exceeds what can be injected directly, three strategies extend the effective reach.
+
+\begin{enumerate}
+\item \textbf{Retrieval.} Index a large corpus and retrieve the most relevant chunks for the current task.
+This is the subject of Chapter~\ref{chapter:Retrieval}.
+
+\item \textbf{Summarization.} Compress long documents or conversation histories into compact summaries before injection.
+The summary trades recall for brevity; its quality determines how much information survives.
+
+\item \textbf{Reference, not inclusion.} Give the agent a pointer to a file and the ability to read it, rather than injecting the file's contents.
+This works when the agent can selectively read only the sections it needs.
+\end{enumerate}
+
+\section{Automated Context Management}
+\label{section:AutomatedContext}
+
+\emph{Automated context management}\index{Automated context management} refers to mechanisms that pre-populate the context without requiring the researcher to specify what to inject for every session.
+The goal is to make the rig \emph{self-contextualizing}: when the agent opens a project, it automatically knows what it is working on, what tools are available, and what state the project is in.
+
+\subsection{Hooks and Triggers}
+
+A \emph{hook}\index{Hook} is a shell command or script that runs automatically in response to a trigger event — for example, when the agent starts a session, before a tool call, or after a file is modified.
+Hooks can inject context by:
+\begin{itemize}
+\item Running \code{git status} and \code{git log} to summarize recent changes,
+\item Loading the results of the most recent eval run,
+\item Summarizing which files have changed since the last session.
+\end{itemize}
+
+\subsection{Instruction File Hierarchy}
+
+The instruction file hierarchy discussed in Section~\ref{section:InstructionFiles} is itself a form of automated context management: the \code{CLAUDE.md} at the root of the project is loaded automatically at the start of every session.
+A well-maintained \code{CLAUDE.md} means the agent starts every session knowing the project's conventions, the location of key files, and the one-command run procedure.
+
+\section{Measuring Context Quality}
+\label{section:ContextQuality}
+
+How does one know whether a context engineering change is an improvement?
+The answer is the same as for any other engineering choice: measure it.
+
+\begin{enumerate}
+\item \textbf{Ablation.} Remove one element of the context (a retrieved document, a few-shot example, a section of the system prompt) and measure whether performance on a held-out task set changes.
+If removing it makes no difference, it is not contributing.
+
+\item \textbf{Prompt sensitivity.} Run the same task with several small variations of the instruction and observe the variance in output.
+High variance indicates the model is sensitive to phrasing, which in turn indicates the instruction is under-specified.
+
+\item \textbf{Leaderboard comparison.} In the course, the primary measure of context quality is whether a change improves the agent's score on the shared evaluation harness.
+A grounded agent (Challenge~3) beats an ungrounded agent, or it does not — the harness decides.
+\end{enumerate}
+
+\section*{Further Reading}
+
+\begin{small}
+\begin{enumerate}
+\item Wei, J., et al., ``Chain-of-Thought Prompting Elicits Reasoning in Large Language Models,'' \emph{NeurIPS}, 2022 — the empirical case for scratchpad reasoning.
+\item Liu, N. F., et al., ``Lost in the Middle: How Language Models Use Long Contexts,'' \emph{TACL}, 2024 — the empirical basis for the lost-in-the-middle effect.
+\item Anthropic, \emph{Prompt Engineering Guide} — practical instruction-writing reference for Claude; available at \href{https://docs.anthropic.com/prompt-engineering}{docs.anthropic.com}.
+\item Anthropic, \emph{Claude Code: Model Context Protocol} — specification for automated context injection; available in the course workshop materials.
+\end{enumerate}
+\end{small}
+% EVOLVE-BLOCK-END

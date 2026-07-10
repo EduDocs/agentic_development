@@ -1,0 +1,203 @@
+\chapter{Evaluation Harnesses}
+\label{chapter:Evaluation}
+% EVOLVE-BLOCK-START
+
+A research agent that cannot be evaluated cannot be trusted.\index{Evaluation harness}
+Evaluation is not a post-hoc check performed after a system is built; it is the foundation on which every comparison, every improvement claim, and eventually every evolutionary search rests.
+This chapter develops the theory and practice of the evaluation harness — the reusable module that scores an agent's output against ground truth.
+
+The harness introduced in this chapter is the same object that becomes the fitness function of the evolutionary framework in Chapter~\ref{chapter:EvolutionaryFrameworks}.
+Build it cleanly; you will live with it for the rest of the course.
+
+\section{The Evaluation Principle}
+\label{section:EvaluationPrinciple}
+
+An \emph{evaluation harness}\index{Evaluation harness} is a function that takes a candidate artifact and a reference dataset and returns a numerical score.
+\begin{definition}
+\label{definition:EvalHarness}
+An \emph{evaluation harness} is a tuple $(\mathcal{D}, \Score)$ where
+\begin{itemize}
+\item $\mathcal{D} = (\mathcal{D}_{\mathrm{train}}, \mathcal{D}_{\mathrm{test}})$ is a partition of the data into a training split and a held-out test split, and
+\item $\Score : \Artifacts \times \mathcal{D}_{\mathrm{test}} \to \RealNumbers$ is a scoring function that evaluates a candidate artifact $a \in \Artifacts$ against the test split.
+\end{itemize}
+The score of artifact $a$ is $\Score(a, \mathcal{D}_{\mathrm{test}})$.
+\end{definition}
+
+The separation of training and test data, and the requirement that the score be computed on the test split alone, are the most important properties of the harness.
+They are also the easiest to violate accidentally.
+
+\subsection{Why Evaluation Must Be Automatic}
+
+Automatic evaluation — a numerical score computed without human judgment — has three decisive advantages for agentic and evolutionary systems.
+\begin{enumerate}
+\item \textbf{Speed.} An automated harness scores hundreds of candidates in the time a human would score one.
+\item \textbf{Consistency.} Automated scores are deterministic; human judgments vary.
+\item \textbf{Composability.} A numerical score can be directly compared, optimized, and used as a fitness signal.
+\end{enumerate}
+These properties are requirements for the evolutionary half of the course.
+An evaluation that requires human intervention cannot drive an automated search.
+
+\subsection{What Counts as a Good Score}
+
+A good score is:
+\begin{itemize}
+\item \textbf{Faithful}: high scores correspond to genuinely good artifacts, not to artifacts that exploit loopholes in the scoring function.
+\item \textbf{Discriminating}: the score distinguishes between candidates of different quality; all candidates scoring the same is as bad as no score at all.
+\item \textbf{Leakage-resistant}: the score cannot be improved by exposing the artifact to test data during training.
+\item \textbf{Stable}: small, inconsequential changes to the artifact produce small changes in the score; large changes in quality produce large changes in the score.
+\end{itemize}
+
+\section{Held-Out Data and Leakage}
+\label{section:Leakage}
+
+\subsection{The Train/Test Split}
+
+The fundamental practice of supervised evaluation is to partition the data before any modeling begins and to hold the test split entirely in reserve.\index{Train/test split}
+
+\begin{principle}
+\label{principle:TestSplitInviolable}
+The test split is inviolable.
+It must not be used to select hyperparameters, tune the model, or make any decision about the artifact.
+The moment any information about the test split influences the artifact, the test score is optimistic and the comparison is compromised.
+\end{principle}
+
+In practice: load the full dataset, split immediately (before looking at the data), and pass only $\mathcal{D}_{\mathrm{train}}$ to the agent.
+The test split is sealed inside the harness; the agent never sees it.
+
+\subsection{What Leakage Is}
+
+\emph{Leakage}\index{Leakage} is the unintended exposure of test-set information to the artifact during its construction.
+Leakage inflates test scores, making a weak artifact appear strong.
+Its consequences are especially severe when a harness is used as a fitness function: an evolutionary search that optimizes a leaking harness will produce artifacts that score well on leaked tests and poorly in the real world.
+
+\begin{example}
+Common forms of leakage, in increasing subtlety:
+\begin{enumerate}
+\item \textbf{Scoring on training data.} The function returns error on $\mathcal{D}_{\mathrm{train}}$ rather than $\mathcal{D}_{\mathrm{test}}$.
+An overfit artifact achieves near-zero training error and receives an excellent score.
+\item \textbf{Feature construction from the full dataset.} Computing a normalization mean from the full dataset before splitting contaminates the training split with information from the test split.
+\item \textbf{Adaptive re-splitting.} Trying multiple splits and selecting the one with the best score on a specific candidate.
+The resulting split is no longer independent of the artifact.
+\end{enumerate}
+\end{example}
+
+\subsection{Leakage-Resistant Design}
+
+A leakage-resistant harness separates the split from the fit from the score into three independent stages:
+\begin{lstlisting}[language=python]
+def build_harness(data, test_fraction=0.2, seed=42):
+    """Split data and return a scorer sealed over the test set."""
+    X, y = data['X'], data['y']
+    idx = np.random.default_rng(seed).permutation(len(y))
+    n_test = int(len(y) * test_fraction)
+    train_idx, test_idx = idx[n_test:], idx[:n_test]
+    X_test, y_test = X[test_idx], y[test_idx]
+
+    def score(model):
+        """Score model on the sealed test set."""
+        y_pred = model.predict(X_test)
+        return float(np.mean((y_pred - y_test) ** 2))  # MSE
+
+    return score   # the scorer is a closure over X_test, y_test
+\end{lstlisting}
+The caller receives only a scoring function; the test data itself is inaccessible.
+This is the design pattern used in the course harness.
+
+\section{Scoring Functions}
+\label{section:ScoringFunctions}
+
+\subsection{Predictive Error}
+
+The most natural score for a model discovery task is \emph{predictive error}: how well does the discovered model predict the test targets?
+For a model $\hat{m}$ and test data $\{(x_i, y_i)\}_{i=1}^{n}$, the \emph{mean squared error} (MSE) is
+\begin{equation}
+\mathrm{MSE}(\hat{m}) = \frac{1}{n} \sum_{i=1}^{n} \bigl( \hat{m}(x_i) - y_i \bigr)^2 .
+\label{equation:MSE}
+\end{equation}
+MSE penalizes large errors quadratically and is differentiable, which makes it attractive for gradient-based methods.
+When MSE is on the leaderboard, the researcher reports the lower value as the better one.
+
+\subsection{Parsimony}
+
+A model that perfectly predicts the test data by memorizing it is not a discovery.
+\emph{Parsimony}\index{Parsimony} — the preference for simpler models among those of comparable predictive quality — guards against this failure mode.
+
+The parsimony of a symbolic expression is typically measured by its \emph{complexity}: the number of nodes in its expression tree, or the number of operations required to evaluate it.
+A simpler expression is easier to interpret, more likely to generalize, and less likely to be an accidental fit.
+
+\begin{example}
+The expressions $f_1(x) = x^2$ and $f_2(x) = x^2 + 10^{-9} x^7$ may achieve similar MSE on a clean test set, but $f_1$ has complexity~2 and $f_2$ has complexity~5.
+Parsimony selects $f_1$ as the discovery.
+\end{example}
+
+\subsection{Multi-Objective Scoring}
+\label{subsection:MultiObjectiveScoring}
+
+A composite score combines accuracy and parsimony into a single number.
+A common form is
+\begin{equation}
+\Score(\hat{m}) = \mathrm{MSE}(\hat{m}) + \lambda \cdot C(\hat{m}) ,
+\label{equation:CompositeScore}
+\end{equation}
+where $C(\hat{m})$ is the complexity of $\hat{m}$ and $\lambda > 0$ is a parsimony weight.
+Lower scores are better.
+The weight $\lambda$ encodes the tradeoff between accuracy and simplicity; the course benchmarks specify its value so that all participants use the same harness.
+
+\begin{remark}
+The parsimony weight $\lambda$ is a design choice, not a universal constant.
+Too small a $\lambda$ and the optimizer ignores complexity; too large and it ignores accuracy.
+The appropriate value depends on the scale of MSE (which changes with the dataset) and the expected complexity of the target expression.
+For the course benchmarks, $\lambda$ is calibrated so that a model twice as complex must reduce MSE by a meaningful amount to be preferred.
+\end{remark}
+
+\section{Evaluation Hacking}
+\label{section:EvalHacking}
+
+\emph{Evaluation hacking}\index{Evaluation hacking} (also known as \emph{Goodhart's Law}\index{Goodhart's Law} in the context of learned systems) is the phenomenon in which a system optimizes the \emph{proxy} (the score) rather than the \emph{goal} (genuine discovery of a correct model).
+Wherever a score is computed automatically and an optimizer is pointed at it, evaluation hacking will occur if there is any gap between the score and the goal.
+
+\begin{principle}
+\label{principle:GoodhartsLaw}
+Any metric that becomes a target ceases to be a good metric.
+The stronger and more persistent the optimizer, the more aggressively it will find and exploit weaknesses in the scoring function.
+Designing a harness you would trust an adversary to attack is more reliable than designing one that looks good on the first round of benign candidates.
+\end{principle}
+
+Common attack surfaces in a model discovery harness:
+\begin{enumerate}
+\item \textbf{Trivial re-parameterization.} A parsimony term that counts nodes rewards replacing $2 \cdot x$ with a single constant $c$ learned from the data (zero nodes for $c$, but two nodes for $2 \cdot x$), even though both represent the same model.
+\item \textbf{High-degree polynomial fitting.} A sufficiently high-degree polynomial can achieve near-zero MSE on any finite dataset — including the test set, if the harness leaks.
+\item \textbf{Memorizing the test set via complexity.} An artifact that memorizes $n$ test points as a piecewise constant function with $n$ pieces has zero MSE and complexity $O(n)$ — which may still produce a low composite score if $\lambda$ is too small.
+\end{enumerate}
+
+Recognizing these attack surfaces in advance and closing them in the harness design is the primary defense.
+
+\section{The Harness as a Contract}
+\label{section:HarnessContract}
+
+The evaluation harness is used across Challenges~2, 3, and 4, and becomes the fitness function in the capstone.
+Its interface must be \emph{stable} across this span.
+
+\begin{definition}
+\label{definition:HarnessContract}
+A harness interface is a pair $(\texttt{score}, \texttt{report})$ where
+\begin{itemize}
+\item $\texttt{score}(\text{model}) \to \text{float}$ returns the composite score (lower is better), and
+\item $\texttt{report}(\text{model}) \to \text{dict}$ returns a structured breakdown: MSE, complexity, and score.
+\end{itemize}
+A harness satisfying this interface can be dropped into any unit in the course without modification.
+\end{definition}
+
+If the harness interface must change — for example, because a new scoring dimension is added in a later challenge — the change must be documented and applied consistently to all prior baselines.
+An inconsistent harness produces incomparable leaderboard entries.
+
+\section*{Further Reading}
+
+\begin{small}
+\begin{enumerate}
+\item \texttt{benchmarks/README.md} in the course repository — the specification of the shared harness, including the parsimony weight and the leaderboard format.
+\item Kapoor, S., and Narayanan, A., ``Leakage and the Reproducibility Crisis in Machine Learning,'' \emph{PLOS ONE}, 2023 — an empirical survey of leakage in published ML results.
+\item Sculley, D., et al., ``Challenging Common Assumptions in the Unsupervised Pretraining of Deep Neural Networks,'' \emph{ICML}, 2014 — a classic treatment of evaluation pitfalls in ML research.
+\end{enumerate}
+\end{small}
+% EVOLVE-BLOCK-END

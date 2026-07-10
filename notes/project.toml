@@ -1,0 +1,59 @@
+# project.toml — the per-paper manifest. The engine reads it; you edit it.
+#
+# Centralizes the knobs the Python entrypoints (evaluate.py) consume, so config
+# stops being scattered across CLAUDE.md prose and Python constants. Things that
+# already have an authoritative home and their own consumer are NOT duplicated
+# here (pointers at the bottom).
+
+[project]
+# Globally-unique, location-independent id as "owner/slug" (namespaced like a
+# GitHub repo). `owner` is an ownership identity (a Google account/domain or org;
+# scaffold.py seeds "local/<dir>"); `slug` is your paper's short name. This scopes
+# the paper's candidates in a shared archive — independent of where the DB lives.
+id = "local/agentic-development-notes"
+title = "Agentic Development in Research — Course Notes"
+target_score = 0.9      # stop early once the mean reviewer rubric reaches this
+max_attempts = 40       # per-branch attempt budget
+
+[evaluation]
+review_timeout = 240    # seconds per reviewer backend call
+compile_timeout = 180   # seconds per pdflatex pass
+
+# The quantitative EVALUATOR stage (metrics.py; ADR 0005): deterministic
+# checks over the manuscript + compile log, always reported in feedback. A
+# metric listed in `gate` REJECTS the candidate in milliseconds, before the
+# reviewer panel spends any LLM call. Gateable: undefined-references,
+# undefined-citations, multiply-defined-labels, todo-markers. Editing this
+# list changes the evaluator_version (no stale cache reuse).
+[evaluation.metrics]
+gate = ["undefined-references", "undefined-citations",
+        "multiply-defined-labels", "todo-markers"]
+
+# The reviewer panel: one entry per expert lens. `persona` names
+# prompts/reviewers/<persona>.md. `backend_pref` is tried in order against the
+# CLIs actually installed; falls back to `claude` with `model` otherwise.
+# Editing this table or any persona file changes the evaluator_version, so a new
+# panel never silently reuses an old evaluation-cache entry.
+[[evaluation.panel]]
+persona = "rigor"
+backend_pref = ["claude"]
+model = "opus"
+
+[[evaluation.panel]]
+persona = "clarity"
+backend_pref = ["claude"]
+model = "sonnet"
+
+[[evaluation.panel]]
+persona = "novelty"
+backend_pref = ["claude"]
+model = "sonnet"
+
+[[evaluation.panel]]
+persona = "referee"
+backend_pref = ["claude"]
+model = "opus"
+
+# Authoritative elsewhere (own consumer; not duplicated here):
+#   strategies -> prompts/strategies.txt  (per-branch biases, read by run.sh)
+#   spine      -> main.tex \input list     (section order, read by LaTeX)

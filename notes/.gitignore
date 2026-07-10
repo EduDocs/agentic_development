@@ -1,0 +1,57 @@
+__pycache__/
+*.pyc
+.DS_Store
+STOP
+
+# Per-checkout engine path written by scaffold.py (machine-specific; set
+# NEL_ENGINE to override). The engine repo has none. .nano-engine is the
+# deprecated pre-rename name (scaffold.py update migrates and removes it).
+.nel-engine
+.nano-engine
+
+# LaTeX build artifacts and the composed/compiled output
+build/
+*.aux
+*.bbl
+*.blg
+*.fdb_latexmk
+*.fls
+*.lof
+*.log
+*.lot
+*.out
+*.synctex.gz
+*.toc
+
+# worktrees live outside the repo by default, but ignore if anyone puts
+# them inside:
+nano-evolve-runs/
+
+# runtime state written by step.py in solo mode:
+log/state-*.json
+log/elites/
+log/feedback/
+log/branch-solo.md
+log/by-approach/*.md
+!log/by-approach/README.md
+
+# archive DB (runtime; schema/DAL are code under db/, the data file is not tracked)
+log/archive.db
+log/archive.db-wal
+log/archive.db-shm
+
+# Learning-flywheel scratch area (ephemeral, personal, per-clone; the /capture
+# inbox and skill ledgers live here). Only the README travels with the repo.
+scratch/*
+!scratch/README.md
+
+# Local arXiv reference library (ingested via get-arxiv).
+# Paper folders are local-only; the tracked catalog + watch profile travel with
+# the repo — as do the shared-knowledge files of the engine resources layer
+# (README/STYLE/exemplars; ADR 0007), which projects may shadow with their own.
+resources/*
+!resources/CATALOG.md
+!resources/WATCH.md
+!resources/README.md
+!resources/STYLE.md
+!resources/exemplars/

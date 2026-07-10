@@ -1,0 +1,100 @@
+#!/usr/bin/env bash
+# nel — the project's command surface over the (referenced) engine.
+#
+# The agent and skills call `./nel <cmd>` so their commands never depend on
+# WHERE the engine lives. Engine resolution, in order:
+#   1. $NEL_ENGINE (explicit; what a collaborator on another machine sets)
+#   2. <project>/.nel-engine (a path file scaffold.py writes; gitignored)
+#   3. the project itself (the engine repo's own in-place case)
+# This script is vendored UNCHANGED into every project; only .nel-engine differs.
+# (NEL_ENGINE / .nel-engine are the canonical names; the pre-rename
+# NANO_ENGINE / .nano-engine are still honored as a fallback.)
+
+set -euo pipefail
+
+PROJECT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+ENGINE="${NEL_ENGINE:-${NANO_ENGINE:-}}"
+if [[ -z "$ENGINE" ]]; then
+    if [[ -f "$PROJECT/.nel-engine" ]]; then
+        ENGINE="$(cat "$PROJECT/.nel-engine")"
+    elif [[ -f "$PROJECT/.nano-engine" ]]; then
+        ENGINE="$(cat "$PROJECT/.nano-engine")"
+    else
+        ENGINE="$PROJECT"   # engine repo operating on itself
+    fi
+fi
+
+cmd="${1:-}"; shift || true
+
+# Commands that drive the engine need its Python present. Fail clearly if the
+# resolved engine is wrong/missing rather than erroring cryptically downstream.
+case "$cmd" in
+    step|evaluate|compose|archive|doctor|db-archive)
+        if [[ ! -f "$ENGINE/compose.py" ]]; then
+            echo "nel: engine not found at '$ENGINE' (no compose.py)." >&2
+            echo "      Set NEL_ENGINE=/path/to/engine, or run 'python3 <engine>/scaffold.py update $PROJECT'." >&2
+            exit 3
+        fi ;;
+esac
+
+case "$cmd" in
+    step)       exec python3 "$ENGINE/step.py" "$@" --project "$PROJECT" ;;
+    evaluate)   exec python3 "$ENGINE/evaluate.py" --project "$PROJECT" ;;
+    compose)    exec python3 "$ENGINE/compose.py" --project "$PROJECT" ;;
+    archive)    exec python3 "$ENGINE/db/archive.py" "$@" ;;
+    doctor)     exec python3 "$ENGINE/doctor.py" --project "$PROJECT" "$@" ;;
+    db-archive) exec python3 "$ENGINE/contribute.py" --project "$PROJECT" "$@" ;;
+    resources)
+        # The two resources layers (ADR 0007): the project's private grounding
+        # library, then the engine's shared layer. A project file with the same
+        # name as an engine file SHADOWS it.
+        echo "project layer ($PROJECT/resources):"
+        if [[ -d "$PROJECT/resources" ]]; then
+            n=0
+            for d in "$PROJECT/resources"/arXiv-*/; do
+                [[ -d "$d" ]] && { printf '  %s\n' "$(basename "$d")"; n=$((n+1)); }
+            done
+            for f in "$PROJECT/resources"/*; do
+                [[ -f "$f" ]] && printf '  %s\n' "$(basename "$f")"
+            done
+            [[ $n -eq 0 ]] && echo "  (no arXiv ingests yet — see the get-arxiv skill)"
+        else
+            echo "  (none)"
+        fi
+        if [[ "$ENGINE" != "$PROJECT" && -d "$ENGINE/resources" ]]; then
+            echo "engine layer ($ENGINE/resources) — shared; shadowed by same-named project files:"
+            for f in "$ENGINE/resources"/*; do
+                name="$(basename "$f")"
+                mark=""
+                [[ -e "$PROJECT/resources/$name" ]] && mark="   (SHADOWED by project)"
+                printf '  %s%s\n' "$name" "$mark"
+            done
+        fi ;;
+    build)
+        # Self-contained compile (needs only pdflatex + the project's templates),
+        # so a collaborator can build without the Python engine. Mirrors justfile.
+        mkdir -p "$PROJECT/build"
+        cd "$PROJECT"
+        # \include (unlike \input) writes a per-file .aux mirroring its source
+        # path under -output-directory; that dir must exist first (book-class
+        # documents, e.g. an adopted manuscript, that \include per chapter).
+        # Best-effort scan (no Python engine here): top-level + sections/*.tex.
+        while IFS= read -r inc; do
+            [[ -n "$inc" ]] && mkdir -p "build/$(dirname "$inc")"
+        done < <(grep -hoE '\\include\{[^}]+\}' ./*.tex sections/*.tex 2>/dev/null \
+                  | sed -E 's/\\include\{([^}]+)\}/\1/')
+        export TEXINPUTS=".:templates/:"
+        pdflatex=(pdflatex -interaction=nonstopmode -output-directory=build main.tex)
+        "${pdflatex[@]}" >/dev/null 2>&1 || true
+        if grep -qE '\\cite[a-zA-Z]*\{' sections/*.tex main.tex 2>/dev/null; then
+            ( cd build && BIBINPUTS=..:../templates: BSTINPUTS=..:../templates: bibtex main >/dev/null 2>&1 ) || true
+        else
+            rm -f build/main.bbl
+        fi
+        "${pdflatex[@]}" >/dev/null 2>&1 || true
+        "${pdflatex[@]}" >/dev/null 2>&1
+        echo "built $PROJECT/build/main.pdf" ;;
+    *)
+        echo "usage: ./nel {step <rationale> --approach <name> [--register tex|md|both] | evaluate | compose | archive <best|show|history|status|pending|...> | db-archive [--by <id>] | build | resources | doctor [--compile] [--fix] [--strict]}" >&2
+        exit 2 ;;
+esac

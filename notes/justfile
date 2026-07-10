@@ -1,64 +1,72 @@
-# Build configuration
-outdir     := "output"
-main       := "notes"
+# Build configuration for the manuscript (the evolving artifact).
+outdir     := "build"
 latex      := "pdflatex"
-latexflags := "-interaction=nonstopmode -halt-on-error"
+bibtex     := "bibtex"
+latexflags := "-interaction=nonstopmode"
+main       := "main"
 open_cmd   := "open"
 
-# Chapter order — mirrors the \include sequence in the main .tex.
-md_files := "chapters/preface.md \
-chapters/agentic_paradigm.md \
-chapters/agentic_rig.md \
-chapters/context_engineering.md \
-chapters/agentic_coding.md \
-chapters/agent_loop.md \
-chapters/evaluation.md \
-chapters/retrieval.md \
-chapters/orchestration.md \
-chapters/evolutionary_frameworks.md"
-
-# Print available recipes (default)
+# Print available recipes (default recipe)
 default:
     @just --list
 
-# Build either the LaTeX notes or the Markdown sidecars.
-#   just build latex   -> output/notes.pdf
-#   just build md      -> output/notes_sidecars.pdf
-build kind:
-    @just _build-{{kind}}
+# Compose the standalone aggregate + spine digest (build/aggregate.tex, build/spine.md)
+compose:
+    python3 compose.py
 
-# View either compiled PDF (builds first if needed).
-#   just view latex
-#   just view md
-view kind:
-    @just _view-{{kind}}
-
-# --- LaTeX ----------------------------------------------------------------
-
-_build-latex:
-    mkdir -p {{outdir}}/chapters
+# Full build: pdflatex -> bibtex (only if cited) -> pdflatex -> pdflatex
+# Runs bibtex only when something is actually \cite'd — otherwise bibtex emits a
+# degenerate empty thebibliography that breaks pdflatex (mirrors evaluate._compile).
+build:
+    #!/usr/bin/env bash
+    set -e
+    mkdir -p {{outdir}}
+    # \include (unlike \input) writes a per-file .aux mirroring its source path
+    # under -output-directory; that dir must exist first (book-class documents,
+    # e.g. an adopted manuscript, that \include per chapter). Best-effort scan.
+    while IFS= read -r inc; do
+        [[ -n "$inc" ]] && mkdir -p "{{outdir}}/$(dirname "$inc")"
+    done < <(grep -hoE '\\include\{[^}]+\}' ./*.tex sections/*.tex 2>/dev/null \
+              | sed -E 's/\\include\{([^}]+)\}/\1/')
+    export TEXINPUTS=.:templates/:
     {{latex}} {{latexflags}} -output-directory={{outdir}} {{main}}.tex
-    -cd {{outdir}} && makeindex {{main}}.idx
+    if grep -qE '\\cite[a-zA-Z]*\{' sections/*.tex main.tex; then
+        ( cd {{outdir}} && BIBINPUTS=..:../templates: BSTINPUTS=..:../templates: {{bibtex}} {{main}} ) || true
+    else
+        rm -f {{outdir}}/{{main}}.bbl
+    fi
     {{latex}} {{latexflags}} -output-directory={{outdir}} {{main}}.tex
     {{latex}} {{latexflags}} -output-directory={{outdir}} {{main}}.tex
 
-_view-latex: _build-latex
+# Open the compiled PDF
+view: build
     {{open_cmd}} {{outdir}}/{{main}}.pdf
 
-# --- Markdown sidecars (future use) ---------------------------------------
+# Run the soft-feedback evaluator (composes, compiles, reviewer panel)
+evaluate:
+    python3 evaluate.py
 
-_build-md:
-    mkdir -p {{outdir}}
-    pandoc {{md_files}} \
-        --top-level-division=chapter \
-        --toc \
-        -V geometry:margin=1in \
-        -o {{outdir}}/{{main}}_sidecars.pdf
-
-_view-md: _build-md
-    {{open_cmd}} {{outdir}}/{{main}}_sidecars.pdf
-
-# --- Housekeeping ---------------------------------------------------------
-
+# Remove build artifacts
 clean:
     rm -rf {{outdir}}
+
+# List the papers in the local arXiv library (resources/)
+resources:
+    #!/usr/bin/env bash
+    shopt -s nullglob
+    dirs=(resources/arXiv-*/)
+    if [ ${#dirs[@]} -eq 0 ]; then
+        echo "No papers in resources/ yet — ingest one with the get-arxiv skill."
+        exit 0
+    fi
+    echo "Local arXiv library — ${#dirs[@]} paper(s):"
+    for d in "${dirs[@]}"; do
+        s="${d}SYNOPSIS.md"
+        title=$(sed -n 's/^title:[[:space:]]*//p' "$s" 2>/dev/null | head -1)
+        title="${title%\'}"; title="${title#\'}"
+        [ -z "$title" ] && title=$(sed -n 's/^# //p' "$s" 2>/dev/null | head -1)
+        [ -z "$title" ] && title="(no SYNOPSIS.md)"
+        id=$(basename "$d")
+        printf '  %-22s %s\n' "${id#arXiv-}" "$title"
+    done
+    echo "(roles & tags: resources/CATALOG.md)"

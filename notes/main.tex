@@ -1,0 +1,120 @@
+\documentclass[12pt,openany]{book}
+
+%%  Dimensions and URL
+\usepackage[margin=1in]{geometry}
+\usepackage[hyperindex,colorlinks,linkcolor=blue!60!black,urlcolor=blue!60!black]{hyperref}
+
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{booktabs}
+\usepackage{makeidx}
+\usepackage{listings}
+\usepackage{xcolor}
+
+\usepackage{tikz}
+\usetikzlibrary{arrows,shadows,shapes,positioning,fit,backgrounds}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\pgfplotsset{width=3in}
+\pgfplotsset{every axis plot/.append style={very thick}}
+
+\newtheorem{theorem}{Theorem}[chapter]
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{example}[theorem]{Example}
+\newtheorem{remark}[theorem]{Remark}
+\newtheorem{principle}[theorem]{Principle}
+
+%%  Notation
+\newcommand{\Artifacts}{\mathcal{A}}
+\newcommand{\Population}{\mathcal{P}}
+\newcommand{\Fitness}{f}
+\newcommand{\Mutate}{\mu}
+\newcommand{\Select}{\sigma}
+\newcommand{\RealNumbers}{\mathbb{R}}
+\newcommand{\NaturalNumbers}{\mathbb{N}}
+\newcommand{\Score}{\mathrm{score}}
+\newcommand{\Eval}{\mathrm{eval}}
+\newcommand{\Loss}{\mathcal{L}}
+
+%%  Inline code
+\newcommand{\code}[1]{\texttt{#1}}
+
+%%  Spacing
+\renewcommand{\baselinestretch}{1.25}
+
+%%  Code listings style
+% listings ships no built-in TOML or diff lexer; minimal definitions so
+% \begin{lstlisting}[language=toml|diff] resolves instead of erroring.
+\lstdefinelanguage{toml}{
+  morecomment=[l]{\#},
+  morestring=[b]",
+  morestring=[b]',
+  sensitive=false,
+}
+\lstdefinelanguage{diff}{
+  morecomment=[f]{@@},
+  morecomment=[f]{+},
+  morecomment=[f]{-},
+}
+\lstdefinelanguage{json}{
+  morestring=[b]",
+  sensitive=false,
+}
+\lstdefinelanguage{markdown}{
+  sensitive=false,
+}
+\lstset{
+  basicstyle=\ttfamily\small,
+  breaklines=true,
+  frame=single,
+  backgroundcolor=\color{gray!8},
+  keywordstyle=\color{blue!70!black},
+  commentstyle=\color{gray!70},
+  stringstyle=\color{green!55!black},
+  numbers=left,
+  numberstyle=\tiny\color{gray},
+  numbersep=5pt,
+  % listings' tokenizer is not UTF-8-aware by default; teach it the
+  % typographic punctuation that appears in code comments (em/en dash,
+  % curly quotes) rather than requiring every listing to avoid them.
+  literate=
+    {—}{{-{}-{}-}}1
+    {–}{{-{}-}}1
+    {'}{{\textquoteright}}1
+    {'}{{\textquoteleft}}1
+    {"}{{\textquotedblright}}1
+    {"}{{\textquotedblleft}}1,
+}
+
+\makeindex
+\renewcommand{\today}{Fall 2026}
+
+\begin{document}
+
+\author{}
+\title{
+\Huge{Agentic Development in Research}\\[5mm]
+\Large{Course Notes}}
+
+\frontmatter
+\maketitle
+
+\tableofcontents
+
+\include{sections/preface}
+
+\mainmatter
+
+\include{sections/agentic_paradigm}
+\include{sections/agentic_rig}
+\include{sections/context_engineering}
+\include{sections/agentic_coding}
+\include{sections/agent_loop}
+\include{sections/evaluation}
+\include{sections/retrieval}
+\include{sections/orchestration}
+\include{sections/evolutionary_frameworks}
+
+\printindex
+
+\end{document}
