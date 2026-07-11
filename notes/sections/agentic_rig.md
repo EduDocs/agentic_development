@@ -18,11 +18,11 @@ in the order a new user meets it, and argue why each makes work trustworthy.
 
 ## Directions
 - Cross-link the permissions/least-privilege material forward to Ch.4 (read-every-diff) and Ch.8 (rate-limit reliability) so the rig's payoffs are explicit.
-- **Currency:** add a prompt-injection paragraph to §Permissions (tool results and retrieved content are untrusted surfaces) and name computer use as a tool type in §Tools (currency panel).
 
 ## Decisions
 - 2026-07-10: rig presented in encounter order (terminal → git → API → instruction files → permissions) rather than by importance, matching the onboarding Tasks; grounded in the vendored claude-cli-workshop.
 - 2026-07-10 (realized in prose): added the **chapter roadmap** (one clause per section, with `\ref` links) after the opening.
+- 2026-07-10 (realized in prose, currency): added a **§Untrusted Inputs and Prompt Injection** subsection to §Permissions — tool results / fetched pages / retrieved passages are untrusted text the model cannot distinguish from researcher instructions; least privilege (Principle~LeastPrivilege) is the primary structural defense, with schema validation (Ch.5) and human-in-the-loop as complements. **Computer use** as a tool type was added in Ch.1 §Tools (screenshot + keyboard/mouse vs named-API tools), the more natural home than the rig chapter.
 <!-- EVOLVE-BLOCK-END -->
 
 ## Open questions

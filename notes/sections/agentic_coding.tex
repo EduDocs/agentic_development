@@ -102,6 +102,7 @@ A minimal diff showing the addition of a CSV branch to a loader:
 \end{lstlisting}
 Reading this diff reveals that the CSV branch assumes the target column is named \code{'target'} and that the remaining columns are all features.
 Neither of these constraints appears in the instruction; both affect correctness on real data.
+The diff also introduces a dependency on \code{pandas} (the \code{pd} alias) that must already be present in the environment --- itself a change worth catching in the diff rather than at run time on a clean machine.
 \end{example}
 
 Reading diffs develops two habits.

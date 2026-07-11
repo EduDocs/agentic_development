@@ -115,6 +115,17 @@ The mutator's context should include:
 \end{enumerate}
 This is the convergence of the two spines: \emph{evaluation becomes fitness} (Spine~1) and \emph{context engineering drives the mutator} (Spine~2).
 
+\begin{example}
+To see the two spines converge on one artifact, follow a single expression through one generation.
+The survivor \code{x0 * exp(-x1)} enters the round carrying the harness score of Chapter~\ref{chapter:Evaluation}: $\mathrm{MSE} = 0.0045$, complexity $C = 5$, and composite $\Score = \mathrm{MSE} + \lambda C = 0.0055$ at $\lambda = 0.0002$.
+The generate--evaluate--select loop of Chapter~\ref{chapter:Orchestration} selects it as an elite and passes it --- together with that very score and a retrieved domain note on Arrhenius kinetics --- into the mutation prompt shown above.
+The mutator returns the motivated variant \code{x0 * exp(-x1 / x2)}.
+The \emph{same} harness now scores the variant: $\mathrm{MSE} = 0.0021$, complexity $C = 7$, and composite $\Score = 0.0021 + 0.0002 \cdot 7 = 0.0035$.
+Because $0.0035 < 0.0055$, selection keeps the variant, and the next mutation prompt will carry \emph{its} score in turn.
+No new machinery appears in this trace: the number that drives selection is the Chapter~\ref{chapter:Evaluation} evaluation score, now used to \emph{drive} search rather than to \emph{compare} methods.
+That reuse --- one harness, one score, two roles --- is what ``evaluation becomes fitness'' means concretely.
+\end{example}
+
 \section{Selection and Population Management}
 \label{section:Selection}
 

@@ -53,7 +53,7 @@ Structuring the context so that the most important information appears near the 
 \subsection{Temperature and Sampling}
 
 The model samples an action from the distribution $M(\mathcal{C})$.
-The \emph{temperature}\index{Temperature} parameter scales the logits before sampling: a temperature of~0 produces deterministic (greedy) output; higher temperatures produce more varied output.
+The \emph{temperature}\index{Temperature} parameter divides the logits by the temperature before the softmax: a temperature of~0 produces deterministic (greedy) output, and higher temperatures flatten the distribution and produce more varied output.
 
 For most agentic tasks, low temperature (0--0.3) is preferred: the agent should follow instructions precisely rather than improvising.
 Higher temperatures are appropriate when the goal is to generate diverse candidates — for example, during the proposal step of an evolutionary search (Chapter~\ref{chapter:EvolutionaryFrameworks}).
@@ -175,6 +175,14 @@ Hooks can inject context by:
 
 The instruction file hierarchy discussed in Section~\ref{section:InstructionFiles} is itself a form of automated context management: the \code{CLAUDE.md} at the root of the project is loaded automatically at the start of every session.
 A well-maintained \code{CLAUDE.md} means the agent starts every session knowing the project's conventions, the location of key files, and the one-command run procedure.
+
+\subsection{The Model Context Protocol}
+
+Where hooks and instruction files inject context with project-specific scripts, the \emph{Model Context Protocol} (MCP)\index{Model Context Protocol} standardizes the mechanism (Anthropic, 2024).
+MCP is an open client--server protocol: a \emph{server} exposes tools, resources, and prompts through a typed interface, and any MCP-aware \emph{client} (an agentic CLI, an editor, a chat application) can attach to it and offer its capabilities to the model.
+Its value is composability.
+A single database server, documentation server, or issue-tracker server, written once, works across every client that speaks the protocol, rather than being re-implemented as a bespoke hook per project.
+In the vocabulary of this chapter, MCP is automated context management with a standard interface: it is the protocol-level counterpart to the \code{CLAUDE.md} hierarchy, supplying tools and retrievable resources on demand where the instruction file supplies static conventions.
 
 \section{Measuring Context Quality}
 \label{section:ContextQuality}

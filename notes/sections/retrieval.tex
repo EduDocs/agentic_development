@@ -98,7 +98,7 @@ This is the \emph{$k$-nearest-neighbor problem} in $\RealNumbers^d$.\index{$k$-n
 
 Exact nearest-neighbor search is $O(N \cdot d)$ per query — linear in the corpus size.
 For the small corpora used in the course (hundreds to thousands of passages), exact search is fast enough.
-For larger corpora, \emph{approximate nearest-neighbor} (ANN) indices trade a small reduction in recall for a large reduction in query time.
+For larger corpora, \emph{approximate nearest-neighbor} (ANN) indices trade a small reduction in recall for a large reduction in query time (Johnson et al., 2021).
 
 \subsection{Building a Retrieval Index}
 
@@ -124,6 +124,7 @@ class FlatIndex:
         self.vectors  = np.array([embed_fn(p) for p in passages])
         # normalise for cosine similarity via inner product
         norms = np.linalg.norm(self.vectors, axis=1, keepdims=True)
+        norms = np.maximum(norms, 1e-12)   # guard against zero-norm embeddings
         self.vectors = self.vectors / norms
 
     def query(self, q_vec, k=5):
@@ -229,8 +230,11 @@ If the corpus contains no entries about oscillatory-times-Gaussian forms, retrie
 In this case, the ungrounded agent performs better than the grounded one because the domain prior is misaligned.
 \end{example}
 
-The ablation study required in Challenge~3 — grounded vs. ungrounded on at least two datasets — exists to quantify exactly this tradeoff.
+\begin{remark}
+Grounding helps when the retrieved prior is aligned and hurts when it is misaligned, and which case obtains cannot be assumed in advance.
+The ablation study required in Challenge~3 --- grounded vs.\ ungrounded on at least two datasets --- exists precisely to quantify this tradeoff rather than presume it.
 A dataset where grounding helps and a dataset where it hurts, analyzed together, build the researcher's intuition for when retrieval adds value.
+\end{remark}
 
 \section*{Further Reading}
 

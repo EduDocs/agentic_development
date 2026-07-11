@@ -17,6 +17,20 @@ On one side are vendor tool tutorials, which teach the mechanics of a particular
 On the other are standard machine-learning and NLP courses, which teach models but not the surrounding discipline of building, orchestrating, evaluating, and evolving an autonomous system around one.
 These notes are neither: the rig is treated as an on-ramp rather than the subject, and a single research task — model discovery from data — is carried the full length of the ladder so that each capability is introduced because that task demands it, and every technique earns its place by advancing the same evolving artifact.
 
+\paragraph{Chapter by chapter.}
+The nine chapters follow the ladder, and a student entering the course mid-stream can locate any one of them here.
+\begin{itemize}
+\item Chapter~\ref{chapter:AgenticParadigm} defines the agent, the capability ladder, and the two spines the rest of the book builds on.
+\item Chapter~\ref{chapter:AgenticRig} assembles the working rig — terminal, version control, model API, instruction files, and permissions — the tools one \emph{operates} before building anything.
+\item Chapter~\ref{chapter:ContextEngineering} treats the model as a function of its context and the deliberate construction of that context as the primary lever.
+\item Chapter~\ref{chapter:AgenticCoding} directs an agent to write code the researcher still owns, with reading the diff as the central discipline.
+\item Chapter~\ref{chapter:AgentLoop} builds the loop from scratch — tool definitions, the ReAct pattern, structured outputs, and failure modes.
+\item Chapter~\ref{chapter:Evaluation} builds the evaluation harness — the object that becomes the fitness function in Chapter~\ref{chapter:EvolutionaryFrameworks}.
+\item Chapter~\ref{chapter:Retrieval} grounds an agent in domain knowledge, and is honest about the cases where grounding hurts.
+\item Chapter~\ref{chapter:Orchestration} composes agents into reliable multi-step workflows, ending at the generate--evaluate--select loop.
+\item Chapter~\ref{chapter:EvolutionaryFrameworks} adds a mutation operator to that loop to evolve artifacts — the point where evaluation becomes fitness.
+\end{itemize}
+
 The expected background is some Python experience and general quantitative ability.
 No prior knowledge of agents, the shell, or professional development tooling is assumed; the course starts there.
 Examples are drawn from \emph{model discovery from data} (symbolic regression), a domain-portable task that researchers across quantitative fields can connect to their own work.

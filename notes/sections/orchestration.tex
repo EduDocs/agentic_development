@@ -197,6 +197,7 @@ def with_retry(fn, max_attempts=5, base_delay=1.0):
                 raise
             delay = base_delay * (2 ** attempt) + random.uniform(0, 1)
             time.sleep(delay)
+    raise RuntimeError("with_retry requires max_attempts >= 1")
 \end{lstlisting}
 
 \subsection{Logging}
@@ -258,6 +259,7 @@ The pivot is not a new topic; it is an addition to a loop already understood.
 \item Hong, S., et al., ``MetaGPT: Meta Programming for a Multi-Agent Collaborative Framework,'' \emph{ICLR}, 2024 — a framework for structured multi-agent communication.
 \item Wu, Q., et al., ``AutoGen: Enabling Next-Gen LLM Applications via Multi-Agent Conversation,'' \emph{arXiv}, 2023 — a widely used orchestration library for multi-agent conversations.
 \item Chase, H., \emph{LangChain Documentation} — a survey of pipeline and memory patterns for LLM applications; available at \href{https://python.langchain.com}{python.langchain.com}.
+\item \emph{A note on the ecosystem:} the multi-agent framework landscape has fragmented rapidly (LangGraph, Claude's agent SDK, Swarm, and others), so treat the AutoGen and LangChain references above as historical anchors for the conversation and pipeline patterns rather than as current installation targets — check present adoption before committing to a framework.
 \item Workshop materials, \code{resources/claude-cli-workshop/} Lesson~04 — sub-agents, agent teams, and headless operation with Claude Code.
 \end{enumerate}
 \end{small}
