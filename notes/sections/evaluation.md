@@ -24,6 +24,7 @@ fitness function in Ch.9. Establish leakage-resistance and eval-hacking defenses
 
 ## Decisions
 - 2026-07-10: sign convention "lower is better" fixed in this chapter and carried through elitism (Ch.9) — rigor panel confirmed the manuscript is internally consistent on the convention, so do not disturb it.
+- 2026-07-10 (realized in prose): complexity now defined once as node count (with the $f_1{=}3$/$f_2{=}9$ counting shown); the "trivial re-parameterization" exploit restated correctly as node count undercounting fitted-constant degrees of freedom (the false "$c$ and $2x$ are the same model" claim is gone). Still open: Goodhart citation, Sculley 2014 replacement.
 <!-- EVOLVE-BLOCK-END -->
 
 ## Open questions

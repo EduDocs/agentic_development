@@ -45,12 +45,12 @@ backend_pref = ["claude"]
 model = "sonnet"
 
 [[evaluation.panel]]
-persona = "novelty"
+persona = "currency"
 backend_pref = ["claude"]
 model = "sonnet"
 
 [[evaluation.panel]]
-persona = "referee"
+persona = "pedagogy"
 backend_pref = ["claude"]
 model = "opus"
 

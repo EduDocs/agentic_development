@@ -122,12 +122,14 @@ When MSE is on the leaderboard, the researcher reports the lower value as the be
 A model that perfectly predicts the test data by memorizing it is not a discovery.
 \emph{Parsimony}\index{Parsimony} — the preference for simpler models among those of comparable predictive quality — guards against this failure mode.
 
-The parsimony of a symbolic expression is typically measured by its \emph{complexity}: the number of nodes in its expression tree, or the number of operations required to evaluate it.
+The parsimony of a symbolic expression is measured by its \emph{complexity}: the number of nodes in its expression tree, counting every operator, variable, and constant as one node.
+An alternative convention counts the operations required to evaluate the expression; the two usually track one another, and the course fixes on node count so that all leaderboard entries are comparable.
 A simpler expression is easier to interpret, more likely to generalize, and less likely to be an accidental fit.
 
 \begin{example}
-The expressions $f_1(x) = x^2$ and $f_2(x) = x^2 + 10^{-9} x^7$ may achieve similar MSE on a clean test set, but $f_1$ has complexity~2 and $f_2$ has complexity~5.
-Parsimony selects $f_1$ as the discovery.
+The expressions $f_1(x) = x^2$ and $f_2(x) = x^2 + 10^{-9} x^7$ may achieve similar MSE on a clean test set, but their expression trees differ in size.
+Counting each operator, variable, and constant as one node, $f_1$ has three nodes (the variable $x$, the exponent $2$, and the power operator), while $f_2$ has nine.
+Parsimony selects the simpler $f_1$ as the discovery.
 \end{example}
 
 \subsection{Multi-Objective Scoring}
@@ -165,7 +167,9 @@ Designing a harness you would trust an adversary to attack is more reliable than
 
 Common attack surfaces in a model discovery harness:
 \begin{enumerate}
-\item \textbf{Trivial re-parameterization.} A parsimony term that counts nodes rewards replacing $2 \cdot x$ with a single constant $c$ learned from the data (zero nodes for $c$, but two nodes for $2 \cdot x$), even though both represent the same model.
+\item \textbf{Trivial re-parameterization.} A parsimony term that counts nodes treats every fitted constant as one cheap node, even though a fitted constant is a real degree of freedom.
+An optimizer can therefore hide capacity in constants: $\sin(c \cdot x)$ has only a handful of nodes, yet by tuning the single fitted constant $c$ it can fit arbitrarily many oscillations, so node count rates it ``simpler'' than a polynomial with the same number of free parameters.
+Counting fitted parameters, not just nodes, closes the loophole.
 \item \textbf{High-degree polynomial fitting.} A sufficiently high-degree polynomial can achieve near-zero MSE on any finite dataset — including the test set, if the harness leaks.
 \item \textbf{Memorizing the test set via complexity.} An artifact that memorizes $n$ test points as a piecewise constant function with $n$ pieces has zero MSE and complexity $O(n)$ — which may still produce a low composite score if $\lambda$ is too small.
 \end{enumerate}

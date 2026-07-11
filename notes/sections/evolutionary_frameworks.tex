@@ -315,21 +315,23 @@ Every fitness evaluation and mutation is an API call that costs money and takes 
 A long evolutionary run on a high-cost model can be expensive; a run on a cheap model may produce inferior mutations that the run cannot recover from.
 
 \begin{definition}
-The \emph{cost-adjusted fitness} of an artifact $a$ produced by a run of total cost $C$ is
+The \emph{cost-adjusted fitness} of an artifact $a$ is
 \begin{equation}
-\tilde{\Fitness}(a) = \Fitness(a) + \alpha \cdot C ,
+\tilde{\Fitness}(a) = \Fitness(a) + \alpha \cdot \mathrm{cost}(a) ,
 \label{equation:CostAdjustedFitness}
 \end{equation}
-where $\alpha > 0$ converts cost (in dollars) to the same scale as the fitness score.
+where $\mathrm{cost}(a)$ is the \emph{marginal} cost — in dollars of API usage — of producing and evaluating $a$, and $\alpha > 0$ converts that cost to the scale of the fitness score.
 \end{definition}
 
-Cost-adjusted fitness rewards the same quality at lower cost.
-This connects the capstone to Challenge~4's model benchmarking: a cheaper proposer model that achieves comparable mutations is preferred by cost-adjusted fitness, even if the per-mutation quality is slightly lower.
+Using the \emph{marginal} cost $\mathrm{cost}(a)$, rather than a run's total cost, is what makes the adjustment discriminating: a cost shared equally by every artifact would shift all fitnesses by the same constant and could not reorder candidates within a run.
+With $\mathrm{cost}(a)$, two candidates of equal $\Fitness$ are separated in favor of the one that was cheaper to obtain — the mutation drawn from a cheaper proposer model, or the expression that reached its score in fewer evaluation calls.
+This connects the capstone to Challenge~4's model benchmarking: a cheaper proposer that achieves comparable mutations is preferred by cost-adjusted fitness, even when its per-mutation quality is slightly lower.
 
 \begin{remark}
-The choice of $\alpha$ is a policy decision.
-For research purposes, the primary leaderboard uses unadjusted fitness so that discovery quality is the primary signal.
-The cost analysis is reported separately, enabling the reader to understand the resource requirements of each method.
+Like the parsimony weight $\lambda$ (Section~\ref{subsection:MultiObjectiveScoring}), $\alpha$ is a calibrated design choice, not a universal constant.
+Its units are fitness per dollar, so its scale depends on both the MSE scale of the dataset and the dollar cost of a typical mutation.
+A workable default fixes $\alpha$ so that halving an artifact's cost is worth the same as a small, stated fraction of the MSE gap between adjacent baselines.
+For research purposes the primary leaderboard uses unadjusted fitness so that discovery quality is the dominant signal; the cost analysis is reported separately, enabling the reader to understand the resource requirements of each method.
 \end{remark}
 
 \section*{Further Reading}

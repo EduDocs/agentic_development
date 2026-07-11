@@ -23,6 +23,7 @@ from the "LLM as a function of its context" view down to automated management.
 
 ## Decisions
 - 2026-07-10: Principle stated deterministically for pedagogical punch, but a one-clause caveat is owed since the same chapter introduces temperature; this is a self-consistency fix, not a reframing.
+- 2026-07-10 (realized in prose): Principle~ContextDeterminesOutput now says context fixes the output *distribution*; the realized *sample* depends on temperature (below) and serving nondeterminism — reconciled with the Temperature subsection and the Ch.8/Ch.9 nondeterminism material. Still open: roadmap; inline citations.
 <!-- EVOLVE-BLOCK-END -->
 
 ## Open questions

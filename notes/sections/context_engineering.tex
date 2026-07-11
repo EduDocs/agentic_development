@@ -27,9 +27,9 @@ This view has a direct practical consequence.
 
 \begin{principle}
 \label{principle:ContextDeterminesOutput}
-The model's output is entirely determined by its input.
-Two identical contexts produce identical distributions over outputs.
-If the agent behaves unexpectedly, the cause is in the context — either something unexpected is present, or something necessary is absent.
+The context determines the model's output \emph{distribution}: two identical contexts induce the same distribution over next actions.
+The realized \emph{sample} depends further on the sampling temperature (introduced below) and can carry additional nondeterminism from production serving, so identical contexts guarantee identical distributions, not identical outputs.
+The practical consequence is unchanged: if the agent behaves unexpectedly, look first to the context — either something unexpected is present, or something necessary is absent.
 \end{principle}
 
 \subsection{The Context Window}

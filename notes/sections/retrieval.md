@@ -23,6 +23,7 @@ honest point that grounding sometimes *hurts*.
 
 ## Decisions
 - 2026-07-10: cosine over Euclidean justified by magnitude-invariance; kept exact search as the default because course corpora are small (hundreds–thousands of passages), with ANN as the scaling note.
+- 2026-07-10 (realized in prose): embedding Definition softened from a universal strict inequality over all triples to a "trained so that, for most triples" statistical statement, with an explicit "no finite-dimensional embedding orders every triple correctly" caveat. Still open: promote "When Grounding Hurts" to a named block; inline citations.
 <!-- EVOLVE-BLOCK-END -->
 
 ## Open questions

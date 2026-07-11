@@ -25,6 +25,7 @@ components, and trace the FunSearch → AlphaEvolve → OpenEvolve lineage.
 
 ## Decisions
 - 2026-07-10: the chapter deliberately presents evolution as "orchestration + mutation" so the pivot inherits every reliability lesson from Ch.8; the two-spines convergence is stated at the mutator, the conceptual climax of the book.
+- 2026-07-10 (realized in prose): cost-adjusted fitness now uses the marginal $\mathrm{cost}(a)$ (renamed from $C$ to avoid clashing with complexity $C$), with prose explaining why a run-shared constant cannot reorder intra-run candidates; $\alpha$ given the same units/default/tradeoff treatment as $\lambda$. Still open: replace the "1990s GP" strawman with PySR; hedge AlphaEvolve/FunSearch claims; add one end-to-end worked SR example.
 <!-- EVOLVE-BLOCK-END -->
 
 ## Open questions

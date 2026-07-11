@@ -43,11 +43,12 @@ Embedding models are trained so that semantically similar passages map to nearby
 
 \begin{definition}
 \label{definition:Embedding}
-An \emph{embedding model} is a function $\phi: V^* \to \RealNumbers^d$ such that, for passages $p_1, p_2, p_3$ with $p_1$ more semantically similar to $p_2$ than to $p_3$,
+An \emph{embedding model} is a function $\phi: V^* \to \RealNumbers^d$ trained so that, for \emph{most} triples of passages $p_1, p_2, p_3$ in which $p_1$ is more semantically similar to $p_2$ than to $p_3$,
 \begin{equation}
 \mathrm{sim}(\phi(p_1), \phi(p_2)) > \mathrm{sim}(\phi(p_1), \phi(p_3)) ,
 \end{equation}
 where $\mathrm{sim}$ is a similarity function, typically cosine similarity.
+The property is statistical rather than universal: no finite-dimensional embedding orders \emph{every} triple correctly, and retrieval quality depends on how often the inequality holds for the passages that matter.
 \end{definition}
 
 \subsection{Cosine Similarity}
