@@ -222,6 +222,10 @@ Much of an agent's context is stable across calls: the system prompt, the instru
 For a single request the saving is modest.
 For an evolutionary run that fires hundreds of mutation calls against the same domain corpus and system prompt (Chapter~\ref{chapter:EvolutionaryFrameworks}), caching is often the single largest cost lever, and it ties the context-engineering discipline of this chapter directly to the cost-aware search of Section~\ref{section:CostAwareSearch}.
 
+Because the cache reuses an unchanged \emph{prefix}, the order of the window is not incidental: everything before the first change stays cached, and everything after it must be reprocessed.
+The discipline that follows is to arrange context from most stable to most volatile --- system prompt and tool definitions first, then the domain corpus and few-shot examples, and only then the per-call content that changes every mutation (the current candidate, the latest turn).
+An evolutionary loop that keeps this shared prefix byte-identical across mutations pays the full context cost once and only the marginal cost thereafter; one that reshuffles the prefix each round defeats the cache and pays in full every time.
+
 \section{Measuring Context Quality}
 \label{section:ContextQuality}
 

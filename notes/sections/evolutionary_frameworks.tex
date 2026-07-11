@@ -13,6 +13,15 @@ Over generations, the population improves because good structure is inherited an
 
 This chapter formalizes the evolutionary loop, develops the components that make it work, and traces the lineage from classical genetic programming through FunSearch and AlphaEvolve to the systems students build in the capstone.
 
+\begin{remark}
+It is worth asking why an \emph{external} loop is needed at all, now that a capable model can reason at length before it answers --- iterating, reconsidering, and backtracking within a single call (Chapter~\ref{chapter:AgentLoop}).
+For a problem whose solution lies inside the space the model can search internally, that deliberation may indeed do the work, and it is worth trying as a baseline before building a harness.
+Two things keep the loop irreducible when it is.
+First, the \emph{evaluator is an external oracle}: the model can reason \emph{about} whether a candidate works, but the ground-truth signal --- does this program run, what error does the simulator return, what does the measurement say --- comes from executing against the world, not from further thought (Spine~1 of Section~\ref{section:TwoSpines}, in its starkest form).
+Second, search over a large, rugged space of structured artifacts is a different regime from bounded per-call reasoning: the population, its memory of what has already failed, and the selection pressure across generations explore a landscape no single forward pass exhausts.
+Extended thinking makes each \emph{proposal} smarter; it does not replace the external check or the search around it.
+\end{remark}
+
 \section{The Evolutionary Loop}
 \label{section:EvolutionaryLoop}
 

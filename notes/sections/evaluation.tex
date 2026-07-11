@@ -259,6 +259,14 @@ An inconsistent harness produces incomparable leaderboard entries.
 Beyond this course's numeric harness, the field compares agents on shared \emph{capability benchmarks} --- SWE-bench for resolving real GitHub issues, and WebArena and related suites for web tasks --- so a claim that ``my agent scores $X$'' is a claim against a named, public harness with its own contract (Anthropic, 2025--2026).
 The mean-squared-error-plus-parsimony harness built here is one domain-specific instance of that general practice, not a different kind of thing: the discipline --- a sealed test set, a stable interface, a leakage-resistant score --- is the same at any scale.
 
+\begin{remark}
+A harness contract says nothing about \emph{where} the score is computed, but that choice shapes what is buildable.
+Some evaluators are portable: self-contained code with standard dependencies runs in any fresh sandbox, which is why an ephemeral cloud environment can evaluate it and why it is the easiest to share and reproduce.
+Others are infrastructure-bound: a compiled simulator with a non-trivial build, a GPU kernel, a licensed tool, or a run whose fitness signal is a long wall-clock measurement cannot be provisioned on demand.
+Part of harness design is deciding which the fitness signal genuinely requires --- then pinning that environment (Chapter~\ref{chapter:AgenticCoding}) so the score means the same thing every time, and sandboxing it (Chapter~\ref{chapter:EvolutionaryFrameworks}) so a tool-enabled optimizer cannot reach past it.
+The most informative signal is often the least portable, and that is not a defect: an evaluator that resists commoditization is exactly the part of a research harness a general platform cannot supply for you.
+\end{remark}
+
 \section*{Further Reading}
 
 \begin{small}

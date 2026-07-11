@@ -230,6 +230,13 @@ Together, these capabilities make a language model a plausible substrate for a r
 The course is concerned with doing this \emph{well}: reliably, reproducibly, and honestly.
 Doing it well requires a working rig --- the terminal, version control, and API access on which everything else rests --- and that is where the next chapter begins.
 
+\begin{remark}
+A fair question hangs over everything that follows: if the platform keeps improving --- automatic context management, better tool use, longer windows, models that reason before they act --- does the researcher's own engineering simply get absorbed?
+Part of it does, and should: generic prompt-crafting and transport-level tuning (how context is cached and ordered, when to compact a conversation) are being standardized into the platform, and a wise builder lets them be.
+What does not compress away is the part specific to your problem: the design of an evaluation that measures what \emph{you} mean by better, the curation of a corpus that encodes your field's judgment, and the architecture of the loop that composes these into something trustworthy.
+This is why the chapters ahead spend their effort on evaluation, grounding, and orchestration rather than on prompt wording --- the durable skill is building the parts a general system cannot know to build for you.
+\end{remark}
+
 \section*{Further Reading}
 
 \begin{small}
