@@ -112,6 +112,7 @@ main_result  -> conclusion     # the conclusion recaps the result and names futu
 
 ### Off-map files
 - **`abstract`** — front-matter summary of the whole note, not a node in the dependency chain.
+- **`rig_reference`** — appendix reference manual for the Claude Code CLI (leaf off `agentic_rig`); a deliberate product-surface snapshot, outside the conceptual dependency chain.
 
 ## Git
 

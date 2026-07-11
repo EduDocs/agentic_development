@@ -2,7 +2,9 @@
 \label{chapter:AgenticRig}
 % EVOLVE-BLOCK-START
 
-Before writing a single tool definition or system prompt, a researcher needs a working \emph{rig}: a set of interlocking tools that together make agentic work possible, legible, and reproducible.\index{Agentic rig}
+Six months into a project, an analysis pipeline stops reproducing its own results: the figures still render, but the numbers have drifted, and with no commit history there is no way to find the change that broke them --- or even to say when it happened.
+Nothing in the science went wrong; the working environment simply could not answer the question ``what changed?''
+Before writing a single tool definition or system prompt, a researcher therefore needs a working \emph{rig}: a set of interlocking tools that together make agentic work possible, legible, and reproducible.\index{Agentic rig}
 The rig is not glamorous — it is the terminal, the version control system, the API key, the editor — but it is the surface on which everything else rests.
 A shaky rig means untrustworthy results: work that cannot be reproduced, history that cannot be inspected, changes that cannot be understood.
 
@@ -166,6 +168,11 @@ The system prompt is to an agent what source code is to a program: it defines be
 
 When using Claude Code (the CLI tool used throughout this course), the system prompt is assembled from a hierarchy of \emph{instruction files}: a global user-level file, a project-level \code{CLAUDE.md}, and optionally directory-level overrides.\index{CLAUDE.md}
 Each layer narrows or extends the instructions of the layer above it.
+(Appendix~\ref{chapter:RigReference} tabulates the layers and the rest of the tool's command surface.)
+
+For a quantitatively minded reader, the right mental model for the instruction file is a \emph{compressed index} of the project --- a sufficient statistic, not a copy.
+It compresses the large state space of files, conventions, and past decisions into a short, information-dense summary that tells the agent \emph{where to look} and \emph{what patterns to expect}; the agent then reads the specific files it needs on demand rather than ingesting the repository.
+Per token of context consumed, a good instruction file buys far more correct decisions than raw source ever could --- which is why maintaining it as the project evolves pays for itself, and why Chapter~\ref{chapter:ContextEngineering} treats what enters the window as an engineering discipline of its own.
 
 \begin{example}
 A minimal project-level \code{CLAUDE.md}:
@@ -232,7 +239,7 @@ Validating tool outputs against an expected schema (Chapter~\ref{chapter:AgentLo
 No permission model eliminates the need for human judgment.
 The researcher is responsible for every change the agent makes.
 In practice, this means reading tool call arguments before approving them, reviewing diffs before committing, and stopping the agent when its actions diverge from intent.
-Chapter~\ref{chapter:AgenticCoding} develops the habit of \emph{reading every diff} as a professional discipline.
+Chapter~\ref{chapter:AgenticCoding} develops the habit of \emph{reading every diff} as a professional discipline, and the reliability machinery that lets an agent run unattended despite the rate limits and transient errors of Section~\ref{section:Models} is developed in Chapter~\ref{chapter:Orchestration}.
 
 \section*{Further Reading}
 

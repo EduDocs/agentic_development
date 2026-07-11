@@ -3,6 +3,7 @@
 % EVOLVE-BLOCK-START
 
 The loop described in Chapter~1 becomes concrete when the researcher must actually implement it.
+Building the loop yourself --- rather than configuring a pre-built one --- means understanding exactly what the agent can and cannot do, and knowing where to intervene when it fails.
 Building a research agent means writing tool definitions, choosing how to structure the control loop, specifying what the agent should return, and anticipating the ways the loop can fail.
 This chapter develops each of these in turn.
 Section~\ref{section:ToolDefinitions} covers tool definitions and their schemas; Section~\ref{section:ReAct} develops the ReAct control pattern that interleaves reasoning and action; Section~\ref{section:StructuredOutputs} shows how to constrain what the agent returns; and Section~\ref{section:FailureModes} catalogs the ways the loop breaks and how to guard against each.
@@ -179,14 +180,14 @@ Two mechanisms enforce structured output.
 \item \textbf{JSON mode / tool-use pattern.}
 The model is given a tool called \code{submit\_result} whose input schema is the desired output schema.
 The model must call this tool (with correctly typed arguments) to produce its final answer.
-Since the tool-calling layer validates arguments against the schema, malformed outputs are automatically rejected and the model is asked to try again.
+The tool-calling layer strongly guides the model toward schema-valid arguments, but on typical APIs this is not a hard server-side guarantee, so the calling code should still validate the received arguments and re-prompt on any mismatch.
 
 \item \textbf{Response parsing with retries.}
 The model is instructed to produce JSON matching a schema, and the calling code parses and validates the output.
 If validation fails, the calling code returns the validation error to the model and requests a corrected response.
 \end{enumerate}
 
-The first mechanism is preferable when the API supports it, because validation happens before the model commits to an output.
+The first mechanism makes schema-valid output far more likely and is preferable when the API supports it, but in both cases the calling code remains the authoritative validator.
 
 \section{Failure Modes}
 \label{section:FailureModes}

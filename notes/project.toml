@@ -13,7 +13,7 @@
 id = "local/agentic-development-notes"
 title = "Agentic Development in Research — Course Notes"
 target_score = 0.9      # stop early once the mean reviewer rubric reaches this
-max_attempts = 40       # per-branch attempt budget
+max_attempts = 10       # per-branch attempt budget
 
 [evaluation]
 review_timeout = 240    # seconds per reviewer backend call
@@ -53,6 +53,11 @@ model = "sonnet"
 persona = "pedagogy"
 backend_pref = ["claude"]
 model = "opus"
+
+[[evaluation.panel]]
+persona = "visual"
+backend_pref = ["claude"]
+model = "sonnet"
 
 # Authoritative elsewhere (own consumer; not duplicated here):
 #   strategies -> prompts/strategies.txt  (per-branch biases, read by run.sh)

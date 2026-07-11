@@ -1,15 +1,23 @@
-# nano-evolve strategies (LaTeX paper authoring)
+# nano-evolve strategies (course-notes authoring)
 #
 # One line per branch. Lines starting with # and blank lines are ignored.
-# run.sh expects at least N_BRANCHES (default 4) non-empty lines.
+# The launcher expects at least N_BRANCHES (default 1) non-empty lines.
+# Line 1 is the balanced default used by single-worker runs.
 #
 # Each branch authors the SAME manuscript from a different editorial bias, so
-# the population explores the paper's design space rather than converging on
+# the population explores the notes' design space rather than converging on
 # one editor's habits. A bias names (a) which REGISTER the branch tends to
 # push — the .md conceptual spine or the .tex shipped prose — and (b) what kind
 # of move it favors. Read PROGRESSION.md for the .md <-> .tex sidecar model.
 
-spine-exploration (.md-led): sketch theorems and promising directions in the sidecars first, harmonize the conceptual spine across sections, and only realize into prose once a direction is solid (lean on /md2tex)
-prose-crystallization (.tex-led): take the settled spine and write/sharpen the shipped prose — tighten statements, complete proofs, fix definitions — then feed concept changes back with /tex2md
-novelty-and-positioning: strengthen the contribution and its framing — sharpen what is new, position against prior work, add and wire up citations in references.bib (ground in resources/ papers)
-grounding-and-rigor: pull supporting results and techniques from the resources/ arXiv library to shore up proofs and assumptions, close logical gaps, and make every claim checkable
+panel-driven (balanced): read the latest reviewer feedback and close its highest-value items, in whichever register each item calls for — no standing bias; let the panel's critique choose the move
+spine-exploration (.md-led): sketch new directions and restructured arguments in the sidecars first, harmonize the conceptual spine across chapters, and only realize into prose once a direction is solid (lean on /md2tex)
+prose-crystallization (.tex-led): take the settled spine and write/sharpen the shipped prose — tighten definitions, sharpen principles, complete worked examples — then feed concept changes back with /tex2md
+citation-integrity: convert informal inline author-year mentions into real \cite keys against references.bib, resolve vague sources, and add independent corroborating references so no claim rests on a single vendor post
+grounding-and-rigor: pull techniques and citations from the resources/ library to shore up claims, verify code snippets run as written, close logical gaps, and make every claim checkable in-chapter
+visual-pedagogy: add or improve TikZ figures that make one relationship visible per chapter (shared visual language, self-contained captions, referenced from prose); target the chapters whose central abstraction still has no figure
+audience-fit: sweep for the cross-disciplinary reader — gloss acronyms at first use per chapter, bridge formal notation in plain language, replace CS-native assumptions with discipline-portable examples a biologist or economist can follow
+worked-examples: strengthen the worked-example spine — concrete numeric instances after abstract definitions, end-of-chapter connections to the Challenge the material serves, runnable snippets over pseudocode
+currency-sweep: verify claims against 2026 practice — hedge fast-moving results, name present-day defaults where the text only warns, and add recent developments a graduate student should know (scoped, with sources)
+referee-consistency: cross-chapter self-consistency — conventions stated identically at every use site (complexity counting, score sign, notation), promises in early chapters paid off later, no chapter contradicting another
+pedagogical-narrative: strengthen motivation and through-line — opening hooks before component lists, roadmaps and payoff sentences, transitions that carry the capability-ladder argument from chapter to chapter

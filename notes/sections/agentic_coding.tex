@@ -29,6 +29,11 @@ The loop is deliberately incremental.
 Each cycle should produce a small, reviewable change — not a thousand-line scaffolding dump.
 A change the researcher cannot fully read is a change the researcher cannot own.
 
+What makes the execute step more than fast code generation is the \emph{verification oracle}\index{Verification oracle}: the interpreter, test runner, or compiler the agent can invoke on its own output.
+In a chat interface, ``this code runs'' is a prediction; in an agentic rig it is a checked fact, and a failure returns a structured error signal — the line number, the type mismatch, the stack trace — that tells the agent exactly which assumption was violated.
+This is why the loop converges even when the first attempt is wrong: each run--fail--fix cycle is grounded feedback, denser and more reliable than any specification the researcher could have written up front.
+The same oracle, formalized as a scoring function, becomes the evaluation harness of Chapter~\ref{chapter:Evaluation}.
+
 \begin{principle}
 \label{principle:IncrementalDevelopment}
 Prefer small, reviewable changes over large, opaque ones.

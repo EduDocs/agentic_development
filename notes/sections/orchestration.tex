@@ -130,6 +130,15 @@ following check and report whether the claim is true or false:
 The verifier can catch mistakes the proposer made silently — here, the possibility that some feature values are zero or negative.
 \end{example}
 
+\subsection{Dynamic Sub-Agent Spawning}
+
+The proposer--critic topology above is \emph{static}: the agents and their wiring are fixed before the run begins.
+A more flexible pattern lets an \emph{orchestrator}\index{Orchestrator agent} agent spawn specialist sub-agents on demand --- calling a tool that launches a fresh agent instance with its own context window, tool set, and task, then collecting the result.
+This is how a single agent decomposes a large job at run time: a research orchestrator might spawn one sub-agent per candidate dataset, or one per section of a report, each working in an isolated context so that the orchestrator's own window is not flooded with intermediate detail.
+The reliability discipline of this chapter applies unchanged --- each spawned agent can fail, so its result must be validated and its failures surfaced (Section~\ref{section:Reliability}).
+Current agent SDKs (for example, Claude's agent SDK) expose this spawning as a built-in tool; it is the dynamic generalization of the fixed proposer--critic wiring.
+When parallel agents must \emph{write} --- not just analyze --- they also need isolated working directories so their changes cannot collide; the git-worktree pattern that provides this is described in Appendix~\ref{chapter:RigReference}.
+
 \section{Memory and State}
 \label{section:MemoryState}
 
@@ -187,6 +196,7 @@ A \emph{retry}\index{Retry} re-attempts a failed operation after a waiting perio
 
 \begin{lstlisting}[language=python]
 import time, random
+from anthropic import RateLimitError, APIError   # provider SDK exception types
 
 def with_retry(fn, max_attempts=5, base_delay=1.0):
     for attempt in range(max_attempts):
@@ -197,7 +207,7 @@ def with_retry(fn, max_attempts=5, base_delay=1.0):
                 raise
             delay = base_delay * (2 ** attempt) + random.uniform(0, 1)
             time.sleep(delay)
-    raise RuntimeError("with_retry requires max_attempts >= 1")
+    raise ValueError("with_retry needs max_attempts >= 1")
 \end{lstlisting}
 
 \subsection{Logging}
@@ -245,6 +255,9 @@ The \emph{generate–evaluate–select} (GES) loop is the procedure:
 \end{enumerate}
 \end{definition}
 
+Concretely: in round~1 the proposer generates five candidate expressions; the harness scores them $0.12$, $0.08$, $0.23$, $0.07$, $0.15$; with $k=2$ (and lower scores better), the selector retains the candidates scoring $0.07$ and $0.08$ as the elites that seed round~2.
+Every run of the loop is this small story repeated.
+
 This loop is an evolutionary algorithm in all but name.
 The one ingredient missing is a \emph{mutation operator}: a procedure that derives new candidates from the survivors rather than proposing from scratch.
 Adding mutation transforms the GES loop into the full generate→evaluate→select→\textbf{mutate} evolutionary loop of Chapter~\ref{chapter:EvolutionaryFrameworks}.
@@ -259,7 +272,7 @@ The pivot is not a new topic; it is an addition to a loop already understood.
 \item Hong, S., et al., ``MetaGPT: Meta Programming for a Multi-Agent Collaborative Framework,'' \emph{ICLR}, 2024 — a framework for structured multi-agent communication.
 \item Wu, Q., et al., ``AutoGen: Enabling Next-Gen LLM Applications via Multi-Agent Conversation,'' \emph{arXiv}, 2023 — a widely used orchestration library for multi-agent conversations.
 \item Chase, H., \emph{LangChain Documentation} — a survey of pipeline and memory patterns for LLM applications; available at \href{https://python.langchain.com}{python.langchain.com}.
-\item \emph{A note on the ecosystem:} the multi-agent framework landscape has fragmented rapidly (LangGraph, Claude's agent SDK, Swarm, and others), so treat the AutoGen and LangChain references above as historical anchors for the conversation and pipeline patterns rather than as current installation targets — check present adoption before committing to a framework.
+\item \emph{A note on the ecosystem:} the multi-agent framework landscape has fragmented rapidly, so treat the AutoGen and LangChain references above as historical anchors for the conversation and pipeline patterns rather than as current installation targets. As a reasonable present-day starting point aligned with the course's default stack, Claude's agent SDK; but the field moves quickly, so check current adoption before committing to any framework (LangGraph, Swarm, and others are also in active use).
 \item Workshop materials, \code{resources/claude-cli-workshop/} Lesson~04 — sub-agents, agent teams, and headless operation with Claude Code.
 \end{enumerate}
 \end{small}

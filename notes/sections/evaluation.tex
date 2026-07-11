@@ -23,6 +23,9 @@ An \emph{evaluation harness} is a tuple $(\mathcal{D}, \Score)$ where
 The score of artifact $a$ is $\Score(a, \mathcal{D}_{\mathrm{test}})$.
 \end{definition}
 
+A note on terminology: we write $a \in \Artifacts$ for a \emph{candidate artifact} --- in the symbolic-regression setting, a \emph{candidate expression} --- to keep it distinct from the language model $M$ of Chapter~\ref{chapter:ContextEngineering}.
+``Model'' in these notes always means the language model; the discovered symbolic expression is the candidate (or, once selected, the discovered model \emph{of the data}), and we flag the latter reading explicitly wherever it appears.
+
 The separation of training and test data, and the requirement that the score be computed on the test split alone, are the most important properties of the harness.
 They are also the easiest to violate accidentally.
 
@@ -36,6 +39,7 @@ Automatic evaluation — a numerical score computed without human judgment — h
 \end{enumerate}
 These properties are requirements for the evolutionary half of the course.
 An evaluation that requires human intervention cannot drive an automated search.
+The harness-based approach developed here suits the symbolic-regression vehicle of the course, where quality reduces to predictive error and parsimony; research tasks whose quality is inherently qualitative require the LLM-as-judge or human evaluation of Section~\ref{section:LLMJudge} instead.
 
 \subsection{What Counts as a Good Score}
 
@@ -69,6 +73,36 @@ The test split is sealed inside the harness; the agent never sees it.
 \emph{Leakage}\index{Leakage} is the unintended exposure of test-set information to the artifact during its construction.
 Leakage inflates test scores, making a weak artifact appear strong.
 Its consequences are especially severe when a harness is used as a fitness function: an evolutionary search that optimizes a leaking harness will produce artifacts that score well on leaked tests and poorly in the real world.
+Figure~\ref{figure:Leakage} shows the sanctioned data flow and the forbidden path that defines leakage.
+
+\begin{figure}[htb!]
+\begin{center}
+\begin{tikzpicture}[
+    node distance=1.1cm and 1.6cm,
+    box/.style={draw, rounded corners=4pt, minimum width=2.6cm,
+                minimum height=0.8cm, align=center, font=\small},
+    arr/.style={->, >=stealth', thick},
+    leak/.style={->, >=stealth', thick, dashed, red}
+]
+\node[box, fill=gray!15]                                  (data)  {dataset $\mathcal{D}$};
+\node[box, fill=blue!15,   below left=1.1cm and 0.9cm of data]  (train) {$\mathcal{D}_{\mathrm{train}}$};
+\node[box, fill=orange!20, below right=1.1cm and 0.9cm of data] (test)  {$\mathcal{D}_{\mathrm{test}}$ (sealed)};
+\node[box, fill=green!20,  below=1.3cm of train]          (agent) {agent constructs\\candidate $a$};
+\node[box, fill=gray!15,   below=1.3cm of test]           (score) {$\Score(a, \mathcal{D}_{\mathrm{test}})$};
+\draw[arr] (data)  -- node[above left, font=\scriptsize]{split first} (train);
+\draw[arr] (data)  -- (test);
+\draw[arr] (train) -- (agent);
+\draw[arr] (test)  -- (score);
+\draw[arr] (agent) -- node[above, font=\scriptsize]{$a$} (score);
+\draw[leak] (test) -- node[above, sloped, font=\scriptsize]{leakage (forbidden)}
+                      node[midway, font=\large]{$\times$} (agent);
+\end{tikzpicture}
+\caption{The sanctioned data flow of an evaluation harness, and the one forbidden path.
+The dataset is split before any modeling; only $\mathcal{D}_{\mathrm{train}}$ reaches the agent, and the sealed test split is used exactly once, in the final scoring step.
+\emph{Leakage} is any influence of $\mathcal{D}_{\mathrm{test}}$ on how the candidate is built or selected (dashed red): every form in the example above --- scoring on training data, whole-dataset feature construction, adaptive re-splitting --- is a disguised version of this arrow, and each inflates the score in violation of Principle~\ref{principle:TestSplitInviolable}.}
+\label{figure:Leakage}
+\end{center}
+\end{figure}
 
 \begin{example}
 Common forms of leakage, in increasing subtlety:
@@ -178,6 +212,19 @@ Counting fitted parameters, not just nodes, closes the loophole.
 
 Recognizing these attack surfaces in advance and closing them in the harness design is the primary defense.
 
+\section{LLM-as-Judge Evaluation}
+\label{section:LLMJudge}
+
+Not every research output can be scored by a formula.
+When the artifact is a proof sketch, a literature summary, a piece of code judged for quality, or an experimental design, there is no ground-truth vector against which to compute an MSE.
+The \emph{LLM-as-judge}\index{LLM-as-judge} pattern fills this gap: a capable model is given the candidate output and a rubric, and returns a score --- often with a justification --- for each criterion.
+This is the same harness contract of Definition~\ref{definition:EvalHarness}, with the scoring function realized by a model call rather than a numerical metric, and it is the standard way to evaluate open-ended agentic outputs where an automatic metric cannot be constructed~(Zheng et al., 2023).
+
+The power comes with a characteristic risk: the judge's biases become the harness's biases.
+A judge model may prefer verbose answers, favor its own stylistic habits, be sensitive to the order in which candidates are presented, or itself be vulnerable to prompt injection from the content it is scoring.
+The mitigations mirror those for any harness: pin the judge model and rubric, calibrate the judge against a small human-scored set, and prefer relative judgments (is $A$ better than $B$?) to absolute scores where possible.
+Because a judge is itself a target for the optimizer, Principle~\ref{principle:GoodhartsLaw} applies with full force --- an evolutionary search will find and exploit a weak judge as readily as a weak metric.
+
 \section{The Harness as a Contract}
 \label{section:HarnessContract}
 
@@ -203,6 +250,7 @@ An inconsistent harness produces incomparable leaderboard entries.
 \begin{enumerate}
 \item \texttt{benchmarks/README.md} in the course repository — the specification of the shared harness, including the parsimony weight and the leaderboard format.
 \item Kapoor, S., and Narayanan, A., ``Leakage and the Reproducibility Crisis in Machine Learning,'' \emph{PLOS ONE}, 2023 — an empirical survey of leakage in published ML results.
+\item Zheng, L., et al., ``Judging LLM-as-a-Judge with MT-Bench and Chatbot Arena,'' \emph{NeurIPS}, 2023 — the reference study on using a strong model as an evaluator, including its biases and calibration.
 \item Sculley, D., Snoek, J., Wiltschko, A., and Rahimi, A., ``Winner's Curse? On Pace, Progress, and Empirical Rigor,'' \emph{ICLR Workshop}, 2018 — a widely cited call for evaluation discipline and honest empirical comparison in machine learning.
 \end{enumerate}
 \end{small}

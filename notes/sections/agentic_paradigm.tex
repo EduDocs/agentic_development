@@ -126,7 +126,7 @@ The arrows indicate this dependency order.}
 
 \paragraph{Operate.}
 The foundation is being able to drive an existing agent reliably and reproducibly.
-The habit that most predicts downstream fluency here is deceptively plain --- stating the objective before the agent acts (Anthropic, 2025) --- so this rung trains goal clarity before any tooling.
+The habit most worth instilling first is deceptively plain --- stating the objective before the agent acts --- which appears to track downstream proficiency more closely than knowledge of any particular feature (Anthropic, 2025); so this rung trains goal clarity before any tooling.
 This means working from the terminal, using version control, accessing a model through an API, and giving the agent instructions that produce predictable, revisable results.
 Many researchers skip this rung and never develop the habit of \emph{reading every change} the agent makes — a deficit that grows more costly with each rung climbed.
 
@@ -160,7 +160,9 @@ Evaluation is therefore introduced when the student first builds an agent (Chall
 The key moment comes at the capstone pivot: the evaluation harness, which has been used to \emph{compare methods}, is now used to \emph{drive search}.
 Nothing about the harness changes; its role changes.
 This transition — evaluation becoming fitness — is the conceptual hinge of the course.
-There is also an empirical reason evaluation is promoted to a spine rather than left to habit: analyses of large corpora of human--agent interaction find that some competences (shaping context, reusing a project setup) accrue with mere exposure, whereas the discernment to catch a wrong assumption or a plausible-but-false claim does not tend to grow on its own (Anthropic, 2025), so it must be taught deliberately and revisited at every rung.
+There is also a pedagogical reason evaluation is promoted to a spine rather than left to habit.
+Not every competence is learned the same way: some --- shaping context, reusing a project setup --- tend to accrue with ordinary exposure, whereas the discernment to catch a wrong assumption or a plausible-but-false claim shows little tendency to grow on its own, an asymmetry consistent with Anthropic's analysis of how researchers use these tools (Anthropic, 2025).
+Because discernment does not come free with practice, it must be taught deliberately and revisited at every rung.
 
 \begin{principle}
 \label{principle:EvalFitness}
@@ -188,6 +190,7 @@ Three capabilities combine to make this shift significant.
 Modern language models follow complex, nuanced instructions expressed in natural language with high reliability.
 An agent builder need not program the model's behavior in code; they write a system prompt.
 This dramatically lowers the cost of specifying what an agent should do.
+A geologist who wants an agent to download seismic records, filter them by magnitude, and produce a summary figure writes that goal in plain English --- not in a programming language the geologist may not speak fluently.
 
 \paragraph{Tool use.}
 Tool-calling capability, now standard in frontier models, allows a language model to take actions in the world — reading files, running code, searching the web — and incorporate the results into subsequent reasoning.
@@ -208,7 +211,7 @@ Doing it well requires a working rig --- the terminal, version control, and API 
 \item Yao, S., et al., ``ReAct: Synergizing Reasoning and Acting in Language Models,'' \emph{ICLR}, 2023 — the canonical formalization of the observe–reason–act loop.
 \item Anthropic, \emph{Claude's Tool Use Guide}, available at \href{https://docs.anthropic.com}{docs.anthropic.com} — the practical tool-calling interface used throughout the course.
 \item Wang, L., et al., ``A Survey on Large Language Model Based Autonomous Agents,'' \emph{Frontiers of Computer Science}, 2024 — a comprehensive taxonomy of agent architectures.
-\item Anthropic, \emph{The AI Fluency Index} and the accompanying AI-fluency framework, 2025 — a corpus study of human--agent interaction identifying the behaviors (goal clarity, discernment) that most predict proficiency; the source for the substrate-properties and organic-versus-deliberate framing used in this chapter.
+\item Anthropic, \emph{AI Fluency} (the four-properties and the four-competency ``4Ds'' framing) together with its accompanying analysis of agent-usage patterns, 2025 — the source for this chapter's substrate-properties framing and for the observation that goal clarity and discernment track proficiency more than feature knowledge does.
 \end{enumerate}
 \end{small}
 % EVOLVE-BLOCK-END

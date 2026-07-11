@@ -9,7 +9,9 @@
 % (not just in listings): cleaner glyphs, better 0/O and 1/l/I
 % distinguishability, and a proper straight quote glyph — the standard
 % modern choice for LaTeX code listings.
-\usepackage{inconsolata}
+% varqu selects the straight-quote glyph variants (the default is curly,
+% which silently corrupts quotes in every code listing).
+\usepackage[varqu]{inconsolata}
 \usepackage{amsmath,amssymb,amsthm}
 \usepackage{booktabs}
 \usepackage{makeidx}
@@ -94,6 +96,9 @@
   % spaces used to align trailing "# comment" annotations.
   columns=fullflexible,
   keepspaces=true,
+  % the upquote package only reaches listings when this option is set;
+  % without it, straight quotes in code render as curly typographic quotes.
+  upquote=true,
   showstringspaces=false,
   tabsize=4,
   breakautoindent=true,
@@ -117,10 +122,10 @@
   literate=
     {—}{{-{}-{}-}}1
     {–}{{-{}-}}1
-    {'}{{\textquoteright}}1
-    {'}{{\textquoteleft}}1
-    {"}{{\textquotedblright}}1
-    {"}{{\textquotedblleft}}1,
+    {’}{{\textquoteright}}1
+    {‘}{{\textquoteleft}}1
+    {”}{{\textquotedblright}}1
+    {“}{{\textquotedblleft}}1,
 }
 
 \makeindex
@@ -151,6 +156,9 @@
 \include{sections/retrieval}
 \include{sections/orchestration}
 \include{sections/evolutionary_frameworks}
+
+\appendix
+\include{sections/rig_reference}
 
 \printindex
 

@@ -119,6 +119,8 @@ At query time: embed the query, search the index for the $k$ nearest passage vec
 A minimal retrieval index using NumPy:
 \begin{lstlisting}[language=python]
 class FlatIndex:
+    # embed_fn: any embedding API call, e.g.
+    #   lambda p: client.embeddings.create(input=p, model=...).data[0].embedding
     def __init__(self, passages, embed_fn):
         self.passages = passages
         self.vectors  = np.array([embed_fn(p) for p in passages])
@@ -128,7 +130,7 @@ class FlatIndex:
         self.vectors = self.vectors / norms
 
     def query(self, q_vec, k=5):
-        q_norm = q_vec / np.linalg.norm(q_vec)
+        q_norm = q_vec / np.maximum(np.linalg.norm(q_vec), 1e-12)
         scores = self.vectors @ q_norm
         top_k  = np.argsort(scores)[::-1][:k]
         return [(self.passages[i], float(scores[i])) for i in top_k]
@@ -225,7 +227,7 @@ Grounding is not always beneficial.
 It helps when the retrieved knowledge is relevant and the domain is well-understood; it hurts when the retrieved knowledge is irrelevant, misleading, or too strong a prior.
 
 \begin{example}
-A dataset generated from the formula $y = e^{-x_1^2} \sin(x_2)$ is unusual.
+A dataset generated from the formula $y = e^{-x_1^2} \sin(x_2)$ is unusual (a product of Gaussian decay and oscillation --- a functional form that rarely appears in domain corpora organized around named physical laws).
 If the corpus contains no entries about oscillatory-times-Gaussian forms, retrieval will return the nearest available match (perhaps a simple exponential decay), which could steer the agent away from the correct form.
 In this case, the ungrounded agent performs better than the grounded one because the domain prior is misaligned.
 \end{example}

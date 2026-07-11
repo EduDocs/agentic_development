@@ -37,12 +37,35 @@ The practical consequence is unchanged: if the agent behaves unexpectedly, look 
 
 The \emph{context window}\index{Context window} is the finite-length sequence that $M$ receives at a single invocation.
 Window sizes for frontier models in 2025–2026 range from roughly 100,000 to 1,000,000 tokens.
-This is large but not unlimited: a single research paper is roughly 10,000 tokens; a large codebase can exceed any window.
+This is large but not unlimited: a dense academic paper runs roughly 8{,}000--15{,}000 tokens and a book-length monograph 150{,}000--500{,}000, while a large codebase can exceed any window.
 These figures are best read as a point on a fast-moving trajectory rather than a fixed ceiling: the first 100,000-token window was itself a frontier result in 2023, an order-of-magnitude jump over the few thousand tokens available shortly before (Anthropic, 2023), and the limit has kept climbing since.
 The practical lesson survives each increase --- reason about how to \emph{use} a window rather than assume the next one will be large enough to make the question moot.
 
 Even within the window, not all tokens are equal.
-Empirical studies consistently find \emph{recency bias} (later tokens receive more weight) and \emph{primacy bias} (early tokens, particularly system-prompt content, also receive elevated attention), with a \emph{lost-in-the-middle} effect (Liu et al., 2024) where relevant information buried in the center of a long context is underused.
+Empirical studies consistently find \emph{recency bias} (later tokens receive more weight) and \emph{primacy bias} (early tokens, particularly system-prompt content, also receive elevated attention), with a \emph{lost-in-the-middle} effect (Liu et al., 2024) where relevant information buried in the center of a long context is underused (Figure~\ref{figure:LostInTheMiddle}).
+
+\begin{figure}[htb!]
+\begin{center}
+\begin{tikzpicture}[font=\small]
+% effective-use curve (U-shape) above the window bar
+\draw[->, >=stealth'] (0,1.0) -- (0,2.9) node[rotate=90, anchor=south east, font=\scriptsize, yshift=2pt]{effective use};
+\draw[thick] (0.15,2.55) .. controls (3.8,1.15) and (7.6,1.15) .. (11.25,2.55);
+\node[font=\scriptsize, anchor=south] at (0.7,2.55)   {primacy};
+\node[font=\scriptsize, anchor=south] at (10.7,2.55)  {recency};
+\node[font=\scriptsize, anchor=north] at (5.7,1.45)   {lost in the middle};
+% the context window as a segmented bar
+\draw[fill=blue!15]   (0,0)    rectangle (2.2,0.7);  \node at (1.1,0.35)  {\scriptsize system prompt};
+\draw[fill=green!20]  (2.2,0)  rectangle (4.3,0.7);  \node at (3.25,0.35) {\scriptsize instructions};
+\draw[fill=gray!15]   (4.3,0)  rectangle (8.6,0.7);  \node at (6.45,0.35) {\scriptsize documents, tool results, history};
+\draw[fill=orange!20] (8.6,0)  rectangle (11.4,0.7); \node at (10.0,0.35) {\scriptsize recent turns $+$ query};
+\node[anchor=north, font=\scriptsize] at (5.7,-0.15) {position in the context window $\longrightarrow$};
+\end{tikzpicture}
+\caption{Positions in the context window are not used equally.
+Content near the beginning (primacy) and end (recency) is used reliably; content buried in the middle of a long context is underused --- the lost-in-the-middle effect (Liu et al., 2024).
+The practical rule follows directly from the curve's shape: place load-bearing information near the edges of the window, or point to it explicitly in the instruction, rather than trusting the model to find it in the middle.}
+\label{figure:LostInTheMiddle}
+\end{center}
+\end{figure}
 
 \begin{remark}
 The lost-in-the-middle effect implies that simply extending the context window does not proportionally extend the effective working memory of the model.
@@ -53,7 +76,7 @@ Structuring the context so that the most important information appears near the 
 \subsection{Temperature and Sampling}
 
 The model samples an action from the distribution $M(\mathcal{C})$.
-The \emph{temperature}\index{Temperature} parameter divides the logits by the temperature before the softmax: a temperature of~0 produces deterministic (greedy) output, and higher temperatures flatten the distribution and produce more varied output.
+The \emph{temperature}\index{Temperature} parameter divides the logits by the temperature before the softmax; the limiting case of temperature~0 is taken to mean deterministic greedy selection of the highest-logit token (the argmax) rather than a literal division by zero, and higher temperatures flatten the distribution and produce more varied output.
 
 For most agentic tasks, low temperature (0--0.3) is preferred: the agent should follow instructions precisely rather than improvising.
 Higher temperatures are appropriate when the goal is to generate diverse candidates — for example, during the proposal step of an evolutionary search (Chapter~\ref{chapter:EvolutionaryFrameworks}).
@@ -183,6 +206,13 @@ MCP is an open client--server protocol: a \emph{server} exposes tools, resources
 Its value is composability.
 A single database server, documentation server, or issue-tracker server, written once, works across every client that speaks the protocol, rather than being re-implemented as a bespoke hook per project.
 In the vocabulary of this chapter, MCP is automated context management with a standard interface: it is the protocol-level counterpart to the \code{CLAUDE.md} hierarchy, supplying tools and retrievable resources on demand where the instruction file supplies static conventions.
+
+\subsection{Prompt Caching}
+
+Much of an agent's context is stable across calls: the system prompt, the instruction files, and any large reference document injected for the task.
+\emph{Prompt caching}\index{Prompt caching} lets the API layer store this stable prefix so that later calls in the same loop pay only for the new tokens, rather than reprocessing the whole prefix each time.
+For a single request the saving is modest.
+For an evolutionary run that fires hundreds of mutation calls against the same domain corpus and system prompt (Chapter~\ref{chapter:EvolutionaryFrameworks}), caching is often the single largest cost lever, and it ties the context-engineering discipline of this chapter directly to the cost-aware search of Section~\ref{section:CostAwareSearch}.
 
 \section{Measuring Context Quality}
 \label{section:ContextQuality}

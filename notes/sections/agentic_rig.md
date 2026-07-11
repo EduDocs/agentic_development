@@ -17,12 +17,15 @@ in the order a new user meets it, and argue why each makes work trustworthy.
 - Model selection axes for agentic work: context window, tool-use quality, instruction following, cost.
 
 ## Directions
-- Cross-link the permissions/least-privilege material forward to Ch.4 (read-every-diff) and Ch.8 (rate-limit reliability) so the rig's payoffs are explicit.
+- (no open prose directions; roadmap, prompt injection, computer use, and the forward cross-links all realized — see Decisions)
 
 ## Decisions
 - 2026-07-10: rig presented in encounter order (terminal → git → API → instruction files → permissions) rather than by importance, matching the onboarding Tasks; grounded in the vendored claude-cli-workshop.
 - 2026-07-10 (realized in prose): added the **chapter roadmap** (one clause per section, with `\ref` links) after the opening.
 - 2026-07-10 (realized in prose, currency): added a **§Untrusted Inputs and Prompt Injection** subsection to §Permissions — tool results / fetched pages / retrieved passages are untrusted text the model cannot distinguish from researcher instructions; least privilege (Principle~LeastPrivilege) is the primary structural defense, with schema validation (Ch.5) and human-in-the-loop as complements. **Computer use** as a tool type was added in Ch.1 §Tools (screenshot + keyboard/mouse vs named-API tools), the more natural home than the rig chapter.
+- 2026-07-10 (realized in prose): absorbed the workshop's **compressed-index framing** into §CLAUDE.md — the instruction file as a sufficient statistic of the project (where to look + what patterns to expect; more correct decisions per token than raw source), wired forward to Ch.3; added the pointer to the new **Appendix (rig_reference)** which now holds the command-level Claude Code detail so this chapter stays concept-register.
+- 2026-07-10 (realized in prose, clarity): the chapter now **opens with a motivating story** (a pipeline that stops reproducing its own results six months in, with no commit history to interrogate) *before* the component list — converts the reference-guide opening into a chapter the reader wants, per the clarity panel.
+- 2026-07-10 (realized in prose): closed the **forward cross-links** from §Permissions/§Human-in-the-Loop — read-every-diff (Ch.4) and the reliability machinery for rate limits / transient errors (Ch.8) are now named, so the rig's payoffs are explicit.
 <!-- EVOLVE-BLOCK-END -->
 
 ## Open questions

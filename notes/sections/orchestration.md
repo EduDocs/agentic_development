@@ -22,7 +22,10 @@ assemble the GES loop that is one ingredient short of evolution.
 ## Decisions
 - 2026-07-10: the propose→evaluate→select loop is deliberately named and boxed as a Definition so the Ch.9 pivot is "add one ingredient to a known object," not a new topic.
 - 2026-07-10 (realized in prose): added the **chapter roadmap** after the opening; **tightened the GES→evolution handoff** — Ch.9 §EvolutionaryLoop now opens by citing Def.~GenEvalSel directly ("already in place; this chapter adds the one missing ingredient"), closing the loose-restatement the clarity panel flagged.
-- 2026-07-10 (realized in prose): hedged the **AutoGen/LangChain** Further Reading entries (ecosystem fragmented — LangGraph, Claude agent SDK, Swarm — treat as historical anchors); added a trailing `raise RuntimeError` to `with_retry` so it cannot silently return `None` for `max_attempts <= 0` (rigor nit).
+- 2026-07-10 (realized in prose): hedged the **AutoGen/LangChain** Further Reading entries (ecosystem fragmented — LangGraph, Claude agent SDK, Swarm — treat as historical anchors); added a trailing `raise` to `with_retry` so it cannot silently return `None` for `max_attempts <= 0` (rigor nit; message reworded to match the case it actually fires on, and the `RateLimitError/APIError` import added so the snippet runs as written).
+- 2026-07-10 (realized in prose, clarity): added a **concrete GES instance** right after Def.~GenEvalSel — five proposed expressions scored 0.12/0.08/0.23/0.07/0.15, $k{=}2$ selector keeps 0.07 and 0.08 as round-2 elites — so the definition is visceral at introduction and Ch.9's worked example has a lighter load.
+- 2026-07-10 (realized in prose): §Dynamic Sub-Agent Spawning now points at the **git-worktree isolation pattern** in the new Appendix (rig_reference) for parallel agents that write, closing the gap between the topology diagram and the physical infrastructure.
+- 2026-07-10 (realized in prose, currency): added a **§Dynamic Sub-Agent Spawning** subsection — an orchestrator spawns specialist sub-agents on demand (fresh context/tools per agent), the dynamic generalization of the static proposer–critic wiring; reliability discipline applies unchanged; names Claude's agent SDK as the concrete reference and as a reasonable present-day default (giving the framework hedge a positive starting point).
 <!-- EVOLVE-BLOCK-END -->
 
 ## Open questions

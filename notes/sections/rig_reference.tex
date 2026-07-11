@@ -1,0 +1,149 @@
+\chapter{The Rig in Practice: A Claude Code Reference}
+\label{chapter:RigReference}
+% EVOLVE-BLOCK-START
+
+This appendix is a working reference for Claude Code, the agentic CLI used throughout the course --- the concrete counterpart to the rig concepts of Chapter~\ref{chapter:AgenticRig}.\index{Claude Code}
+The chapters deliberately teach concepts that outlive any particular tool; this appendix deliberately does the opposite, collecting the command-level detail you need at the keyboard.
+Product surfaces change faster than concepts: treat this appendix as a snapshot (Fall 2026), verify against the current documentation at \href{https://docs.anthropic.com}{docs.anthropic.com} when something disagrees, and see the course's vendored workshop (\code{resources/claude-cli-workshop/}) for the guided version of this material with exercises.
+
+\section{Launching and Sessions}
+
+Claude Code runs \emph{in} your terminal and inherits your shell environment --- your \code{PATH}, your environment variables, your working directory, your git configuration.
+The directory you launch from is the project context (Section~\ref{section:InstructionFiles}), so start it from the project root.
+
+\begin{center}
+\begin{tabular}{ll}
+\toprule
+Command & Effect \\
+\midrule
+\code{claude}                          & start an interactive session in this directory \\
+\code{claude -c}                       & continue the most recent session here \\
+\code{claude -r}                       & open the session picker (search, preview, resume) \\
+\code{claude -p "..."}                 & non-interactive: run one prompt, print, exit \\
+\code{claude -{}-model <name>}           & choose the model at launch \\
+\code{claude -{}-permission-mode plan}   & start in read-only plan mode \\
+\code{claude -{}-add-dir <path>}         & grant access to a directory outside the project \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+A session's conversation history persists on disk and is restored on resume; the context-window cost of that history persists too, so long resumed sessions may need compaction (\code{/compact}, below).
+Sessions are filed under the directory they were started from --- work from the project root and the session list stays organized by project.
+
+\section{Permission Modes}
+
+Chapter~\ref{chapter:AgenticRig} introduced the layered permission model (Principle~\ref{principle:LeastPrivilege}); Claude Code exposes it as three interactive modes, cycled with \code{Shift+Tab}:
+
+\begin{itemize}
+\item \textbf{Normal} --- the agent asks before editing files or running commands; you approve each action.
+\item \textbf{Auto-accept} --- file edits apply without prompting; commands still follow the configured permission rules. The productive middle ground once a plan is agreed.
+\item \textbf{Plan} --- read-only. The agent can explore and propose but cannot change anything. Use it for anything touching more than a couple of files, before granting write access.
+\end{itemize}
+
+The plan-then-execute workflow is the practical form of the specify--execute--read loop of Chapter~\ref{chapter:AgenticCoding}: enter plan mode, describe the goal, refine the proposed plan, then switch modes and let the agent execute the plan it already committed to.
+
+Standing rules live in \code{.claude/settings.json}, which is committed to the repository so a team shares one trust configuration:
+
+\begin{lstlisting}[language=json]
+{
+  "permissions": {
+    "allow": ["Bash(git status)", "Bash(pytest *)"],
+    "deny":  ["Read(.env)", "Read(secrets/**)"]
+  }
+}
+\end{lstlisting}
+
+The \code{allow} list removes prompts for named commands; the \code{deny} list makes files unreadable to the agent regardless of mode --- the right home for credentials and raw data that no session should touch.
+
+\section{Instruction File Layers}
+
+The instruction hierarchy of Section~\ref{section:InstructionFiles} is realized as stacked \code{CLAUDE.md} files; more specific layers extend or override broader ones.
+
+\begin{center}
+\begin{tabular}{llll}
+\toprule
+Layer & Location & Scope & Shared? \\
+\midrule
+Global       & \code{\textasciitilde/.claude/CLAUDE.md} & every project      & no (personal) \\
+Project      & \code{./CLAUDE.md}                       & this repository    & yes (committed) \\
+Local        & \code{./CLAUDE.local.md}                 & this repository    & no (gitignored) \\
+Subdirectory & \code{src/api/CLAUDE.md}                 & that module        & yes (committed) \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Subdirectory files load on demand --- only when the agent works with files in that directory --- which keeps module-specific rules from occupying the window (Chapter~\ref{chapter:ContextEngineering}) on unrelated tasks.
+\code{/init} generates a starter project file by analyzing the repository; edit it rather than accepting it verbatim.
+
+\section{In-Session Controls}
+
+Slash commands control the session itself rather than instructing the agent:
+
+\begin{center}
+\begin{tabular}{ll}
+\toprule
+Command & Effect \\
+\midrule
+\code{/init}     & generate a starter \code{CLAUDE.md} for the project \\
+\code{/model}    & switch models mid-session \\
+\code{/context}  & show how much of the context window is in use \\
+\code{/compact}  & summarize the conversation to reclaim window space \\
+\code{/clear}    & reset the conversation entirely \\
+\code{/cost}     & show token usage and cost for the session \\
+\code{/help}     & list available commands \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Two prefixes are worth internalizing.
+\code{!}~runs a shell command directly, without the agent interpreting it (\code{! git status}) --- useful for quick checks mid-session.
+\code{@}~pulls a file into focus (\code{@src/eval.py what does the scorer return?}), a manual form of the retrieval this course automates in Chapter~\ref{chapter:Retrieval}.
+
+\code{/context} and \code{/compact} are the manual face of the context management developed in Chapter~\ref{chapter:ContextEngineering}: check what occupies the window, and compact --- accepting the summarization loss --- when it fills.
+Starting a fresh session on a task switch is often the better move than compacting a sprawling one.
+
+\section{Headless Operation}
+
+The \code{-p} flag runs the agent non-interactively --- the building block for the scripted, unattended pipelines of Chapter~\ref{chapter:Orchestration}:
+
+\begin{lstlisting}[language=bash]
+claude -p "Fix the failing tests, then stop." \
+  --max-turns 10 \
+  --allowedTools "Read" "Edit" "Bash(pytest *)" \
+  --output-format json > result.json
+\end{lstlisting}
+
+Three flags do the safety work.
+\code{-{}-max-turns} bounds the loop (the timeout discipline of Chapter~\ref{chapter:Orchestration}); \code{-{}-allowedTools} grants exactly the tools the task needs (least privilege, made per-invocation); \code{-{}-output-format json} makes the result machine-readable so a harness --- not a human --- can consume it.
+An unattended agent has no human in the loop, so the permission configuration \emph{is} the supervision: headless runs deserve narrower allowlists than interactive ones, not broader.
+
+\section{Parallel Work with Git Worktrees}
+
+Git \emph{worktrees}\index{Worktree} give one repository several simultaneous working directories, each with its own checked-out branch and shared history:
+
+\begin{lstlisting}[language=bash]
+git worktree add ../proj-tests feature/add-tests
+git worktree add ../proj-docs  feature/update-docs
+# one agent per worktree, in separate terminals:
+#   (cd ../proj-tests && claude -p "Add the missing unit tests")
+#   (cd ../proj-docs  && claude -p "Update the API documentation")
+git merge feature/add-tests   # then merge and remove the worktrees
+git worktree remove ../proj-tests
+\end{lstlisting}
+
+This is the physical infrastructure for the multi-agent patterns of Chapter~\ref{chapter:Orchestration}: each parallel agent gets an isolated directory, so agents cannot overwrite each other's changes, and every result arrives as a branch a human can review before merging.
+
+\section{Extending the Agent}
+
+Three extension mechanisms recur in the course, listed here with their conceptual homes:
+
+\begin{itemize}
+\item \textbf{MCP servers} connect the agent to systems beyond the filesystem --- databases, issue trackers, web services --- as additional tools, using the protocol introduced in Chapter~\ref{chapter:ContextEngineering}. Configure per-project so the connection is shared and version-controlled; every added tool is also added attack surface for the prompt-injection risks of Chapter~\ref{chapter:AgenticRig}.
+\item \textbf{Skills} are markdown procedure files the agent reads before performing a recurring task --- a checklist it follows, invoked as a slash command. They are the lightweight precursor to the tool definitions of Chapter~\ref{chapter:AgentLoop}: instructions, not code.
+\item \textbf{Hooks} run your scripts at fixed points in the agent's lifecycle (before or after tool calls), enforcing policy mechanically --- lint after every write, log every command for audit. They implement guardrails the model cannot forget, because the harness, not the model, executes them.
+\end{itemize}
+
+Configuration details for all three change frequently; consult the current documentation rather than memorizing syntax.
+The durable idea is the division of labor: instruction files shape \emph{behavior}, permissions bound \emph{authority}, and hooks enforce \emph{invariants}.
+
+% EVOLVE-BLOCK-END
