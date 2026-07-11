@@ -99,7 +99,7 @@ using variables x0, x1, x2.
 The LLM might return \code{"x0 * exp(-x1 / x2)"} — a motivated variation informed by domain knowledge that a blind mutation would find only by chance.
 \end{example}
 
-This is the advantage that separates LLM-guided evolution from 1990s GP: the mutation operator has \emph{priors} about which variations are likely to be meaningful, and it can use \emph{domain context} to make those priors specific.
+This is the advantage that separates LLM-guided evolution from classical genetic programming — including mature libraries such as PySR, the GP-based symbolic-regression baseline on the course ladder (Table~\ref{table:BaselineLadder}), whose variation operators remain essentially blind tree edits: the LLM mutation operator carries \emph{priors} about which variations are likely to be meaningful, and it can use \emph{domain context} to make those priors specific.
 
 \subsection{Context Engineering for the Mutator}
 

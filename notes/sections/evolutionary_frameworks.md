@@ -17,15 +17,12 @@ components, and trace the FunSearch → AlphaEvolve → OpenEvolve lineage.
 - **Lineage**: FunSearch (programs, automatic evaluator) → AlphaEvolve (full algorithms, scaled) → OpenEvolve (hackable reference impl for the capstone). SR is the vehicle (auto-evaluable, domain-portable, interpretable, baselined); the **baseline ladder** positions the agent honestly against linear regression and PySR.
 
 ## Directions
-- **Fix cost-adjusted fitness.** As defined, $\tilde f(a) = f(a) + \alpha C$ with $C$ the *total run cost* is a constant shared by every artifact of a run, so it cannot reorder candidates *within* a run — yet the prose claims it "prefers a cheaper proposer." Either make $C = C(a)$ the **marginal** cost of producing/evaluating $a$, or explicitly scope $\tilde f$ to **cross-run/cross-model** comparison and say a shared additive $\alpha C$ does not reorder intra-run (baseline rigor + referee).
-- **Give $\alpha$ the same calibration treatment $\lambda$ gets** in Ch.6: units, a default, and how it trades against the MSE scale — referee flagged the asymmetry between the two multi-objective knobs.
-- **Replace the "1990s GP" strawman.** The real baseline students face is **PySR** (modern GP, already on the baseline ladder). Reframe the LLM advantage as *guided, domain-informed* mutation rather than a contrast with obsolete methods (baseline novelty).
-- **Hedge the fast-moving results**: add one-clause venue/date qualifiers to the AlphaEvolve-2025 "beats Strassen" and FunSearch claims so no statement outruns its source (referee).
 - **Add one end-to-end worked SR example** carried from the Ch.6 harness → Ch.8 GES → Ch.9 mutation, to make the "eval becomes fitness" hinge tangible rather than asserted (referee).
 
 ## Decisions
 - 2026-07-10: the chapter deliberately presents evolution as "orchestration + mutation" so the pivot inherits every reliability lesson from Ch.8; the two-spines convergence is stated at the mutator, the conceptual climax of the book.
-- 2026-07-10 (realized in prose): cost-adjusted fitness now uses the marginal $\mathrm{cost}(a)$ (renamed from $C$ to avoid clashing with complexity $C$), with prose explaining why a run-shared constant cannot reorder intra-run candidates; $\alpha$ given the same units/default/tradeoff treatment as $\lambda$. Still open: replace the "1990s GP" strawman with PySR; hedge AlphaEvolve/FunSearch claims; add one end-to-end worked SR example.
+- 2026-07-10 (realized in prose): cost-adjusted fitness now uses the marginal $\mathrm{cost}(a)$ (renamed from $C$ to avoid clashing with complexity $C$), with prose explaining why a run-shared constant cannot reorder intra-run candidates; $\alpha$ given the same units/default/tradeoff treatment as $\lambda$.
+- 2026-07-10 (realized in prose): **"1990s GP" strawman replaced.** The LLM-mutation advantage is now framed against the real ladder baseline — mature GP libraries such as **PySR**, whose variation operators remain essentially blind tree edits — rather than against obsolete methods; the contrast is *guided, domain-informed* mutation vs blind tree edits. AlphaEvolve ("beating Strassen \emph{in certain settings}", DeepMind 2025) and FunSearch (Romera-Paredes et al., DeepMind 2023) already carry venue/date tags and the settings hedge, so the fast-moving-results ask is satisfied.
 <!-- EVOLVE-BLOCK-END -->
 
 ## Open questions

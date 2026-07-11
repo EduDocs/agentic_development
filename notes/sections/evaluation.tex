@@ -165,6 +165,8 @@ The stronger and more persistent the optimizer, the more aggressively it will fi
 Designing a harness you would trust an adversary to attack is more reliable than designing one that looks good on the first round of benign candidates.
 \end{principle}
 
+The adage is \emph{Goodhart's Law}, after the economist Charles Goodhart, whose 1975 observation was that a statistical regularity collapses once it is adopted as a policy target; the compact formulation used here — that a measure under optimization ceases to measure what it once did — is due to Strathern (1997).
+
 Common attack surfaces in a model discovery harness:
 \begin{enumerate}
 \item \textbf{Trivial re-parameterization.} A parsimony term that counts nodes treats every fitted constant as one cheap node, even though a fitted constant is a real degree of freedom.
@@ -201,7 +203,7 @@ An inconsistent harness produces incomparable leaderboard entries.
 \begin{enumerate}
 \item \texttt{benchmarks/README.md} in the course repository — the specification of the shared harness, including the parsimony weight and the leaderboard format.
 \item Kapoor, S., and Narayanan, A., ``Leakage and the Reproducibility Crisis in Machine Learning,'' \emph{PLOS ONE}, 2023 — an empirical survey of leakage in published ML results.
-\item Sculley, D., et al., ``Challenging Common Assumptions in the Unsupervised Pretraining of Deep Neural Networks,'' \emph{ICML}, 2014 — a classic treatment of evaluation pitfalls in ML research.
+\item Sculley, D., Snoek, J., Wiltschko, A., and Rahimi, A., ``Winner's Curse? On Pace, Progress, and Empirical Rigor,'' \emph{ICLR Workshop}, 2018 — a widely cited call for evaluation discipline and honest empirical comparison in machine learning.
 \end{enumerate}
 \end{small}
 % EVOLVE-BLOCK-END

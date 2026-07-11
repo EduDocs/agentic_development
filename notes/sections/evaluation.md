@@ -17,14 +17,12 @@ fitness function in Ch.9. Establish leakage-resistance and eval-hacking defenses
 - **Harness as a contract** `(score, report)` — stable across Challenges 2–4 and reused unchanged as the Ch.9 fitness function. This is the mechanical realization of Spine 1.
 
 ## Directions
-- **Settle a single complexity measure.** The text currently offers two ("nodes in the expression tree" *or* "operations to evaluate") and then asserts the $f_1{=}2$, $f_2{=}5$ example without a counting rule. Pick **node count**, define it once where "complexity" first appears, and show the node counts that yield 2 and 5 (baseline rigor).
-- **Fix the "Trivial re-parameterization" exploit.** Replacing $2\cdot x$ with a fitted constant $c$ is *not* "the same model" — $c$ is constant in $x$, $2x$ is not. Restate as: a fitted coefficient $c\cdot x$ vs a literal $2\cdot x$ differ in node count under the parsimony term, so the metric rewards the re-parameterization even though the *function class* is unchanged (baseline rigor — this is a genuine logical error).
-- **Credit Goodhart** (Goodhart 1975 / Strathern 1997) at Principle~GoodhartsLaw — named and indexed but uncredited (novelty).
-- **Repair the Sculley 2014 citation** — its title ("Challenging Common Assumptions in the Unsupervised Pretraining...") does not support "a classic treatment of evaluation pitfalls." Replace with a correct leakage/reproducibility reference; Kapoor & Narayanan 2023 already carries the leakage claim (baseline referee).
+- (no open prose directions for this chapter; the rigor/novelty/referee items flagged at baseline are realized — see Decisions)
 
 ## Decisions
 - 2026-07-10: sign convention "lower is better" fixed in this chapter and carried through elitism (Ch.9) — rigor panel confirmed the manuscript is internally consistent on the convention, so do not disturb it.
-- 2026-07-10 (realized in prose): complexity now defined once as node count (with the $f_1{=}3$/$f_2{=}9$ counting shown); the "trivial re-parameterization" exploit restated correctly as node count undercounting fitted-constant degrees of freedom (the false "$c$ and $2x$ are the same model" claim is gone). Still open: Goodhart citation, Sculley 2014 replacement.
+- 2026-07-10 (realized in prose): complexity now defined once as node count (with the $f_1{=}3$/$f_2{=}9$ counting shown); the "trivial re-parameterization" exploit restated correctly as node count undercounting fitted-constant degrees of freedom (the false "$c$ and $2x$ are the same model" claim is gone).
+- 2026-07-10 (realized in prose): **Goodhart credited** at Principle~GoodhartsLaw — an attribution sentence names Charles Goodhart (1975, the policy-target collapse) and Strathern (1997, the compact "measure under optimization" formulation). **Sculley citation repaired** — the mis-titled "Challenging Common Assumptions..." reference is replaced by Sculley, Snoek, Wiltschko & Rahimi, "Winner's Curse? On Pace, Progress, and Empirical Rigor" (ICLR Workshop 2018), a correctly-titled, on-topic call for evaluation discipline.
 <!-- EVOLVE-BLOCK-END -->
 
 ## Open questions

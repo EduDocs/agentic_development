@@ -16,12 +16,11 @@ and why this course exists — in under a page.
 - Audience: some Python, high general ability, zero assumed background in agents/shell/git; the course starts there.
 
 ## Directions
-- Add one **curriculum-positioning** paragraph — what gap this fills versus a standard ML/NLP course or a vendor tools tutorial. This is the single missing Novelty statement for a course-notes document (baseline novelty panel).
 - Add a **chapter map** paragraph: one line per chapter stating its role, so students in a 14-week course can navigate non-linearly (baseline clarity panel).
-- State the two-spines framing explicitly as *the course's own pedagogical contribution* so the positioning claim is legible.
 
 ## Decisions
 - 2026-07-10: capability ladder + two spines chosen as the through-line; baseline referee/clarity confirmed the through-line is architecturally sound (Ch.1 sets it up, Ch.9 pays it off), so the preface should name both devices up front.
+- 2026-07-10 (realized in prose): added the **curriculum-positioning** paragraph — names the ladder + two spines as the notes' *organizing contribution* and positions the course between vendor tool tutorials (stop at operating) and standard ML/NLP courses (models without the build/orchestrate/evolve discipline). Closes the single missing Novelty statement; the two-spines framing is now stated as the course's own pedagogical contribution.
 <!-- EVOLVE-BLOCK-END -->
 
 ## Open questions
