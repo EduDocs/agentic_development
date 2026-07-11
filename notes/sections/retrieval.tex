@@ -162,7 +162,7 @@ The source reports a one-time cost on the order of a dollar per million document
 
 \subsection{The RAG Architecture}
 
-A \emph{retrieval-augmented} agent extends the basic loop with a retrieval step before each model invocation.\index{RAG architecture}
+A \emph{retrieval-augmented} agent extends the basic loop with a retrieval step before each model invocation (Figure~\ref{figure:RAGPipeline}).\index{RAG architecture}
 
 \begin{enumerate}
 \item The agent (or the loop) forms a query from the current task: ``What functional forms are commonly used to model population growth?''
@@ -171,6 +171,39 @@ A \emph{retrieval-augmented} agent extends the basic loop with a retrieval step 
 \item The passages are injected into the agent's context as domain knowledge.
 \item The agent reads the augmented context and produces a proposal conditioned on the retrieved information.
 \end{enumerate}
+
+\begin{figure}[htb!]
+\begin{center}
+\resizebox{\textwidth}{!}{%
+\begin{tikzpicture}[
+    node distance=0.85cm,
+    box/.style={draw, rounded corners=4pt, minimum width=2.3cm,
+                minimum height=1.0cm, align=center, font=\small},
+    store/.style={draw, dashed, rounded corners=3pt, fill=gray!8,
+                  minimum width=3.0cm, minimum height=1.0cm, align=center, font=\small},
+    arr/.style={->, >=stealth', thick}
+]
+\node[box, fill=blue!15]                   (q)     {query $q$};
+\node[box, fill=blue!8,    right=of q]      (qe)    {embed\\$\phi(q)$};
+\node[box, fill=green!20,  right=of qe]     (idx)   {vector index\\search};
+\node[box, fill=green!20,  right=of idx]    (topk)  {top-$k$\\passages};
+\node[box, fill=yellow!20, right=of topk]   (model) {model reads\\augmented context};
+\node[store, above=1.1cm of idx]            (corpus) {corpus $\mathcal{K}$ (sealed)\\chunk $+$ embed, offline};
+
+\draw[arr] (q)    -- (qe);
+\draw[arr] (qe)   -- node[above,font=\scriptsize]{$\phi(q)$} (idx);
+\draw[arr] (idx)  -- node[above,font=\scriptsize]{$k$-NN}    (topk);
+\draw[arr] (topk) -- node[above,font=\scriptsize]{inject}    (model);
+\draw[arr] (corpus) -- (idx);
+\end{tikzpicture}%
+}
+\caption{The retrieval-augmented generation pipeline.
+At query time (left to right) the query is embedded, matched against the vector index by $k$-nearest-neighbor search, and its top-$k$ passages are injected into the context the model reads.
+The corpus $\mathcal{K}$ is chunked and embedded once, offline (dashed), and sealed thereafter --- exactly the discipline of Section~\ref{section:VectorSearch}.
+Retrieval quality is set at the index-search step: an index that returns irrelevant passages spends context budget for no gain, and one that returns misleading passages actively steers the proposal wrong.}
+\label{figure:RAGPipeline}
+\end{center}
+\end{figure}
 
 The quality of the retrieval determines the quality of the grounding.
 A retrieval system that returns irrelevant passages wastes context budget; one that returns the wrong information can actively mislead the agent.

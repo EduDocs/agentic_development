@@ -37,28 +37,30 @@ Starting from $\Population_0$, the loop produces generations $\Population_1, \Po
 
 The key insight from~\eqref{equation:EvolutionaryLoop} is that the next generation is drawn from the union of (a) the survivors of the current generation (the \emph{elite}), and (b) mutations of those survivors.
 Good structure is not discarded — it is carried forward and explored around.
+Figure~\ref{figure:EvolutionaryLoop} draws the loop, with \emph{Mutate} shown as a node distinct from \emph{Generate}: mutation is the single operator absent from the generate--evaluate--select loop of Chapter~\ref{chapter:Orchestration}, and it is what makes the candidates depend on the survivors.
 
 \begin{figure}[htb!]
 \begin{center}
 \begin{tikzpicture}[
-    node distance=1.5cm and 2.0cm,
     box/.style={draw, rounded corners=4pt, minimum width=2.8cm,
                 minimum height=0.85cm, align=center, font=\small},
     arr/.style={->, >=stealth', thick}
 ]
-\node[box, fill=blue!15]   (gen)  {Generate / Mutate};
-\node[box, fill=green!20,  right=of gen]  (fit)  {Evaluate (Fitness)};
-\node[box, fill=orange!20, right=of fit]  (sel)  {Select};
-\node[box, fill=yellow!20, below=of gen]  (pop)  {Population $\Population_t$};
+\node[box, fill=yellow!20]              (pop) at (0, 2.4)   {Initial population $\Population_0$};
+\node[box, fill=blue!8]                 (gen) at (0, 0.8)   {Generate};
+\node[box, fill=blue!15]                (mut) at (0,-0.8)   {Mutate};
+\node[box, fill=green!20]               (fit) at (4.4, 0)   {Evaluate\\(Fitness)};
+\node[box, fill=orange!20]              (sel) at (4.4,-2.2) {Select};
 
-\draw[arr] (gen) -- node[above,font=\scriptsize]{candidates}  (fit);
-\draw[arr] (fit) -- node[above,font=\scriptsize]{scored}      (sel);
-\draw[arr] (sel) -- ++( 0,-2.25) -| node[pos=0.25,below,font=\scriptsize]{survivors $\Population_{t+1}$} (gen);
-\draw[arr] (pop) -- (gen);
+\draw[arr] (pop) -- node[right,font=\scriptsize]{seed} (gen);
+\draw[arr] (gen.east) -- node[above,font=\scriptsize,pos=0.55]{initial}    (fit);
+\draw[arr] (mut.east) -- node[below,font=\scriptsize,pos=0.55]{candidates} (fit);
+\draw[arr] (fit) -- node[right,font=\scriptsize]{scored} (sel);
+\draw[arr] (sel.south) -- ++(0,-0.8) -| node[pos=0.25,below,font=\scriptsize]{survivors $\Population_{t+1}$} (mut.south);
 \end{tikzpicture}
 \caption{The agentic evolutionary loop.
-The population is mutated to produce candidates; candidates are scored by the fitness function; survivors are selected to form the next generation.
-The fitness function is the evaluation harness built in Challenge~2.}
+An initial population seeds the \emph{Generate} step once; thereafter the steady-state cycle is evaluate~$\to$~select~$\to$~\emph{mutate}, and \emph{Mutate} --- not \emph{Generate} --- consumes the survivors, so each round's candidates are derived from the previous round's elite.
+Mutation is the one node absent from the generate--evaluate--select loop of Chapter~\ref{chapter:Orchestration}; the fitness function is the evaluation harness built in Challenge~2.}
 \label{figure:EvolutionaryLoop}
 \end{center}
 \end{figure}
