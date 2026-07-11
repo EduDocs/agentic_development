@@ -76,13 +76,9 @@
 \lstdefinelanguage{markdown}{
   sensitive=false,
 }
-% Fixed 80-column frame width, measured in the actual listings font/size (so
-% it stays correct if either changes) rather than stretching to \linewidth —
-% a short one-line snippet no longer sits in a box sized for a paragraph.
-\newlength{\lstlinewidth}
-\settowidth{\lstlinewidth}{\ttfamily\small
-  \detokenize{01234567890123456789012345678901234567890123456789012345678901234567890123456789}}
-
+% Code listings span the full text width (flush with the prose block on both
+% sides) and reserve a left gutter *inside* the frame for the line numbers, so
+% the numbers never straddle the frame rule.
 \lstset{
   % \upshape: without it, a listing inside an amsthm "plain"-style block
   % (Example, Theorem, ...) inherits that environment's italic body shape,
@@ -103,19 +99,21 @@
   tabsize=4,
   breakautoindent=true,
   frame=single,
-  linewidth=\lstlinewidth,
-  xleftmargin=0pt,
-  framexleftmargin=5pt,
+  % full text-width frame; xleftmargin == framexleftmargin puts the left frame
+  % rule exactly at the text margin while opening a gutter that holds the line
+  % numbers inside the frame instead of on the rule.
+  xleftmargin=2.7em,
+  framexleftmargin=2.7em,
   framexrightmargin=5pt,
-  framextopmargin=3pt,
-  framexbottommargin=3pt,
+  framextopmargin=4pt,
+  framexbottommargin=4pt,
   backgroundcolor=\color{gray!8},
   keywordstyle=\color{blue!70!black},
   commentstyle=\color{gray!70},
   stringstyle=\color{green!55!black},
   numbers=left,
   numberstyle=\tiny\color{gray},
-  numbersep=5pt,
+  numbersep=1.2em,
   % listings' tokenizer is not UTF-8-aware by default; teach it the
   % typographic punctuation that appears in code comments (em/en dash,
   % curly quotes) rather than requiring every listing to avoid them.
