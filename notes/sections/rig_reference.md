@@ -37,6 +37,7 @@ claude-cli workshop (`resources/claude-cli-workshop/`, source: `sandbox/Evolutio
 - 2026-07-10: the workshop's two durable conceptual gems were placed in chapters, not here —
   the verification-oracle framing (Ch.4) and CLAUDE.md-as-compressed-index (Ch.2) — since
   they are concept-register, not how-to-register.
+- 2026-07-11 (realized in prose, engineering-blog pass): added a **permission-ladder-middle-rung** Remark (OS sandboxing + auto mode, between Normal and skip-all) to Permission Modes; a **Skills progressive-disclosure** sentence to Extending the Agent; and created a **Further Reading** section (best-practices, auto-mode, sandboxing, agent-skills) — the appendix previously had none. All dated as product snapshots.
 <!-- EVOLVE-BLOCK-END -->
 
 ## Open questions

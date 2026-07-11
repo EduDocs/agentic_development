@@ -113,6 +113,7 @@ main_result  -> conclusion     # the conclusion recaps the result and names futu
 ### Off-map files
 - **`abstract`** — front-matter summary of the whole note, not a node in the dependency chain.
 - **`rig_reference`** — appendix reference manual for the Claude Code CLI (leaf off `agentic_rig`); a deliberate product-surface snapshot, outside the conceptual dependency chain.
+- **`cowork_reference`** — concept-level appendix on delegated agentic environments (Cowork, Codex); a leaf that draws on the capability ladder, the specify–review loop (`agentic_coding`), and Spine 1 (evaluation-becomes-fitness), but adds no new dependency the chapters rely on. A dated product-surface snapshot like `rig_reference`.
 
 ## Git
 

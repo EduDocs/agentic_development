@@ -93,6 +93,13 @@ A typical two-step tool use sequence:
 \end{lstlisting}
 \end{example}
 
+\begin{remark}
+A single turn need not carry a single tool call.
+When a task fans out into independent sub-tasks --- fitting five candidate expressions, or querying three data sources --- a frontier model can emit several tool calls in one response, and the loop executes them concurrently, appends all the results as a batch, and re-invokes the model once (Anthropic, 2025).
+This \emph{parallel tool calling}\index{Parallel tool calling} is the idiomatic way to run the fan-out patterns of Chapter~\ref{chapter:Orchestration}: the round trips collapse from one per call to one per batch, and the model reasons over the whole set of results together.
+The loop's obligations are unchanged --- each result is still validated at its own tool boundary --- but its accounting becomes per batch rather than per call.
+\end{remark}
+
 \section{The ReAct Pattern}
 \label{section:ReAct}
 
@@ -140,6 +147,8 @@ Second, it produces an \emph{audit trail}: by reading the thought steps, the res
 The ReAct pattern makes the thought step \emph{explicit}: the model is prompted to write its reasoning into the transcript before each action.
 Frontier \emph{reasoning models}\index{Reasoning model} --- Claude's extended thinking (Anthropic, 2025) and the o3-class models --- move this step inward, reasoning internally before emitting a tool call, so the thought becomes latent rather than a visible transcript entry.
 This is the same chain-of-thought mechanism introduced in Chapter~\ref{chapter:ContextEngineering}, now performed by the model on its own rather than elicited by a ``think step by step'' instruction.
+These two placements are complementary rather than exclusive: reasoning can happen \emph{before} the first action, as planning over the initial prompt, or \emph{during} the loop, as a deliberate step that reasons over a freshly returned tool result before the next call.
+The latter can be induced even without a reasoning model by exposing a no-op ``think'' tool --- a tool with no external effect whose only job is to give the model a scratchpad turn mid-loop --- which reportedly helps most in policy-heavy or long sequential-decision settings and little on simple parallel calls (Anthropic, 2025).
 A practical consequence is that hand-writing a \code{Thought:}/\code{Action:} scaffold buys little when the model already deliberates before acting; the builder's lever shifts from a prompt template to a \emph{thinking budget}\index{Thinking budget} --- a cap on how many reasoning tokens the model may spend before it must answer.
 The cost falls on the audit trail.
 When reasoning was an explicit transcript entry, the researcher could read \emph{why} each tool was called; when it is latent that record is gone, and even where the internal reasoning is surfaced it is not necessarily a faithful trace of the model's computation, so it cannot be trusted as a complete account of why the agent acted.
@@ -240,6 +249,9 @@ Defense against cascading errors requires:
 \item Yao, S., et al., ``ReAct: Synergizing Reasoning and Acting in Language Models,'' \emph{ICLR}, 2023 — the original formulation of the thought–action–observation pattern.
 \item Anthropic, \emph{Tool Use Guide} — the Anthropic API reference for tool definitions, tool-use messages, and enforcing structured outputs.
 \item Shinn, N., et al., ``Reflexion: Language Agents with Verbal Reinforcement Learning,'' \emph{NeurIPS}, 2023 — on agents that detect and recover from their own failures.
+\item Anthropic, ``Writing Effective Tools for Agents --- with Agents,'' \emph{Anthropic Engineering}, 2025 — a tool definition and its returned result are both prompt surfaces; namespace related tools and return high-signal, human-readable output.
+\item Anthropic, ``The `Think' Tool: Enabling Claude to Stop and Think in Complex Tool Use Situations,'' \emph{Anthropic Engineering}, 2025 — a no-op scratchpad tool that adds a mid-loop reasoning turn, with a per-domain evaluation of when it helps.
+\item Anthropic, ``Introducing Advanced Tool Use on the Claude Developer Platform,'' \emph{Anthropic Engineering}, 2025 — tool definitions as a context cost, on-demand tool discovery, and programmatic tool calling.
 \end{enumerate}
 \end{small}
 % EVOLVE-BLOCK-END

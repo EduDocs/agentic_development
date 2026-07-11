@@ -88,6 +88,31 @@ This misconception is as old as large windows themselves --- the first hundred-t
 Choosing what to put in the window, and where, remains consequential even as windows grow.
 \end{remark}
 
+\begin{remark}
+Not every task needs the full loop.
+The distinction between an \emph{agent} --- which lets the model dynamically direct its own process and tool use --- and a \emph{workflow} --- which routes the model through predetermined code paths --- is worth drawing early (Anthropic, 2024; Figure~\ref{figure:WorkflowAgentSpectrum}).
+A workflow fits predictable, well-scoped tasks whose steps are known in advance; an agent fits open-ended problems where the number of steps cannot be fixed ahead of time, at the price of higher cost and more room for compounding error.
+The rungs that follow, and the orchestration patterns of Chapter~\ref{chapter:Orchestration}, move along this spectrum rather than leaping to full autonomy; the durable advice, as of this writing in 2026, is to reach for a workflow when the task allows it and reserve full agency for problems that require it.
+\end{remark}
+
+\begin{figure}[htb!]
+\begin{center}
+\begin{tikzpicture}[
+    box/.style={draw, rounded corners=4pt, minimum width=4.4cm,
+                minimum height=1.6cm, align=center, font=\small},
+    arr/.style={->, >=stealth', thick}
+]
+\node[box, fill=blue!12]                   (wf) {\textbf{Workflow}\\[2pt]\scriptsize the sequence of steps is fixed\\\scriptsize in code (chaining, routing,\\\scriptsize parallelization, orchestrator--workers,\\\scriptsize evaluator--optimizer)};
+\node[box, fill=green!15, right=3.2cm of wf] (ag) {\textbf{Agent}\\[2pt]\scriptsize the model chooses the next\\\scriptsize step and its tools at run time,\\\scriptsize looping until the task is done};
+\draw[arr] (wf) -- node[above, font=\scriptsize, align=center]{who controls\\the next step} (ag);
+\end{tikzpicture}
+\caption{The workflow--agent spectrum (Anthropic, 2024).
+A \emph{workflow} routes the model through predetermined code paths; an \emph{agent} lets the model direct its own loop and tool use.
+The added flexibility of an agent is bought with higher cost and more room for compounding error, so the durable advice is to reach for a workflow when the steps are known in advance and reserve full agency for open-ended tasks that genuinely need it.}
+\label{figure:WorkflowAgentSpectrum}
+\end{center}
+\end{figure}
+
 \section{The Capability Ladder}
 \label{section:CapabilityLadder}
 
@@ -159,6 +184,7 @@ Because the model generates by plausible continuation rather than lookup, its ou
 Evaluation is therefore introduced when the student first builds an agent (Challenge~2) and reused in every subsequent unit.
 The key moment comes at the capstone pivot: the evaluation harness, which has been used to \emph{compare methods}, is now used to \emph{drive search}.
 Nothing about the harness changes; its role changes.
+One caveat travels with this promotion: a fixed evaluation loses discriminating power as capability rises --- a capability-relative echo of Goodhart's law that returns as benchmark saturation in Chapter~\ref{chapter:Evaluation} --- so the fitness function is best treated as an evolving artifact to be refreshed, not a fixed target (Anthropic, 2026).
 This transition — evaluation becoming fitness — is the conceptual hinge of the course.
 There is also a pedagogical reason evaluation is promoted to a spine rather than left to habit.
 Not every competence is learned the same way: some --- shaping context, reusing a project setup --- tend to accrue with ordinary exposure, whereas the discernment to catch a wrong assumption or a plausible-but-false claim shows little tendency to grow on its own, an asymmetry consistent with Anthropic's analysis of how researchers use these tools (Anthropic, 2025).
@@ -212,6 +238,7 @@ Doing it well requires a working rig --- the terminal, version control, and API 
 \item Anthropic, \emph{Claude's Tool Use Guide}, available at \href{https://docs.anthropic.com}{docs.anthropic.com} — the practical tool-calling interface used throughout the course.
 \item Wang, L., et al., ``A Survey on Large Language Model Based Autonomous Agents,'' \emph{Frontiers of Computer Science}, 2024 — a comprehensive taxonomy of agent architectures.
 \item Anthropic, \emph{AI Fluency} (the four-properties and the four-competency ``4Ds'' framing) together with its accompanying analysis of agent-usage patterns, 2025 — the source for this chapter's substrate-properties framing and for the observation that goal clarity and discernment track proficiency more than feature knowledge does.
+\item Anthropic, ``Building Effective Agents,'' \emph{Anthropic Engineering}, 2024 — the workflow-versus-agent distinction adopted here, with a catalogue of composable workflow patterns and the counsel to prefer the simplest design a task allows.
 \end{enumerate}
 \end{small}
 % EVOLVE-BLOCK-END

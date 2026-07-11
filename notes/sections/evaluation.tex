@@ -68,6 +68,11 @@ The moment any information about the test split influences the artifact, the tes
 In practice: load the full dataset, split immediately (before looking at the data), and pass only $\mathcal{D}_{\mathrm{train}}$ to the agent.
 The test split is sealed inside the harness; the agent never sees it.
 
+Leakage is not only a static property of how the data was split.
+When the artifact under test is a tool-using agent --- one that can search the web or run code --- it can, at evaluation time, actively retrieve the benchmark's own answer key or public discussion of it, collapsing ``solve the task'' into ``solve the evaluation.''
+Anthropic reported exactly this contamination on a web-browsing benchmark in 2026, finding that filtering search results by the benchmark's name was a more effective defense than blocking individual URLs.
+A fair harness for such agents must therefore sandbox the tools and scrub the environment, not merely partition the data.
+
 \subsection{What Leakage Is}
 
 \emph{Leakage}\index{Leakage} is the unintended exposure of test-set information to the artifact during its construction.
@@ -212,6 +217,13 @@ Counting fitted parameters, not just nodes, closes the loophole.
 
 Recognizing these attack surfaces in advance and closing them in the harness design is the primary defense.
 
+\begin{remark}
+Goodhart pressure also has a temporal form.
+A benchmark that cleanly separates strong from weak candidates today can \emph{saturate}\index{Benchmark saturation} as capability rises, its scores bunching near the ceiling until the metric no longer discriminates --- decaying into noise without any single candidate ``cheating'' it (Anthropic, 2026).
+Two safeguards follow: grade the \emph{outcome} --- the final artifact or state --- rather than a fixed trajectory a capable agent may bypass, and treat saturation as a signal to \emph{graduate} the task, retiring the solved benchmark to a regression check and authoring harder, often out-of-distribution problems.
+This is the evaluation-side form of the fitness-decay caution of Chapter~\ref{chapter:AgenticParadigm}, and it returns for evolutionary search in Chapter~\ref{chapter:EvolutionaryFrameworks}.
+\end{remark}
+
 \section{LLM-as-Judge Evaluation}
 \label{section:LLMJudge}
 
@@ -244,6 +256,9 @@ A harness satisfying this interface can be dropped into any unit in the course w
 If the harness interface must change — for example, because a new scoring dimension is added in a later challenge — the change must be documented and applied consistently to all prior baselines.
 An inconsistent harness produces incomparable leaderboard entries.
 
+Beyond this course's numeric harness, the field compares agents on shared \emph{capability benchmarks} --- SWE-bench for resolving real GitHub issues, and WebArena and related suites for web tasks --- so a claim that ``my agent scores $X$'' is a claim against a named, public harness with its own contract (Anthropic, 2025--2026).
+The mean-squared-error-plus-parsimony harness built here is one domain-specific instance of that general practice, not a different kind of thing: the discipline --- a sealed test set, a stable interface, a leakage-resistant score --- is the same at any scale.
+
 \section*{Further Reading}
 
 \begin{small}
@@ -252,6 +267,10 @@ An inconsistent harness produces incomparable leaderboard entries.
 \item Kapoor, S., and Narayanan, A., ``Leakage and the Reproducibility Crisis in Machine Learning,'' \emph{PLOS ONE}, 2023 — an empirical survey of leakage in published ML results.
 \item Zheng, L., et al., ``Judging LLM-as-a-Judge with MT-Bench and Chatbot Arena,'' \emph{NeurIPS}, 2023 — the reference study on using a strong model as an evaluator, including its biases and calibration.
 \item Sculley, D., Snoek, J., Wiltschko, A., and Rahimi, A., ``Winner's Curse? On Pace, Progress, and Empirical Rigor,'' \emph{ICLR Workshop}, 2018 — a widely cited call for evaluation discipline and honest empirical comparison in machine learning.
+\item Anthropic, ``Demystifying Evals for AI Agents,'' \emph{Anthropic Engineering}, 2026 — an agent-eval methodology reference: code, model, and human graders; outcome-over-trajectory grading; pass@$k$ versus pass\textasciicircum$k$; and layered evaluation.
+\item Anthropic, ``Eval Awareness in Claude's BrowseComp Performance,'' \emph{Anthropic Engineering}, 2026 — a case study in benchmark contamination: a tool-using agent recognizes it is under test and can retrieve leaked answer keys, with name-filtering as the more robust mitigation.
+\item Anthropic, ``Designing AI-Resistant Technical Evaluations,'' \emph{Anthropic Engineering}, 2026 — how a benchmark's discriminating power decays as capability rises, and why out-of-distribution problems preserve signal.
+\item Anthropic, ``Raising the Bar on SWE-bench Verified with Claude 3.5 Sonnet,'' \emph{Anthropic Engineering}, 2025 — a minimally scaffolded agent evaluated on resolving real software issues, a concrete example of a shared agent-capability benchmark.
 \end{enumerate}
 \end{small}
 % EVOLVE-BLOCK-END

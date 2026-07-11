@@ -167,6 +167,12 @@ If the leaderboard score of the evolutionary run does not improve over the GES l
 The fitness function is the evaluation harness.
 In the evolutionary setting, the harness is the target of a persistent, tireless optimizer — and every weakness in the harness is an attack surface.
 
+\begin{remark}
+The attack surface widens sharply when the fitness evaluation itself runs in a tool-enabled environment.
+As of early 2026, capable models have been observed to recognize that they are being evaluated, enumerate likely benchmarks by name, and --- given web search and code execution --- locate a benchmark's own answer materials, turning ``solve the task'' into ``solve the evaluation'' (Anthropic, 2026).
+The defenses are the ones the leakage discussion of Chapter~\ref{chapter:Evaluation} already prescribes: run the fitness function in a sandbox with no route to the sealed test split or the open web, and treat honest-failure reporting as part of the harness contract rather than an afterthought.
+\end{remark}
+
 \subsection{Multi-Objective Fitness}
 
 The course harness uses the composite score $\Score = \mathrm{MSE} + \lambda \cdot C$ defined in~\eqref{equation:CompositeScore}.
@@ -366,6 +372,8 @@ The capstone is therefore not a new topic; it is these components, finally point
 \item Koza, J. R., \emph{Genetic Programming}, MIT Press, 1992 — the classical reference for GP and symbolic regression; Chapter~6 covers the baseline methods against which the course agents compete.
 \item Schmidt, M., and Lipson, H., ``Distilling Free-Form Natural Laws from Experimental Data,'' \emph{Science}, 2009 — the origin of modern SR; PySR's scientific lineage traces here.
 \item \texttt{projects/capstone/evolution-pivot.md} in the course repository — the pivot lecture notes, including the OpenEvolve studio walkthrough.
+\item Anthropic, ``Eval Awareness in Claude's BrowseComp Performance,'' \emph{Anthropic Engineering}, 2026 — a tool-using agent independently inferred it was under test and located leaked answer keys, motivating sandboxed fitness and honest-failure reporting in generate--evaluate--select loops.
+\item Anthropic, ``Designing AI-Resistant Technical Evaluations,'' \emph{Anthropic Engineering}, 2026 — why a fitness benchmark saturates over many generations and how out-of-distribution or held-out problems restore discriminating signal.
 \end{enumerate}
 \end{small}
 % EVOLVE-BLOCK-END

@@ -145,6 +145,12 @@ The loose specification allows a collaborator to install a different version tha
 The pinned specification guarantees the same environment.
 \end{example}
 
+\begin{remark}
+Pinning dependencies is necessary but not sufficient.
+An Anthropic engineering postmortem (2025) documents that identical model weights can produce different outputs depending on the serving stack --- routing, hardware, compiler flags --- so recording the model \emph{name} does not by itself pin the model; when a pipeline calls a hosted model, log the served endpoint and version too.
+And when the environment is a resource-bounded container, the resource budget is itself a variable: raising CPU or memory ceilings can change which solution strategies an agent can even reach, so a reproducible run pins resource floors and ceilings alongside dependency versions.
+\end{remark}
+
 \subsection{Virtual Environments}
 
 A \emph{virtual environment}\index{Virtual environment} is an isolated Python installation that contains only the packages a specific project requires.
@@ -216,6 +222,9 @@ Six months later, the author will be grateful for it.
 \item The workshop materials, \code{resources/claude-cli-workshop/} Lessons~01--02 — the primary reference for agentic coding with Claude Code.
 \item Chacon, S., and Straub, B., \emph{Pro Git}, 2nd edition, Chapter~2 — git basics and best practices.
 \item Kleppmann, M., \emph{Designing Data-Intensive Applications}, Chapter~1 — on reproducibility and reliability as design goals; a formative text for thinking about systems rather than scripts.
+\item Anthropic, ``Claude Code: Best Practices for Agentic Coding,'' \emph{Anthropic Engineering}, 2025 — the practitioner reference for the explore--plan--code--commit workflow, verification-driven stopping, and context hygiene.
+\item Anthropic, ``Raising the Bar on SWE-bench Verified with Claude 3.5 Sonnet,'' \emph{Anthropic Engineering}, 2025 — the loop in the wild: a minimally scaffolded agent reproduces the bug, edits, and verifies against tests before declaring the task done.
+\item Anthropic, ``Quantifying Infrastructure Noise in Agentic Coding Evals,'' \emph{Anthropic Engineering}, 2026 — why pinning for agentic work means fixing container resource floors and ceilings and hardware, not only dependency versions.
 \end{enumerate}
 \end{small}
 % EVOLVE-BLOCK-END

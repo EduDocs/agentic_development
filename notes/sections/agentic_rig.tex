@@ -260,6 +260,14 @@ Broad permissions make dangerous mistakes easier; narrow permissions make danger
 A permission configuration that requires approval for every write operation is slower but safer than one that allows all writes silently.
 \end{principle}
 
+\begin{remark}[Approval fatigue and the sandbox]
+Per-action approval is only a real control while the human still reads each prompt.
+When nearly every prompt is approved by reflex --- one Anthropic engineering account (2025--2026) reports an approval rate on the order of nine in ten --- the safeguard decays into a rubber stamp.
+This motivates a second, structural realization of least privilege: an OS-level \emph{sandbox}\index{Sandbox} that grants the agent autonomy inside a fixed perimeter (filesystem confinement plus a network egress allowlist), enforced by the operating system rather than by a prompt each time.
+A sandbox bounds the blast radius however the model was steered, so a prompt-injected agent still cannot read credentials outside the perimeter or send data to an unlisted host.
+These specifics are a fast-moving product surface; the durable idea is that autonomy and safety are set by \emph{where} the boundary is drawn, not by how many prompts a tiring human answers.
+\end{remark}
+
 \subsection{Untrusted Inputs and Prompt Injection}
 
 Permissions bound what the agent \emph{may} do; they do not control what \emph{asks} it to act.
@@ -283,6 +291,8 @@ Chapter~\ref{chapter:AgenticCoding} develops the habit of \emph{reading every di
 \item Chacon, S., and Straub, B., \emph{Pro Git}, 2nd edition, Apress, 2014 — available free at \href{https://git-scm.com/book}{git-scm.com/book}.
 \item Anthropic, \emph{Claude Code Documentation} — covers the CLI, permission model, instruction files, and sessions; available at \href{https://docs.anthropic.com/claude-code}{docs.anthropic.com/claude-code}.
 \item The workshop materials in \code{resources/claude-cli-workshop/} — the primary onboarding reference for the rig used in this course.
+\item Anthropic, ``Beyond Permission Prompts: Making Claude Code More Secure and Autonomous,'' \emph{Anthropic Engineering}, 2025 — OS-level sandboxing (filesystem confinement and a network egress allowlist) as the structural mitigation for prompt injection, with an open-source runtime.
+\item Anthropic, ``How We Contain Claude Across Products,'' \emph{Anthropic Engineering}, 2026 — a defense-in-depth model (environment, model, and external-content layers) for containing agents, and why the environment boundary must anchor the defense.
 \end{enumerate}
 \end{small}
 % EVOLVE-BLOCK-END

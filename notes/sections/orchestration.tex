@@ -106,6 +106,7 @@ In the symbolic regression context, a critic might check:
 \item whether the expression has already been tried in a previous round (deduplication).
 \end{itemize}
 Filtering before evaluation saves evaluation cost — especially important when evaluation requires model calls or expensive computation.
+This proposer--critic loop is the pattern Anthropic's engineering writing (2024) names the \emph{evaluator--optimizer} workflow, and it presupposes what Chapter~\ref{chapter:Evaluation} supplies: explicit criteria against which iteration demonstrably improves the artifact, which is why the critic is a filter and not a rubber stamp.
 
 \subsection{Verifiers}
 
@@ -134,10 +135,36 @@ The verifier can catch mistakes the proposer made silently — here, the possibi
 
 The proposer--critic topology above is \emph{static}: the agents and their wiring are fixed before the run begins.
 A more flexible pattern lets an \emph{orchestrator}\index{Orchestrator agent} agent spawn specialist sub-agents on demand --- calling a tool that launches a fresh agent instance with its own context window, tool set, and task, then collecting the result.
-This is how a single agent decomposes a large job at run time: a research orchestrator might spawn one sub-agent per candidate dataset, or one per section of a report, each working in an isolated context so that the orchestrator's own window is not flooded with intermediate detail.
+This is how a single agent decomposes a large job at run time: a research orchestrator might spawn one sub-agent per candidate dataset, or one per section of a report, each working in an isolated context so that the orchestrator's own window is not flooded with intermediate detail (Figure~\ref{figure:OrchestratorWorker}).
 The reliability discipline of this chapter applies unchanged --- each spawned agent can fail, so its result must be validated and its failures surfaced (Section~\ref{section:Reliability}).
 Current agent SDKs (for example, Claude's agent SDK) expose this spawning as a built-in tool; it is the dynamic generalization of the fixed proposer--critic wiring.
 When parallel agents must \emph{write} --- not just analyze --- they also need isolated working directories so their changes cannot collide; the git-worktree pattern that provides this is described in Appendix~\ref{chapter:RigReference}.
+
+\begin{figure}[htb!]
+\begin{center}
+\begin{tikzpicture}[
+    box/.style={draw, rounded corners=4pt, minimum width=2.3cm, minimum height=1.0cm, align=center, font=\small},
+    sub/.style={draw, rounded corners=4pt, minimum width=2.7cm, minimum height=0.9cm, align=center, font=\scriptsize},
+    arr/.style={->, >=stealth', thick}
+]
+\node[box, fill=orange!20] (orch) at (0,0) {Orchestrator};
+\node[sub, fill=blue!12] (s1) at (4.7,1.7)  {sub-agent\\\emph{own context}};
+\node[sub, fill=blue!12] (s2) at (4.7,0)    {sub-agent\\\emph{own context}};
+\node[sub, fill=blue!12] (s3) at (4.7,-1.7) {sub-agent\\\emph{own context}};
+\node[box, fill=green!20] (syn) at (9.4,0) {Synthesis};
+\draw[arr] (orch) -- (s1);
+\draw[arr] (orch) -- (s2) node[midway, above, font=\scriptsize]{task};
+\draw[arr] (orch) -- (s3);
+\draw[arr] (s1) -- (syn);
+\draw[arr] (s2) -- (syn) node[midway, above, font=\scriptsize]{result};
+\draw[arr] (s3) -- (syn);
+\end{tikzpicture}
+\caption{The orchestrator--worker pattern (Anthropic, 2025).
+A lead agent decomposes a task and spawns worker sub-agents that run in parallel, each with its own context window, then synthesizes their results.
+Because each worker's context is isolated, the orchestrator's window is not flooded with intermediate detail and independent sub-questions are explored at once --- at the cost of roughly an order of magnitude more tokens than a single agent, so the topology pays off for breadth-first tasks whose parts are genuinely independent, not for tightly coupled work.}
+\label{figure:OrchestratorWorker}
+\end{center}
+\end{figure}
 
 \section{Memory and State}
 \label{section:MemoryState}
@@ -181,6 +208,10 @@ class RunMemory:
                    for t in self.state["tried"])
 \end{lstlisting}
 The memory file is the primary artifact of an orchestrated run: it records what was tried and what the best result was, enabling the run to be resumed if it is interrupted and reported honestly if it fails.
+
+The single JSON file is the reproducible \emph{floor}, not the ceiling.
+Production agents increasingly back external memory with a vector store, so that ``already tried'' can match \emph{semantically equivalent} candidates rather than only string-identical ones, and with hierarchical or episodic memory for runs that span many sessions (as of 2026).
+The file-based version here is the minimal form that keeps a run resumable and honestly reportable; the richer stores are the same idea with a better index.
 
 \section{Reliability Engineering}
 \label{section:Reliability}
@@ -274,6 +305,9 @@ The pivot is not a new topic; it is an addition to a loop already understood.
 \item Chase, H., \emph{LangChain Documentation} — a survey of pipeline and memory patterns for LLM applications; available at \href{https://python.langchain.com}{python.langchain.com}.
 \item \emph{A note on the ecosystem:} the multi-agent framework landscape has fragmented rapidly, so treat the AutoGen and LangChain references above as historical anchors for the conversation and pipeline patterns rather than as current installation targets. As a reasonable present-day starting point aligned with the course's default stack, Claude's agent SDK; but the field moves quickly, so check current adoption before committing to any framework (LangGraph, Swarm, and others are also in active use).
 \item Workshop materials, \code{resources/claude-cli-workshop/} Lesson~04 — sub-agents, agent teams, and headless operation with Claude Code.
+\item Anthropic, ``Building Effective Agents,'' \emph{Anthropic Engineering}, 2024 — the composable workflow-pattern vocabulary (prompt chaining, routing, parallelization, orchestrator--workers, evaluator--optimizer) that names the patterns of this chapter.
+\item Anthropic, ``How We Built Our Multi-Agent Research System,'' \emph{Anthropic Engineering}, 2025 — a shipped orchestrator--worker system: parallel sub-agents in isolated contexts and the token-cost tradeoff of multi-agent designs.
+\item Anthropic, ``Effective Harnesses for Long-Running Agents,'' \emph{Anthropic Engineering}, 2025 — session-spanning harness design and external-memory checkpointing (progress log, task list, git history) for agents that outlast a single context window.
 \end{enumerate}
 \end{small}
 % EVOLVE-BLOCK-END

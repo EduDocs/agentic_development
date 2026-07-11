@@ -23,6 +23,7 @@ definitions, the ReAct pattern, structured outputs, and failure modes.
 - 2026-07-10: failure modes catalogued here so Ch.8 (orchestration/reliability) can build retries, logging, and honest-failure reporting on a named taxonomy rather than re-deriving it.
 - 2026-07-10 (realized in prose): added the **chapter roadmap** after the opening (tool definitions → ReAct → structured outputs → failure modes).
 - 2026-07-10 (realized in prose, currency): the thin extended-thinking remark is replaced by a **§Reasoning Models and Implicit ReAct** subsection (grounded in Anthropic's *Visible Extended Thinking*, 2025). It names the shift from an explicit ReAct scratchpad to *latent internal reasoning* before the tool call, notes ReAct-as-prompting is now often unnecessary and the lever becomes a *thinking budget*, adds the **faithfulness caveat** (the visible trace is not necessarily a faithful account of the model's computation, so the reliable audit trail is the observable tool-call sequence), and ties back to Ch.3 chain-of-thought. Closes the currency panel's single most-stale-framing flag.
+- 2026-07-11 (realized in prose, engineering-blog pass): closed the currency gap with a **parallel tool calling** Remark (a turn can emit several tool calls; execute concurrently, batch results, one re-invoke — the idiomatic Ch.8 fan-out); added a **before/during reasoning + no-op 'think' tool** clarification; Further Reading on writing-tools, the think tool, and advanced tool use.
 <!-- EVOLVE-BLOCK-END -->
 
 ## Open questions

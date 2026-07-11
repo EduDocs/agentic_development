@@ -55,6 +55,12 @@ Standing rules live in \code{.claude/settings.json}, which is committed to the r
 
 The \code{allow} list removes prompts for named commands; the \code{deny} list makes files unreadable to the agent regardless of mode --- the right home for credentials and raw data that no session should touch.
 
+\begin{remark}[The permission ladder has a middle rung]
+Between Normal (approve every action) and a blanket skip of all prompts sits a graduated middle: OS-level sandboxing that bounds filesystem and network access, and --- as of 2026 --- an \emph{auto} mode whose action classifier auto-approves demonstrably safe commands and escalates only risky ones.
+Both exist because approval is a finite resource: when nearly every prompt is approved by reflex, human-in-the-loop stops being a safeguard.
+Treat the specific tiers as a fast-moving product surface and verify against current documentation; the durable idea is that autonomy and safety are set by \emph{where} the boundary is drawn, not by how many prompts a tiring human answers.
+\end{remark}
+
 \section{Instruction File Layers}
 
 The instruction hierarchy of Section~\ref{section:InstructionFiles} is realized as stacked \code{CLAUDE.md} files; more specific layers extend or override broader ones.
@@ -144,6 +150,18 @@ Three extension mechanisms recur in the course, listed here with their conceptua
 \end{itemize}
 
 Configuration details for all three change frequently; consult the current documentation rather than memorizing syntax.
+Skills in particular lean on \emph{progressive disclosure}: a skill preloads only its name and description, and loads its full \code{SKILL.md} body and bundled files only when the agent judges the task relevant, so the extension surface does not tax the window (Chapter~\ref{chapter:ContextEngineering}) until it is used (Anthropic, 2025).
 The durable idea is the division of labor: instruction files shape \emph{behavior}, permissions bound \emph{authority}, and hooks enforce \emph{invariants}.
+
+\section*{Further Reading}
+
+\begin{small}
+\begin{enumerate}
+\item Anthropic, ``Claude Code: Best Practices for Agentic Coding,'' \emph{Anthropic Engineering}, 2025 --- the practitioner reference for the command-level surface snapshotted here; a moving product surface, now at \href{https://code.claude.com/docs}{code.claude.com/docs}.
+\item Anthropic, ``How We Built Claude Code Auto Mode: A Safer Way to Skip Permissions,'' \emph{Anthropic Engineering}, 2026 --- the \emph{auto} permission tier: a classifier that auto-approves demonstrably safe actions and escalates risky ones.
+\item Anthropic, ``Beyond Permission Prompts: Making Claude Code More Secure and Autonomous,'' \emph{Anthropic Engineering}, 2025 --- OS-level filesystem and network sandboxing as the structural counterpart to per-action permissions.
+\item Anthropic, ``Equipping Agents for the Real World with Agent Skills,'' \emph{Anthropic Engineering}, 2025 --- Skills as filesystem folders (\code{SKILL.md} plus bundled files) discovered by metadata and loaded through progressive disclosure.
+\end{enumerate}
+\end{small}
 
 % EVOLVE-BLOCK-END

@@ -1,0 +1,93 @@
+\chapter{Delegated Agentic Environments: Cowork and Codex}
+\label{chapter:CoworkReference}
+% EVOLVE-BLOCK-START
+
+The body of this course teaches you to \emph{build} agents.
+This appendix looks at the complementary altitude --- \emph{delegating} a whole task to a managed agentic environment you operate rather than assemble --- using two current examples, Claude \emph{Cowork} and OpenAI \emph{Codex}.\index{Cowork}\index{Delegated environments}
+The skills are the same ones the chapters develop; what changes is that the loop, the tools, and the memory arrive packaged as a product instead of as code you write.
+Product surfaces move faster than concepts: treat this appendix as a snapshot taken in mid-2026, verify the specifics against the current documentation at \href{https://docs.anthropic.com}{docs.anthropic.com} when something disagrees, and read it for the durable pattern rather than the button names.
+
+On the capability ladder of Section~\ref{section:CapabilityLadder}, a delegated environment lives at the \emph{operate} rung --- you drive a finished tool --- yet it rehearses the \emph{orchestrate} move of Chapter~\ref{chapter:Orchestration}: describe a task once and let the environment plan and carry it out unattended.
+That is why it earns an appendix rather than a chapter: it is an accessible on-ramp to delegation, but the trustworthiness of an unattended run still rests on the evaluation-becomes-fitness spine of Section~\ref{section:TwoSpines}, not on the polish of the product.
+
+\section{Three Modes: Chat, Cowork, Code}
+
+The three environments differ by how much of the work you hand over.
+\emph{Chat} is turn-by-turn dialogue you drive one step at a time --- thinking, drafting, single-response answers.
+\emph{Cowork} is delegation: you describe an outcome, and the agent gathers context, plans, executes across several tools, and returns a finished artifact --- multi-step, multi-tool work ending in a real deliverable such as a document, a sheet, or a sent message.
+\emph{Code} --- Claude Code, and OpenAI's Codex --- is delegation specialized to a repository: editing files, running tests, working through git.
+The distinction that trips new users is the first one: the value of Cowork appears only when you hand over the \emph{whole} piece of work --- context-gathering, analysis, and production --- rather than asking a question and driving the next step yourself.
+Codex belongs on the coding side of this line, not alongside Cowork: both delegate, but a code environment works against a branch and returns a reviewable change set, while Cowork works in a folder and connected apps and returns a knowledge-work deliverable.
+
+\section{Specify, Delegate, Review}
+
+Delegation does not retire the specify--execute--read loop of Chapter~\ref{chapter:AgenticCoding}; it raises that loop to the level of a whole task.
+A well-formed delegation names three things: the \emph{deliverable} (its format and length), the \emph{inputs} (which folder, which channels, which date range, which tools), and the \emph{judgment context} only you would know to supply.
+The clarifying questions the agent asks in return are the context-gathering that Chat would otherwise do turn-by-turn, front-loaded to the start; answering them precisely rather than picking the nearest-fit option is what buys fewer redo cycles.
+Mid-task steering is expected and cheap --- interrupt and correct rather than letting a wrong run finish and regenerating from scratch.
+
+Review is the control point, and it is the read-every-diff discipline of Section~\ref{section:ReadingDiff} in a new costume.
+The real output is the artifact in the folder, not the chat transcript: check that it matches the actual ask, that referenced facts trace back to source material, and that nothing suspiciously specific --- a date, a name, a quotation --- is present that cannot be traced (the hallucination check of Chapter~\ref{chapter:Evaluation}).
+Prefer a targeted correction when the draft is mostly right, and supply the missing context when it is wrong in a structural way.
+
+\section{Context That Compounds}
+
+What lets a delegated environment improve over time is standing context, layered much like the instruction-file hierarchy of Chapter~\ref{chapter:AgenticRig}.
+
+\begin{center}
+\small
+\begin{tabular}{@{}lll@{}}
+\toprule
+Building block & Learns & Unlocks \\
+\midrule
+Global instructions & who you are, how you work   & every session starts pre-calibrated \\
+Projects            & one recurring stream of work & continuity across sessions \\
+Skills              & how a specific process runs  & repeatable, standardized execution \\
+Plugins             & domain or role expertise     & bundled, shareable toolkits \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Global instructions are the account-wide standing brief --- role, recurring shorthand, standing output preferences --- and function much like a top-level \code{CLAUDE.md} applied to every session.
+A \emph{project} is a scoped workspace for one recurring stream of work, carrying its own instructions, a defined context, and --- the real differentiator --- a memory that accrues from the conversations held inside it; the project instructions play the part of a subdirectory \code{CLAUDE.md}, while the memory is closer to something that accumulates on top of that file than the file itself.
+A \emph{skill} is an installable playbook --- a folder the agent loads when a task matches it --- holding as many of four component types as the process actually needs: instructions (\code{SKILL.md}), assets (templates and raw materials), references (examples that set a bar to match), and scripts (code for the parts that must run identically every time).
+\emph{Plugins} bundle skills and connectors into one job-oriented package distributed through a \emph{marketplace}: the plugin is the installable unit, and the marketplace is the catalog it is discovered through --- a repository carrying a \code{marketplace.json} manifest.\index{Plugin}\index{Marketplace}
+
+The connectors that give the environment reach into email, calendar, chat, drive, and CRM systems are the same class of external tool the course treats as untrusted input.
+Each added connector is also added attack surface (Principle~\ref{principle:LeastPrivilege}): a retrieved page or an incoming message can carry instructions the model cannot cleanly distinguish from yours, so grant connectors per task rather than standing open.
+
+\section{Safety and the Skill Eval}
+
+An unattended agent has no human confirming each step, so the permission configuration \emph{is} the supervision --- the least-privilege argument of Chapter~\ref{chapter:AgenticRig}, applied per task.
+The baseline guarantees are a confirmation before any deletion, always, and a confirmation before an external send or post while in the default ``ask before acting'' mode.
+On top of those, the discipline is ordinary caution made explicit: point the environment at a narrowly-scoped working folder rather than a catch-all directory; back up anything irreplaceable beyond its reach before starting; trial a new recurring task against copies before pointing it at live data; and read the plan it proposes before it runs, stopping if the scope creeps.
+The boundary to hold is the one Principle~\ref{principle:HonestFailure} draws: keep out of a delegated environment anything you would not hand a capable but new colleague unsupervised --- external sends, customer-facing changes --- and any regulated workflow that needs an audit trail the product does not yet keep.
+
+Before you rely on a skill --- or share one, where a teammate lacks the blind-spot knowledge you have --- evaluate it the way this course evaluates everything else.
+A skill-creation tool proposes a few realistic prompts, generates for each a paired output \emph{with} the skill and \emph{without} it, and asks you to judge which you would actually send and what the weaker one is missing; the skill is revised on that feedback and re-run, one change at a time so you can tell what moved the result.
+The bar for shipping is not a perfect score but a meaningful, consistent improvement over the no-skill baseline on the cases you care about, paired with an explicit list of the cases still unhandled.
+That with-versus-without comparison is a hand-run instance of the evaluation harness of Chapter~\ref{chapter:Evaluation}, and the same evaluation-becomes-fitness spine that licenses an evolutionary search (Definition~\ref{definition:GenEvalSel}) is what licenses trusting a shared skill here.
+
+\begin{remark}[Skills are portable, and best authored evaluation-first]
+A skill is a directory on the filesystem --- instructions, assets, references, scripts --- so the same folder travels across surfaces (Chat, Cowork, Code, an SDK) rather than being re-implemented per environment.
+The agent loads it by progressive disclosure: a short description is pre-loaded so the agent can judge relevance, the full \code{SKILL.md} loads only when the task matches, and bundled files load on demand, keeping the finite context window lean.
+Anthropic's authoring guidance (2025) inverts the usual order: start from the eval, structure the skill so mutually exclusive material is not all loaded at once, and iterate on observed usage rather than guessing in advance what context the agent will need.
+\end{remark}
+
+The durable idea survives whatever the products are called next: delegation raises the altitude but not the discipline.
+The specify--delegate--review loop is the loop you already know, the context that compounds is the instruction hierarchy you already keep, and an automatic check is still what licenses an unattended run --- ``build, then delegate'' is the same lesson as ``build, then evolve.''
+
+\section*{Further Reading}
+
+\begin{small}
+\begin{enumerate}
+\item Anthropic, ``Introduction to Claude Cowork'' (course), and the Claude Cowork documentation --- the material this appendix summarizes; consult it for current setup, connectors, and permission details, which change faster than the pattern above.
+\item OpenAI Codex documentation --- the agentic coding environment used here as the code-side example of the same delegate-and-review pattern.
+\item Anthropic Agent Skills, plugin, and marketplace documentation --- the component structure of a skill and how plugins are packaged and distributed.
+\item Anthropic, ``How We Contain Claude Across Products,'' \emph{Anthropic Engineering}, 2026 --- the safety substrate behind unattended delegation: environment-level containment (ephemeral sandboxes, egress limits, host-held credentials) as the anchor against prompt injection.
+\item Anthropic, ``Scaling Managed Agents: Decoupling the Brain from the Hands,'' \emph{Anthropic Engineering}, 2026 --- the infrastructure companion: virtualizing session, harness, and sandbox behind stable interfaces so a delegated environment runs, recovers, and keeps credentials out of the code sandbox.
+\item Anthropic, ``Equipping Agents for the Real World with Agent Skills,'' \emph{Anthropic Engineering}, 2025 --- the engineering account of authoring skills (progressive disclosure, evaluation-first) behind the skill anatomy above.
+\end{enumerate}
+\end{small}
+
+% EVOLVE-BLOCK-END

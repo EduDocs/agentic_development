@@ -26,6 +26,7 @@ in the order a new user meets it, and argue why each makes work trustworthy.
 - 2026-07-10 (realized in prose): absorbed the workshop's **compressed-index framing** into §CLAUDE.md — the instruction file as a sufficient statistic of the project (where to look + what patterns to expect; more correct decisions per token than raw source), wired forward to Ch.3; added the pointer to the new **Appendix (rig_reference)** which now holds the command-level Claude Code detail so this chapter stays concept-register.
 - 2026-07-10 (realized in prose, clarity): the chapter now **opens with a motivating story** (a pipeline that stops reproducing its own results six months in, with no commit history to interrogate) *before* the component list — converts the reference-guide opening into a chapter the reader wants, per the clarity panel.
 - 2026-07-10 (realized in prose): closed the **forward cross-links** from §Permissions/§Human-in-the-Loop — read-every-diff (Ch.4) and the reliability machinery for rate limits / transient errors (Ch.8) are now named, so the rig's payoffs are explicit.
+- 2026-07-11 (realized in prose, engineering-blog pass): added an **approval-fatigue and sandbox** Remark after Principle LeastPrivilege — per-action approval decays when nearly every prompt is rubber-stamped, so OS-level sandboxing is the structural least-privilege realization against prompt injection (hedged/dated); Further Reading on sandboxing (2025) and cross-product containment (2026).
 <!-- EVOLVE-BLOCK-END -->
 
 ## Open questions

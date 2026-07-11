@@ -145,6 +145,31 @@ A passage reading ``the growth rate falls to zero at high density'' does not say
 \emph{Contextual retrieval}\index{Contextual retrieval} (Anthropic, 2024) repairs this by using a language model to prepend a short, chunk-specific description of the surrounding document to each chunk \emph{before} it is embedded and indexed.
 The enriched chunk feeds both the semantic index and a keyword index, so semantic and lexical matching reinforce each other rather than compete.
 On the source's benchmark, contextualizing the embeddings reduced retrieval failures by roughly a third, and adding contextual keyword matching by roughly a half; the technique modifies the \textbf{embed} stage of the pipeline above, not the architecture around it.
+These reductions compose, as Figure~\ref{figure:RetrievalStaircase} shows, which is the point: retrieval quality is a measurable quantity that improves in stackable increments, not a single knob to be tuned by feel.
+
+\begin{figure}[htb!]
+\begin{center}
+\begin{tikzpicture}[arr/.style={->, >=stealth', thick}]
+\draw[arr] (-0.3,0) -- (-0.3,4.1) node[above, font=\scriptsize] {failure rate};
+\draw[arr] (-0.3,0) -- (11.4,0) node[right, font=\scriptsize] {stages added};
+\draw[dashed] (-0.3,3.6) -- (10.9,3.6) node[right, font=\scriptsize] {baseline};
+\draw[fill=gray!15]   (0.5,0)  rectangle (2.3,3.6);
+\draw[fill=blue!15]   (3.3,0)  rectangle (5.1,2.4);
+\draw[fill=green!20]  (6.1,0)  rectangle (7.9,1.8);
+\draw[fill=yellow!20] (8.9,0)  rectangle (10.7,1.2);
+\node[font=\scriptsize] at (4.2,2.75) {$\approx-\tfrac13$};
+\node[font=\scriptsize] at (7.0,2.15) {$\approx-\tfrac12$};
+\node[font=\scriptsize] at (9.8,1.55) {$\approx-\tfrac23$};
+\node[font=\scriptsize, align=center] at (1.4,-0.5) {baseline};
+\node[font=\scriptsize, align=center] at (4.2,-0.5) {$+$ contextual\\embeddings};
+\node[font=\scriptsize, align=center] at (7.0,-0.5) {$+$ contextual\\keyword};
+\node[font=\scriptsize, align=center] at (9.8,-0.5) {$+$ rerank};
+\end{tikzpicture}
+\caption{Retrieval failure rate (the fraction of queries whose relevant passage is missing from the top~$k$) falling in stackable increments as techniques are layered, on the source's benchmark (Anthropic, 2024): contextual embeddings alone cut baseline failures by roughly a third, adding contextual keyword matching reaches roughly a half, and a reranking second stage reaches roughly two-thirds.
+The takeaway is not the exact numbers --- which are benchmark-specific and will shift --- but the shape: each stage lowers the same measurable quantity, so retrieval quality is evaluated and improved the way Chapter~\ref{chapter:Evaluation} treats any score, not judged by feel.}
+\label{figure:RetrievalStaircase}
+\end{center}
+\end{figure}
 
 \begin{remark}
 Retrieval quality improves further with a second stage.
