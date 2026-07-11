@@ -15,6 +15,7 @@ assemble the GES loop that is one ingredient short of evolution.
 - **External memory**: tried expressions, best results, failure modes, run configuration — the memory file is the primary artifact of a run and enables resume + honest reporting.
 - **Reliability engineering**: retries with exponential backoff, structured logging, and **honest failure reporting** (Principle~HonestFailure — a silent fallback is worse than a raised error).
 - **The GES loop** (Def.~GenEvalSel: generate → evaluate → select → repeat) is "an evolutionary algorithm in all but name"; the only missing ingredient is a mutation operator. This is the load-bearing pivot into Ch.9.
+- **Orchestrator–worker topology**: a lead agent spawns parallel sub-agents in *isolated contexts* and synthesizes their results — strong for independent, breadth-first work but ~order-of-magnitude more tokens, hence fit-dependent (`figure:OrchestratorWorker`); the proposer–critic loop is the canonical *evaluator–optimizer* pattern. External memory scales from the JSON floor to vector-store (semantic dedup) / episodic stores.
 
 ## Directions
 - (no open prose directions; roadmap, GES→evolution handoff, framework hedge, and the `with_retry` robustness nit all realized — see Decisions)

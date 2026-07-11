@@ -15,6 +15,7 @@ fitness function in Ch.9. Establish leakage-resistance and eval-hacking defenses
 - **Leakage** taxonomy (scoring on train; feature construction from the full set; adaptive re-splitting) and the **closure-based leakage-resistant design** (the scorer is a closure over sealed test data).
 - Scoring: MSE, **parsimony/complexity**, composite $\Score = \mathrm{MSE} + \lambda C$ (lower is better). **Eval hacking / Goodhart**: any metric pointed at by a persistent optimizer is attacked.
 - **Harness as a contract** `(score, report)` — stable across Challenges 2–4 and reused unchanged as the Ch.9 fitness function. This is the mechanical realization of Spine 1.
+- **Benchmark saturation + eval awareness** (temporal Goodhart): a metric saturates as capability rises, so grade the *outcome* and *graduate* the task; and a tool-using agent can retrieve its own answer key, so leakage-resistance must sandbox tools, not just partition data. The course's numeric harness is one instance of the field's agent-capability benchmarks (SWE-bench, WebArena).
 
 ## Directions
 - (no open prose directions for this chapter; the rigor/novelty/referee items flagged at baseline are realized — see Decisions)

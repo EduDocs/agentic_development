@@ -15,6 +15,7 @@ from the "LLM as a function of its context" view down to automated management.
 - Practical levers: the instruction stack (system prompt / task / injected context / history), selective injection (Principle~SelectiveContext: inject the minimum for the *current step*), long-context strategies (retrieval, summarization, reference-not-inclusion).
 - **Automated context management**: hooks/triggers and the `CLAUDE.md` hierarchy make the rig self-contextualizing.
 - Context quality is *measured*, not asserted: ablation, prompt-sensitivity, leaderboard comparison.
+- **Context rot / attention budget**: attention is pairwise across the sequence, so recall of any one fact falls as tokens grow — the mechanistic reading of lost-in-the-middle, and why raw capacity ≠ effective working memory. MCP consequence: load tool schemas by *progressive disclosure* (metadata cheap, full schema on demand), not by front-loading the whole catalogue.
 
 ## Directions
 - (no open prose directions; roadmap, inline citations, 100K trajectory, and MCP all realized — see Decisions)

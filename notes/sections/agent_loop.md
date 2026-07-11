@@ -15,6 +15,7 @@ definitions, the ReAct pattern, structured outputs, and failure modes.
 - **ReAct** makes intermediate reasoning explicit (thought → action → observation), giving both better-conditioned actions and an audit trail.
 - **Structured outputs** turn an endpoint into a composable component: prefer the tool-use/JSON-schema mechanism (validation before commit) over parse-and-retry.
 - **Failure modes** to design against: hallucinated tool arguments, loops-without-progress (need a max step count), context overrun (truncate tool results), cascading errors (validate at each tool boundary).
+- **Parallel tool calling**: one turn can emit several tool calls; the loop runs them concurrently, batches the results, and re-invokes once — the idiomatic way to run the Ch.8 fan-out (each result still validated at its own boundary). Reasoning can also happen *during* the loop, inducible via a no-op 'think' tool.
 
 ## Directions
 - The `ModelResult` structured-output example names `complexity: int` — keep it consistent with the *single* complexity definition being settled in Ch.6 (node count), so the two chapters agree on what "complexity" counts.

@@ -15,6 +15,7 @@ and the two spines the rest of the book hangs from.
 - **Capability ladder** (Operate → Build → Orchestrate → Evolve): each rung is a strict prerequisite for the next — "cannot evolve what you cannot evaluate."
 - **Two spines** introduced here and paid off at the capstone: Spine 1 *Evaluation Becomes Fitness* (Principle~EvalFitness: any automatic, leakage-resistant harness is a fitness function); Spine 2 *Context Engineering* (the LLM is a function of its context; evolution is context engineering in a loop).
 - **Why now**: instruction following + tool use + structured output combine to make an LLM a directable, composable, evaluable research substrate.
+- **Workflow vs agent** (added handle): a *workflow* runs the model through predetermined code paths; an *agent* lets the model direct its own loop and tools — prefer a workflow unless the step count is genuinely open-ended (`figure:WorkflowAgentSpectrum`). Spine-1 nuance: a fixed evaluation decays as capability rises (temporal Goodhart → benchmark saturation, Ch.6), so fitness is an evolving artifact, not a fixed target.
 
 ## Directions
 - (no open prose directions; the baseline clarity/novelty items are realized — see Decisions)
