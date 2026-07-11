@@ -11,6 +11,8 @@ This distinction matters because agentic tools can produce large volumes of plau
 The risk is not that the agent writes bad code — it is that the researcher stops reading.
 The moment the researcher outsources \emph{comprehension} to the agent, the work ceases to be reproducible, auditable, or defensible.
 
+Section~\ref{section:AgenticCodingLoop} lays out the read--direct--inspect loop; the sections that follow sharpen each phase in turn --- directing the agent with precise instructions, reading the diff it produces (Section~\ref{section:ReadingDiff}), pinning a reproducible environment (Section~\ref{section:ReproducibleEnvironments}), and keeping a clean version history so the work stays auditable.
+
 \section{The Agentic Coding Loop}
 \label{section:AgenticCodingLoop}
 
@@ -105,6 +107,11 @@ Neither of these constraints appears in the instruction; both affect correctness
 Reading diffs develops two habits.
 The first is \emph{catching errors}: agents make mistakes — wrong assumptions, missing edge cases, subtle logic errors — that are invisible in the running output but legible in the diff.
 The second is \emph{maintaining ownership}: a researcher who reads every diff understands their own codebase; one who does not is dependent on the agent to remember what was done and why.
+
+\begin{remark}
+This habit of reading every change and owning the result is what Anthropic's AI-fluency framework names \emph{diligence} --- the discipline of ensuring that the speed an agent offers never costs the researcher responsibility, transparency, or accountability for what remains their own work (Anthropic, 2025).
+Its companion competences in that framework --- \emph{description} (the context engineering of Chapter~\ref{chapter:ContextEngineering}) and \emph{discernment} (the evaluation of Chapter~\ref{chapter:Evaluation}) --- are developed elsewhere in these notes under their own names.
+\end{remark}
 
 \section{Reproducible Environments}
 \label{section:ReproducibleEnvironments}

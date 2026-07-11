@@ -7,7 +7,7 @@ A language model's parametric knowledge — the information encoded in its weigh
 A physicist's agent should know about dimensional analysis; a biologist's should know about enzyme kinetics; an economist's should know about functional forms in demand estimation.
 None of this domain-specific knowledge can be assumed to be reliably present in the model's weights.
 
-\emph{Retrieval-augmented generation} (RAG)\index{Retrieval-augmented generation} solves this by injecting relevant domain knowledge into the context at the time it is needed.
+\emph{Retrieval-augmented generation} (RAG)\index{Retrieval-augmented generation} (Lewis et al., 2020) solves this by injecting relevant domain knowledge into the context at the time it is needed.
 Rather than relying on the model to remember a fact, the loop retrieves the fact from a curated corpus and places it directly in the window.
 
 In the course, retrieval is not a toy feature — it has a real job.
@@ -25,6 +25,13 @@ The \emph{retrieval problem} is to select the subset of $\mathcal{K}$ most relev
 
 Formally: given a query $q$ (the agent's current task description or question) and a corpus $\mathcal{K}$, return the $k$ passages from $\mathcal{K}$ that are most relevant to $q$.
 
+\begin{remark}
+Retrieval is not automatically the right tool.
+When the entire relevant corpus fits comfortably in the context window --- a threshold on the order of a few hundred pages for current models --- loading it directly can beat retrieval on questions that require synthesis across the whole document (Anthropic, 2023, 2024), because no relevant passage can be missed.
+Retrieval earns its place when $\mathcal{K}$ is far larger than any window, when only a small slice is relevant per query, or when injecting irrelevant material would crowd out what matters.
+The course corpora are deliberately small, so this boundary is worth checking before building an index at all.
+\end{remark}
+
 \subsection{Keyword vs.\ Semantic Retrieval}
 
 Classical retrieval systems (e.g., BM25, TF-IDF) match keywords: they return passages that contain the same words as the query.\index{Keyword retrieval}
@@ -32,6 +39,7 @@ These systems fail when the query and the relevant passage use different vocabul
 
 \emph{Semantic retrieval}\index{Semantic retrieval} avoids this failure by representing both query and passage as vectors in a shared semantic space, and returning the passages whose vectors are closest to the query vector.
 Two passages about the same concept have similar vectors even if they use different words.
+In current practice the two are usually combined rather than chosen between: a \emph{hybrid} index runs keyword and semantic retrieval together and merges their results, and the contextual-retrieval technique of Section~\ref{section:ContextualRetrieval} sharpens both at once.
 
 \section{Embeddings and Semantic Similarity}
 \label{section:Embeddings}
@@ -59,6 +67,7 @@ The property is statistical rather than universal: no finite-dimensional embeddi
 \label{equation:CosineSimilarity}
 \end{equation}
 Values near~1 indicate high similarity; values near~0 indicate orthogonality (unrelated topics); values near $-1$ occur rarely and indicate strong opposition.
+In practice the cosine similarities produced by a trained text-embedding model occupy a compressed positive band rather than the full $[-1, 1]$ range: unrelated passages typically score well above~0, so a value like~$0.23$ should be read as ``much less similar,'' not as literal orthogonality.
 Cosine similarity is preferred over Euclidean distance because it is invariant to the magnitude of the embedding vectors, which vary with passage length and model implementation.
 
 \begin{example}
@@ -75,7 +84,7 @@ emb_resist  = embed("Aerodynamic resistance increases with v^2")
 emb_density = embed("Material density is mass divided by volume")
 
 print(cosine_similarity(emb_drag, emb_resist))   # ~0.91 — similar
-print(cosine_similarity(emb_drag, emb_density))  # ~0.23 — unrelated
+print(cosine_similarity(emb_drag, emb_density))  # ~0.23 — much less similar
 \end{lstlisting}
 \end{example}
 
@@ -124,6 +133,26 @@ class FlatIndex:
         return [(self.passages[i], float(scores[i])) for i in top_k]
 \end{lstlisting}
 \end{example}
+
+\subsection{Contextual Retrieval}
+\label{section:ContextualRetrieval}
+
+A chunk extracted in isolation loses the context of the document it came from.
+A passage reading ``the growth rate falls to zero at high density'' does not say which population, which model, or under what assumption --- and the embedding of that fragment is correspondingly ambiguous.
+\emph{Contextual retrieval}\index{Contextual retrieval} (Anthropic, 2024) repairs this by using a language model to prepend a short, chunk-specific description of the surrounding document to each chunk \emph{before} it is embedded and indexed.
+The enriched chunk feeds both the semantic index and a keyword index, so semantic and lexical matching reinforce each other rather than compete.
+On the source's benchmark, contextualizing the embeddings reduced retrieval failures by roughly a third, and adding contextual keyword matching by roughly a half; the technique modifies the \textbf{embed} stage of the pipeline above, not the architecture around it.
+
+\begin{remark}
+Retrieval quality improves further with a second stage.
+A \emph{reranker}\index{Reranker} takes a generous first-pass candidate set --- say the top~150 by vector similarity --- and rescores each candidate against the query with a more expensive model, keeping only the best handful.
+The pattern is general: a cheap, high-recall first stage followed by a precise, low-throughput second stage, which on the source's benchmark cut retrieval failures by about two-thirds overall (Anthropic, 2024).
+\end{remark}
+
+\begin{remark}
+Generating a context sentence for every chunk sounds expensive, but \emph{prompt caching} makes it cheap: the parent document is cached once and reused across all of its chunks rather than re-sent per chunk.
+The source reports a one-time cost on the order of a dollar per million document tokens (Anthropic, 2024) --- small enough that contextualization is a routine preprocessing step rather than a luxury.
+\end{remark}
 
 \section{Retrieval-Augmented Research}
 \label{section:RAG}
@@ -210,6 +239,7 @@ A dataset where grounding helps and a dataset where it hurts, analyzed together,
 \item Lewis, P., et al., ``Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks,'' \emph{NeurIPS}, 2020 — the original RAG paper.
 \item Gao, Y., et al., ``Retrieval-Augmented Generation for Large Language Models: A Survey,'' \emph{arXiv}, 2023 — a comprehensive survey of RAG architectures and applications.
 \item Johnson, J., Douze, M., and Jégou, H., ``Billion-Scale Similarity Search with GPUs,'' \emph{IEEE Transactions on Big Data}, 2021 — the paper behind FAISS, the most widely used ANN library.
+\item Anthropic, ``Introducing Contextual Retrieval,'' 2024 — prepending chunk-specific context before embedding and keyword indexing, with reranking; the source for Section~\ref{section:ContextualRetrieval}.
 \end{enumerate}
 \end{small}
 % EVOLVE-BLOCK-END

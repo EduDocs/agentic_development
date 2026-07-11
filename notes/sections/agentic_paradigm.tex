@@ -5,6 +5,7 @@ An \emph{agent} is a system that perceives its environment, reasons about what t
 For most of computing history, this description applied mainly to robots and game-playing programs.
 The arrival of large language models with tool-calling capability changes the picture: a language model that can read files, execute code, browse the web, and call APIs is, in a meaningful sense, an agent that can do knowledge work.
 This chapter establishes the vocabulary and conceptual structure the rest of the notes build on.
+It opens by defining the agent and its perceive--reason--act loop; Section~\ref{section:CapabilityLadder} then lays out the four-rung \emph{capability ladder} --- operate, build, orchestrate, evolve --- that orders the whole course; Section~\ref{section:TwoSpines} introduces the two \emph{spines}, evaluation-becomes-fitness and context engineering, that thread every rung; and the closing section asks why general-purpose tool-using models make this the moment the pieces combine.
 
 \section{What Is an Agent?}
 
@@ -27,6 +28,15 @@ The components interact in a specific way.
 The context $\mathcal{C}$ is assembled from the system prompt, the task description, a history of previous observations and actions, and any additional information injected by the loop.
 The model $M$ reads the full context and selects an action: either a \emph{tool call} (drawn from $\mathcal{T}$) or a \emph{final response}.
 The loop $L$ executes the tool call, appends the result to the context as a new observation, and invokes $M$ again.
+
+\begin{remark}
+The model $M$ is not a database and not a classical reasoner; it is a next-token predictor conditioned on $\mathcal{C}$, and four properties of that substrate govern where an agent built on it will fail (Anthropic, 2025).
+It generates by statistical continuation, so it produces fluent text that may be confidently wrong --- the failure mode called \emph{hallucination}.
+Its knowledge is a frozen snapshot fixed at a training cutoff, blind to anything more recent or too rare to have been well represented in training.
+Its working memory is exactly the context window introduced below and developed in Chapter~\ref{chapter:ContextEngineering} --- bounded, non-persistent, and unevenly attended.
+And its steerability is pattern continuation rather than comprehension of intent: it follows the \emph{form} of an instruction, which is why long chains accumulate error and why text injected through a tool result can hijack a task.
+Each rung of the ladder that follows is, in part, a discipline for managing one of these four failure modes.
+\end{remark}
 
 \begin{figure}[htb!]
 \begin{center}
@@ -72,7 +82,7 @@ Chapter~\ref{chapter:ContextEngineering} develops context engineering as a disci
 
 \begin{remark}
 A common misconception is that a larger context window reduces the need for context engineering.
-In practice, models exhibit \emph{position bias}: information at the beginning and end of the context tends to receive more attention than information buried in the middle.
+This misconception is as old as large windows themselves --- the first hundred-thousand-token windows were pitched as a way to simply feed the model everything (Anthropic, 2023) --- yet in practice models exhibit \emph{position bias} (Liu et al., 2024): information at the beginning and end of the context tends to receive more attention than information buried in the middle.
 Choosing what to put in the window, and where, remains consequential even as windows grow.
 \end{remark}
 
@@ -114,6 +124,7 @@ The arrows indicate this dependency order.}
 
 \paragraph{Operate.}
 The foundation is being able to drive an existing agent reliably and reproducibly.
+The habit that most predicts downstream fluency here is deceptively plain --- stating the objective before the agent acts (Anthropic, 2025) --- so this rung trains goal clarity before any tooling.
 This means working from the terminal, using version control, accessing a model through an API, and giving the agent instructions that produce predictable, revisable results.
 Many researchers skip this rung and never develop the habit of \emph{reading every change} the agent makes — a deficit that grows more costly with each rung climbed.
 
@@ -142,10 +153,12 @@ They are called \emph{spines} because every unit hangs from them.
 \subsection{Spine 1 — Evaluation Becomes Fitness}
 
 You cannot trust an agent you cannot score, and you cannot evolve an artifact you cannot score automatically.
+Because the model generates by plausible continuation rather than lookup, its output is fluent whether or not it is correct --- which is precisely why trust must come from an external score rather than from the confidence of the text itself.
 Evaluation is therefore introduced when the student first builds an agent (Challenge~2) and reused in every subsequent unit.
 The key moment comes at the capstone pivot: the evaluation harness, which has been used to \emph{compare methods}, is now used to \emph{drive search}.
 Nothing about the harness changes; its role changes.
 This transition — evaluation becoming fitness — is the conceptual hinge of the course.
+There is also an empirical reason evaluation is promoted to a spine rather than left to habit: analyses of large corpora of human--agent interaction find that some competences (shaping context, reusing a project setup) accrue with mere exposure, whereas the discernment to catch a wrong assumption or a plausible-but-false claim does not tend to grow on its own (Anthropic, 2025), so it must be taught deliberately and revisited at every rung.
 
 \begin{principle}
 \label{principle:EvalFitness}
@@ -184,6 +197,7 @@ This is the glue of multi-agent orchestration.
 
 Together, these capabilities make a language model a plausible substrate for a research assistant that can be directed, composed, and evaluated programmatically.
 The course is concerned with doing this \emph{well}: reliably, reproducibly, and honestly.
+Doing it well requires a working rig --- the terminal, version control, and API access on which everything else rests --- and that is where the next chapter begins.
 
 \section*{Further Reading}
 
@@ -192,6 +206,7 @@ The course is concerned with doing this \emph{well}: reliably, reproducibly, and
 \item Yao, S., et al., ``ReAct: Synergizing Reasoning and Acting in Language Models,'' \emph{ICLR}, 2023 — the canonical formalization of the observe–reason–act loop.
 \item Anthropic, \emph{Claude's Tool Use Guide}, available at \href{https://docs.anthropic.com}{docs.anthropic.com} — the practical tool-calling interface used throughout the course.
 \item Wang, L., et al., ``A Survey on Large Language Model Based Autonomous Agents,'' \emph{Frontiers of Computer Science}, 2024 — a comprehensive taxonomy of agent architectures.
+\item Anthropic, \emph{The AI Fluency Index} and the accompanying AI-fluency framework, 2025 — a corpus study of human--agent interaction identifying the behaviors (goal clarity, discernment) that most predict proficiency; the source for the substrate-properties and organic-versus-deliberate framing used in this chapter.
 \end{enumerate}
 \end{small}
 % EVOLVE-BLOCK-END

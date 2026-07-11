@@ -5,6 +5,7 @@
 The loop described in Chapter~1 becomes concrete when the researcher must actually implement it.
 Building a research agent means writing tool definitions, choosing how to structure the control loop, specifying what the agent should return, and anticipating the ways the loop can fail.
 This chapter develops each of these in turn.
+Section~\ref{section:ToolDefinitions} covers tool definitions and their schemas; Section~\ref{section:ReAct} develops the ReAct control pattern that interleaves reasoning and action; Section~\ref{section:StructuredOutputs} shows how to constrain what the agent returns; and Section~\ref{section:FailureModes} catalogs the ways the loop breaks and how to guard against each.
 
 \section{Tool Definitions}
 \label{section:ToolDefinitions}
@@ -133,10 +134,16 @@ The explicit thought step serves two purposes.
 First, it conditions the subsequent action on intermediate reasoning, reducing errors that arise from the model jumping directly from context to action without an intermediate planning step.
 Second, it produces an \emph{audit trail}: by reading the thought steps, the researcher can understand exactly why the agent made each tool call.
 
-\begin{remark}
-Modern frontier models frequently use chain-of-thought-like reasoning internally (visible as \emph{extended thinking} in some APIs) even without being explicitly prompted to reason before acting.
-Whether or not this internal reasoning is visible, the tool-call sequence itself constitutes an auditable record of the agent's decision-making.
-\end{remark}
+\subsection{Reasoning Models and Implicit ReAct}
+
+The ReAct pattern makes the thought step \emph{explicit}: the model is prompted to write its reasoning into the transcript before each action.
+Frontier \emph{reasoning models}\index{Reasoning model} --- Claude's extended thinking (Anthropic, 2025) and the o3-class models --- move this step inward, reasoning internally before emitting a tool call, so the thought becomes latent rather than a visible transcript entry.
+This is the same chain-of-thought mechanism introduced in Chapter~\ref{chapter:ContextEngineering}, now performed by the model on its own rather than elicited by a ``think step by step'' instruction.
+A practical consequence is that hand-writing a \code{Thought:}/\code{Action:} scaffold buys little when the model already deliberates before acting; the builder's lever shifts from a prompt template to a \emph{thinking budget}\index{Thinking budget} --- a cap on how many reasoning tokens the model may spend before it must answer.
+The cost falls on the audit trail.
+When reasoning was an explicit transcript entry, the researcher could read \emph{why} each tool was called; when it is latent that record is gone, and even where the internal reasoning is surfaced it is not necessarily a faithful trace of the model's computation, so it cannot be trusted as a complete account of why the agent acted.
+The dependable audit trail is therefore the observable one: the sequence of tool calls and their results, which the loop logs regardless of what the model reasoned internally.
+This makes the failure-mode discipline of Section~\ref{section:FailureModes} --- validating at each tool boundary and inspecting intermediate outputs --- matter more, not less, as the thought step goes latent.
 
 \section{Structured Outputs}
 \label{section:StructuredOutputs}

@@ -10,6 +10,7 @@ This constraint makes \emph{context engineering} — the deliberate construction
 This chapter distinguishes two related but distinct disciplines.
 \emph{Prompt engineering}\index{Prompt engineering} concerns the wording and structure of instructions, especially at the level of a single message or request.
 \emph{Context engineering} is broader: it concerns the entire contents of the context window across a multi-step interaction, and the strategies for managing that window as the conversation evolves.
+Section~\ref{section:LLMContextFunction} develops the view of the model as a function of its context; Section~\ref{section:PromptEngineering} treats prompt engineering at the level of a single request; Section~\ref{section:ContextEngineeringDetail} scales up to managing the whole window across a multi-step interaction; Section~\ref{section:AutomatedContext} covers the mechanisms that assemble context automatically; and Section~\ref{section:ContextQuality} asks how to tell whether a given context is any good.
 
 \section{The LLM as a Context-Conditioned Function}
 \label{section:LLMContextFunction}
@@ -37,12 +38,15 @@ The practical consequence is unchanged: if the agent behaves unexpectedly, look 
 The \emph{context window}\index{Context window} is the finite-length sequence that $M$ receives at a single invocation.
 Window sizes for frontier models in 2025–2026 range from roughly 100,000 to 1,000,000 tokens.
 This is large but not unlimited: a single research paper is roughly 10,000 tokens; a large codebase can exceed any window.
+These figures are best read as a point on a fast-moving trajectory rather than a fixed ceiling: the first 100,000-token window was itself a frontier result in 2023, an order-of-magnitude jump over the few thousand tokens available shortly before (Anthropic, 2023), and the limit has kept climbing since.
+The practical lesson survives each increase --- reason about how to \emph{use} a window rather than assume the next one will be large enough to make the question moot.
 
 Even within the window, not all tokens are equal.
-Empirical studies consistently find \emph{recency bias} (later tokens receive more weight) and \emph{primacy bias} (early tokens, particularly system-prompt content, also receive elevated attention), with a \emph{lost-in-the-middle} effect where relevant information buried in the center of a long context is underused.
+Empirical studies consistently find \emph{recency bias} (later tokens receive more weight) and \emph{primacy bias} (early tokens, particularly system-prompt content, also receive elevated attention), with a \emph{lost-in-the-middle} effect (Liu et al., 2024) where relevant information buried in the center of a long context is underused.
 
 \begin{remark}
 The lost-in-the-middle effect implies that simply extending the context window does not proportionally extend the effective working memory of the model.
+Early framings of large windows treated raw capacity as a near-substitute for careful selection --- the 2023 case for a 100,000-token window emphasized feeding in whole documents and letting the model synthesize across them (Anthropic, 2023) --- but the effect characterized shortly afterward (Liu et al., 2024) showed that capacity and effective working memory are not the same thing.
 Structuring the context so that the most important information appears near the beginning or end — or citing it explicitly in the instruction — is more reliable than relying on a long window to make everything equally accessible.
 \end{remark}
 
@@ -88,7 +92,7 @@ Where possible, break multi-part tasks into explicit stages.
 
 \subsection{Chain-of-Thought Prompting}
 
-\emph{Chain-of-thought prompting}\index{Chain-of-thought prompting} encourages the model to reason through a task step by step before producing a final answer.
+\emph{Chain-of-thought prompting}\index{Chain-of-thought prompting} (Wei et al., 2022) encourages the model to reason through a task step by step before producing a final answer.
 The instruction ``Think through this step by step before giving your final answer'' can substantially improve accuracy on tasks that require multi-step reasoning.
 The reasoning trace is not wasted computation: it conditions the final answer on intermediate conclusions, which reduces errors that arise from premature closure.
 
@@ -142,6 +146,7 @@ When the necessary context exceeds what can be injected directly, three strategi
 \begin{enumerate}
 \item \textbf{Retrieval.} Index a large corpus and retrieve the most relevant chunks for the current task.
 This is the subject of Chapter~\ref{chapter:Retrieval}.
+Retrieval and long context are a genuine tradeoff rather than a settled choice: when a query must synthesize evidence spread across an entire document, loading the whole text can beat retrieving fragments of it (Anthropic, 2023), whereas retrieval wins when the relevant knowledge is a small, locatable slice of a corpus far larger than any window.
 
 \item \textbf{Summarization.} Compress long documents or conversation histories into compact summaries before injection.
 The summary trades recall for brevity; its quality determines how much information survives.

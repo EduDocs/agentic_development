@@ -17,12 +17,13 @@ and the two spines the rest of the book hangs from.
 - **Why now**: instruction following + tool use + structured output combine to make an LLM a directable, composable, evaluable research substrate.
 
 ## Directions
-- Add a **2–3 sentence roadmap** after the opening hook (baseline clarity: "single highest-leverage exposition fix").
-- End the "Why Now" section with a **forward pointer to Ch.2** (why the rig is the right next topic) — it currently dangles before Further Reading (clarity).
-- Add an inline citation for the **position-bias / lost-in-the-middle** claim in the context Remark rather than deferring it to Ch.3's Further Reading (novelty).
+- (no open prose directions; the baseline clarity/novelty items are realized — see Decisions)
 
 ## Decisions
 - 2026-07-10: two-spines framing placed in Ch.1 so the eval→fitness hinge and context-engineering lever are visible from the start; both recur at every rung and converge in Ch.9.
+- 2026-07-10 (realized in prose): added a 2–3 sentence **roadmap** after the opening hook (names the ladder section and the two-spines section); ended "Why Now" with a **forward pointer to Ch.2** (the rig is where doing this well begins), closing the dangling endpoint; added the **position-bias inline citation** (Liu et al., 2024) at the context Remark.
+- 2026-07-10 (realized in prose, currency): the context-window Remark now grounds the "bigger window ≠ less context engineering" misconception historically — the first hundred-thousand-token windows were pitched as "feed the model everything" (Anthropic, 2023) — before invoking position bias.
+- 2026-07-10 (realized in prose, pedagogy): added a **four-properties-of-the-substrate** Remark after the agent definition (next-token prediction→hallucination, frozen knowledge/cutoff, bounded working memory, pattern-continuation steerability), framing each ladder rung as a discipline for one failure mode (Anthropic, 2025); **grounded Spine 1** in next-token prediction (fluent ≠ correct, so trust needs an external score) and added the **organic-vs-deliberate** justification for why evaluation is a *spine* (discernment doesn't accrue with exposure); added the **goal-clarity signature move** to the Operate rung; added an AI Fluency Index Further Reading entry. Working-memory/position-bias was already covered, so it is only pointed back to, not re-explained.
 <!-- EVOLVE-BLOCK-END -->
 
 ## Open questions

@@ -16,11 +16,12 @@ specify–execute–read–commit loop and the habit of reading every diff.
 - Reproducibility: dependency pinning, virtual environments, a **one-command run**; atomic commits (Principle~AtomicCommits) with messages that explain *why*.
 
 ## Directions
-- Add a **chapter roadmap** after the opening.
 - The diff-reading example was singled out by the clarity panel as the manuscript's most effective device — preserve the "show what the diff reveals" pattern and consider a second, subtler instance (a silent dtype/units change).
 
 ## Decisions
 - 2026-07-10: read-every-diff framed as a professional discipline and explicitly forward-referenced from Ch.2's human-in-the-loop material, so the two chapters form one argument about ownership.
+- 2026-07-10 (realized in prose): added the **chapter roadmap** after the opening (read–direct–inspect loop, then the diff / environments / version-history sections).
+- 2026-07-10 (realized in prose, pedagogy): added a **diligence callback** Remark at the end of §Reading the Diff — names the read-every-diff/ownership habit as what Anthropic's AI-fluency framework calls *diligence* (Anthropic, 2025) and cross-links its companions *description* (Ch.3) and *discernment* (Ch.6). Deliberately a one-point vocabulary borrow, not an adoption of the 4Ds as an organizing scheme (which would compete with the ladder/spines).
 <!-- EVOLVE-BLOCK-END -->
 
 ## Open questions

@@ -17,11 +17,12 @@ definitions, the ReAct pattern, structured outputs, and failure modes.
 - **Failure modes** to design against: hallucinated tool arguments, loops-without-progress (need a max step count), context overrun (truncate tool results), cascading errors (validate at each tool boundary).
 
 ## Directions
-- Add a **chapter roadmap** after the opening.
 - The `ModelResult` structured-output example names `complexity: int` — keep it consistent with the *single* complexity definition being settled in Ch.6 (node count), so the two chapters agree on what "complexity" counts.
 
 ## Decisions
 - 2026-07-10: failure modes catalogued here so Ch.8 (orchestration/reliability) can build retries, logging, and honest-failure reporting on a named taxonomy rather than re-deriving it.
+- 2026-07-10 (realized in prose): added the **chapter roadmap** after the opening (tool definitions → ReAct → structured outputs → failure modes).
+- 2026-07-10 (realized in prose, currency): the thin extended-thinking remark is replaced by a **§Reasoning Models and Implicit ReAct** subsection (grounded in Anthropic's *Visible Extended Thinking*, 2025). It names the shift from an explicit ReAct scratchpad to *latent internal reasoning* before the tool call, notes ReAct-as-prompting is now often unnecessary and the lever becomes a *thinking budget*, adds the **faithfulness caveat** (the visible trace is not necessarily a faithful account of the model's computation, so the reliable audit trail is the observable tool-call sequence), and ties back to Ch.3 chain-of-thought. Closes the currency panel's single most-stale-framing flag.
 <!-- EVOLVE-BLOCK-END -->
 
 ## Open questions

@@ -16,6 +16,8 @@ This chapter formalizes the evolutionary loop, develops the components that make
 \section{The Evolutionary Loop}
 \label{section:EvolutionaryLoop}
 
+Definition~\ref{definition:GenEvalSel} is already in place; this chapter adds the one missing ingredient — a mutation operator — and shows what changes when candidates are derived from survivors rather than drawn afresh.
+
 \begin{definition}
 \label{definition:EvolutionaryLoop}
 An \emph{agentic evolutionary framework} is a tuple $(\Artifacts, \Fitness, \Mutate, \Select, \Population_0)$ where
@@ -85,7 +87,7 @@ A mutation prompt:
 \begin{lstlisting}[language=markdown]
 The current best model is:
     expression: "x0 * exp(-x1)"
-    MSE: 0.0045, complexity: 4, score: 0.0055
+    MSE: 0.0045, complexity: 5, score: 0.0055   # score = MSE + lambda*C, lambda = 0.0002
 
 The dataset appears to describe exponential decay with a rate that
 varies between samples (column x1). Retrieved domain note:
@@ -225,7 +227,7 @@ The agentic evolutionary framework taught in this course has a direct intellectu
 
 \subsection{FunSearch}
 
-\emph{FunSearch}\index{FunSearch} (Romera-Paredes et al., DeepMind, 2023) is an LLM-guided evolutionary search over \emph{programs} (Python functions), scored by an automatic evaluator.
+\emph{FunSearch}\index{FunSearch} (Romera-Paredes et al., DeepMind; \emph{Nature}, 2024, online 2023) is an LLM-guided evolutionary search over \emph{programs} (Python functions), scored by an automatic evaluator.
 The system evolved improved constructions for combinatorics problems (finding larger cap sets in $\mathbb{F}_3^8$) and better heuristics for online bin packing.
 
 The template introduced by FunSearch is:
@@ -268,7 +270,7 @@ Given a dataset $\mathcal{D} = \{(x_i, y_i)\}_{i=1}^{N}$ and a space of expressi
 \begin{equation}
 \hat{m}^* = \operatorname*{argmin}_{a \in \Artifacts} \Score(a, \mathcal{D}_{\mathrm{test}})
 \end{equation}
-where $\Score$ is the composite fitness of Definition~\ref{definition:EvalHarness} and~\eqref{equation:CompositeScore}.
+where $\Score$ is the composite score of~\eqref{equation:CompositeScore} and $\mathcal{D}_{\mathrm{test}}$ is the held-out split of the harness (Definition~\ref{definition:EvalHarness}).
 \end{definition}
 
 SR is the teaching vehicle for the course because it is:
@@ -338,7 +340,7 @@ For research purposes the primary leaderboard uses unadjusted fitness so that di
 
 \begin{small}
 \begin{enumerate}
-\item Romera-Paredes, B., et al., ``Mathematical Discoveries from Program Search with Large Language Models,'' \emph{Nature}, 2023 — the FunSearch paper; the primary template for the capstone.
+\item Romera-Paredes, B., et al., ``Mathematical Discoveries from Program Search with Large Language Models,'' \emph{Nature}, 2024 (online December 2023) — the FunSearch paper; the primary template for the capstone.
 \item DeepMind, ``AlphaEvolve: A Gemini-Powered Coding Agent for Designing Advanced Algorithms,'' technical report, 2025 — the scaled-up successor to FunSearch.
 \item OpenEvolve repository — open-source AlphaEvolve implementation; see \code{benchmarks/README.md} for the course-specific setup.
 \item Koza, J. R., \emph{Genetic Programming}, MIT Press, 1992 — the classical reference for GP and symbolic regression; Chapter~6 covers the baseline methods against which the course agents compete.

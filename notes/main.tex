@@ -4,10 +4,21 @@
 \usepackage[margin=1in]{geometry}
 \usepackage[hyperindex,colorlinks,linkcolor=blue!60!black,urlcolor=blue!60!black]{hyperref}
 
+\usepackage[T1]{fontenc}
+% Inconsolata replaces Computer Modern Typewriter as \ttfamily everywhere
+% (not just in listings): cleaner glyphs, better 0/O and 1/l/I
+% distinguishability, and a proper straight quote glyph — the standard
+% modern choice for LaTeX code listings.
+\usepackage{inconsolata}
 \usepackage{amsmath,amssymb,amsthm}
 \usepackage{booktabs}
 \usepackage{makeidx}
 \usepackage{listings}
+% Without upquote, a straight " inside a listing/verbatim renders as a
+% backslash-like mark instead of a plain quote — upquote patches that
+% (standard fix; see e.g. the listings/verbatim FAQ on "why do my quotes
+% look wrong").
+\usepackage{upquote}
 \usepackage{xcolor}
 
 \usepackage{tikz}
@@ -63,10 +74,36 @@
 \lstdefinelanguage{markdown}{
   sensitive=false,
 }
+% Fixed 80-column frame width, measured in the actual listings font/size (so
+% it stays correct if either changes) rather than stretching to \linewidth —
+% a short one-line snippet no longer sits in a box sized for a paragraph.
+\newlength{\lstlinewidth}
+\settowidth{\lstlinewidth}{\ttfamily\small
+  \detokenize{01234567890123456789012345678901234567890123456789012345678901234567890123456789}}
+
 \lstset{
-  basicstyle=\ttfamily\small,
+  % \upshape: without it, a listing inside an amsthm "plain"-style block
+  % (Example, Theorem, ...) inherits that environment's italic body shape,
+  % rendering the code slanted — and distorting the quote glyphs further.
+  basicstyle=\ttfamily\upshape\small,
   breaklines=true,
+  % listings' default columns=fixed forces every glyph into an equal-width
+  % cell independent of the font's real metrics, which is what produces the
+  % oddly letter-spaced look ("g i t   i n i t"); fullflexible uses the
+  % font's own widths instead. keepspaces preserves the deliberate multiple
+  % spaces used to align trailing "# comment" annotations.
+  columns=fullflexible,
+  keepspaces=true,
+  showstringspaces=false,
+  tabsize=4,
+  breakautoindent=true,
   frame=single,
+  linewidth=\lstlinewidth,
+  xleftmargin=0pt,
+  framexleftmargin=5pt,
+  framexrightmargin=5pt,
+  framextopmargin=3pt,
+  framexbottommargin=3pt,
   backgroundcolor=\color{gray!8},
   keywordstyle=\color{blue!70!black},
   commentstyle=\color{gray!70},

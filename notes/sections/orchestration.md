@@ -17,11 +17,11 @@ assemble the GES loop that is one ingredient short of evolution.
 - **The GES loop** (Def.~GenEvalSel: generate → evaluate → select → repeat) is "an evolutionary algorithm in all but name"; the only missing ingredient is a mutation operator. This is the load-bearing pivot into Ch.9.
 
 ## Directions
-- Add a **chapter roadmap** after the opening.
-- Tighten the GES→evolution handoff so Ch.9's first paragraph can cite Def.~GenEvalSel immediately (the clarity panel flagged that Ch.9 restates the loop loosely instead of pointing here).
+- **Currency:** soften the AutoGen/LangChain references in Further Reading with a one-line hedge (the framework ecosystem has fragmented — LangGraph, Swarm, Claude's agent SDK — so they read as historical anchors, not current defaults) (currency panel).
 
 ## Decisions
 - 2026-07-10: the propose→evaluate→select loop is deliberately named and boxed as a Definition so the Ch.9 pivot is "add one ingredient to a known object," not a new topic.
+- 2026-07-10 (realized in prose): added the **chapter roadmap** after the opening; **tightened the GES→evolution handoff** — Ch.9 §EvolutionaryLoop now opens by citing Def.~GenEvalSel directly ("already in place; this chapter adds the one missing ingredient"), closing the loose-restatement the clarity panel flagged.
 <!-- EVOLVE-BLOCK-END -->
 
 ## Open questions
