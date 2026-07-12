@@ -2,28 +2,22 @@
 \label{chapter:AgenticParadigm}
 % EVOLVE-BLOCK-START
 
-An \emph{agent} is a system that perceives its environment, reasons about what to do, and acts — repeatedly, over time.\index{Agent}
+An \emph{agent} can be described as a system that perceives its environment, reasons about what to do, and acts repeatedly, over time.\index{Agent}
 For most of computing history, this description applied mainly to robots and game-playing programs.
 The arrival of large language models with tool-calling capability changes the picture: a language model that can read files, execute code, browse the web, and call APIs is, in a meaningful sense, an agent that can do knowledge work.
 This chapter establishes the vocabulary and conceptual structure the rest of the notes build on.
-It opens by defining the agent and its perceive--reason--act loop; Section~\ref{section:CapabilityLadder} then lays out the four-rung \emph{capability ladder} --- operate, build, orchestrate, evolve --- that orders the whole course; Section~\ref{section:TwoSpines} introduces the two \emph{spines}, evaluation-becomes-fitness and context engineering, that thread every rung; and the closing section asks why general-purpose tool-using models make this the moment the pieces combine.
+It opens by defining the agent and its perceive--reason--act loop; Section~\ref{section:CapabilityLadder} then lays out the four-rung \emph{capability ladder} (operate, build, orchestrate, evolve) that orders the course progerssion; Section~\ref{section:TwoSpines} introduces the two \emph{spines}, evaluation-becomes-fitness and context engineering, that thread every rung; and the closing section asks why general-purpose tool-using models make this the moment the pieces combine.
 
 \section{What Is an Agent?}
 
 The core of an agentic system is the \emph{perceive–reason–act loop}.\index{Perceive–reason–act loop}
-At each step the agent receives some \emph{observation} from the environment — a file listing, a tool result, a user message — forms a \emph{plan} or \emph{reasoning trace}, and emits an \emph{action} — a tool call, a response, a file write.
+At each step the agent receives some \emph{observation} from the environment (a file listing, a tool result, a user message, etc.); forms a \emph{plan} or \emph{reasoning trace}; and emits an \emph{action} such as a tool call, a response, a file write.
 These three names describe the system's observable behavior, not cognition inside the model: ``reason'' here refers to the intermediate text or plan the loop produces and then acts on, whatever process generated it.
 The action changes the environment, producing the next observation.
 The loop repeats until the task is complete or the agent determines it cannot proceed.
 
 \begin{definition}
-An \emph{agent} is a tuple $(M, \mathcal{T}, \mathcal{C}, L)$ where
-\begin{itemize}
-\item $M$ is a \emph{model} — a function from context to a distribution over actions,
-\item $\mathcal{T}$ is a finite set of \emph{tools} the model may invoke,
-\item $\mathcal{C}$ is the \emph{context} — the information the model is conditioned on at each step, and
-\item $L$ is the \emph{loop} — the procedure that sequences observations, invocations of $M$, and tool calls until a terminal condition is met.
-\end{itemize}
+An \emph{agent} is built from four parts, named here because the rest of these notes refer to them: a \emph{model} $M$, which reads the current context and chooses the next action; a set of \emph{tools} $\mathcal{T}$ the model can invoke; a \emph{context} $\mathcal{C}$, the information the model is given to read at each step; and a \emph{loop} $L$, which runs the model, carries out the action it chooses, feeds the result back as the next observation, and repeats until the task is done or the agent cannot proceed.
 \end{definition}
 
 The components interact in a specific way.
@@ -33,9 +27,9 @@ The loop $L$ executes the tool call, appends the result to the context as a new 
 
 \begin{remark}
 The model $M$ is not a database and not a classical reasoner; it is a next-token predictor conditioned on $\mathcal{C}$, and four properties of that substrate govern where an agent built on it will fail (Anthropic, 2025).
-It generates by statistical continuation, so it produces fluent text that may be confidently wrong --- the failure mode called \emph{hallucination}.
+It generates by statistical continuation, so it produces fluent text that may be confidently wrong, the failure mode called \emph{hallucination}.
 Its knowledge is a frozen snapshot fixed at a training cutoff, blind to anything more recent or too rare to have been well represented in training.
-Its working memory is exactly the context window introduced below and developed in Chapter~\ref{chapter:ContextEngineering} --- bounded, non-persistent, and unevenly attended.
+Its working memory is exactly the context window introduced below and developed in Chapter~\ref{chapter:ContextEngineering}: bounded, non-persistent, and unevenly attended.
 And its steerability is pattern continuation rather than comprehension of intent: it follows the \emph{form} of an instruction, which is why long chains accumulate error and why text injected through a tool result can hijack a task.
 Each rung of the ladder that follows is, in part, a discipline for managing one of these four failure modes.
 \end{remark}

@@ -18,7 +18,7 @@ This is part of why the current moment feels sudden even though the path is legi
 
 An important step was to give words a form a machine could compute with.
 A \emph{word embedding}\index{Word embedding} maps each word to a vector so that words with similar meanings land near one another, and the \emph{word2vec}\index{word2vec} models showed that such a space could be learned cheaply from raw text at scale (Mikolov et al., 2013).
-A companion result added an efficient training objective and vectors for phrases, and displayed the now-famous regularity that simple vector arithmetic is meaningful in this space --- adding the vectors for \emph{Germany} and \emph{capital} lands near the vector for \emph{Berlin} (Mikolov et al., 2013).
+A companion result added an efficient training objective and vectors for phrases, and displayed the now-famous regularity that simple vector arithmetic is meaningful in this space: adding the vectors for \emph{Germany} and \emph{capital} lands near the vector for \emph{Berlin} (Mikolov et al., 2013).
 Meaning had become geometry: a trained space in which distance encodes similarity.
 This is the direct ancestor of the embeddings the course uses for retrieval (Chapter~\ref{chapter:Retrieval}, Definition~\ref{definition:Embedding}), one representational level down, words rather than passages.
 
@@ -40,9 +40,11 @@ The latter, often framed as a finite ``attention budget,'' is a useful heuristic
 
 The Transformer was an architecture; the next move was a \emph{recipe} for using it.
 Rather than train a fresh model for every task, one could \emph{pre-train}\index{Pre-training} a single Transformer on a large corpus of unlabeled text and then adapt it to specific tasks with comparatively little further training.
-\emph{BERT}\index{BERT} did this with a bidirectional encoder trained to fill in masked words, producing \emph{contextual} representations --- a word's vector now depends on the sentence around it --- and set new results across many language tasks at once (Devlin et al., 2019).
+\emph{BERT}\index{BERT} did this with a bidirectional encoder trained to fill in masked words, producing \emph{contextual} representations; in this setting, a word's vector now depends on the sentence around it.
+This paradigm set new results across many language tasks at once (Devlin et al., 2019).
 Contextual embeddings from this family are what many modern retrieval systems actually run on, the successor to the static word vectors of the previous section.
-A parallel line pre-trained \emph{decoder} models for generation rather than understanding --- the GPT line, from GPT and GPT-2 onward --- and that branch is the one that leads to the models an agent is built from.
+A parallel effort pre-trained \emph{decoder} models for generation rather than understanding: the \emph{Generative Pre-trained Transformer} (GPT) line, from GPT and GPT-2 onward.
+The latter branch is the thread that leads to models many  agents are built from.
 
 \section{Scale, Prompting, and Grounding (2020)}
 \label{section:ScaleAndGrounding}
@@ -60,30 +62,41 @@ This made knowledge updatable and, when the system preserves and validates prove
 \label{section:FromModelsToAgents}
 
 A capable, promptable model is still not an agent.
-Three further developments closed that gap.
-\emph{Instruction tuning} with human feedback aligned models to follow instructions helpfully rather than merely continue plausible text, making their behavior reliable enough to direct (Ouyang et al., 2022).
+Further developments closed that gap.
+For isntance, \emph{instruction tuning} with human feedback aligned models to follow instructions helpfully rather than merely continue plausible text, making their behavior reliable enough to direct (Ouyang et al., 2022).
 \emph{Chain-of-thought} prompting showed that eliciting intermediate reasoning before a final answer improves performance on multi-step problems (Wei et al., 2022).
-And giving the model \emph{tools} --- letting it act, observe the result, and act again --- turned a text generator into a system that operates in the world, formalized as the reason-and-act loop the course builds in Chapter~\ref{chapter:AgentLoop} (Yao et al., 2023).
+And giving the model \emph{tools}, letting it act, observe the result, and act again turned a text generator into a system that operates in the world, formalized as the reason-and-act loop the course builds in Chapter~\ref{chapter:AgentLoop} (Yao et al., 2023).
 At that point the model is no longer only answering; it is perceiving, reasoning, and acting.
 
-The chain did not stop at tool use.
+The techniques for making a model reason and act well are a research field in their own right; it is worth naming the landscape even though the details belong to later chapters.
+On the \emph{prompting} side, chain-of-thought has search-based extensions: \emph{self-consistency} samples several reasoning paths and keeps the majority answer, and \emph{tree-of-thoughts} searches over intermediate steps rather than committing to one.
+Whereas \emph{ReAct} and \emph{Reflexion} interleave reasoning with tool calls and let a model revise after seeing a result (developed in Chapters~\ref{chapter:ContextEngineering} and~\ref{chapter:AgentLoop}).
+On the \emph{training} side, reinforcement learning from human feedback (RLHF) is the instruction-tuning method named above; its relatives (learning from AI feedback, constitutional methods) and the reinforcement-learning training behind current reasoning models push the same lever further.
+The point is that ``make the model reason and act better'' is an active, crowded field rather than a single trick; the course develops the parts it uses and names the rest so the reader can place them.
+
+The progression did not stop at tool use.
 The most recent step folds reasoning back inside the model: \emph{reasoning models}\index{Reasoning model} are trained to carry out extended chains of thought internally before they answer, rather than being prompted to reason step by step, and models are increasingly \emph{multimodal}, taking images and other data alongside text.
 The practical consequences, including a latent reasoning trace that cannot be read as an audit log and a thinking budget in place of a prompt scaffold, are treated in Chapter~\ref{chapter:AgentLoop}.
 The progression this chapter traces is therefore still under way, but its shape is unchanged: each step extends what the system can reliably do on its own.
+
+Two moments turned this gradual research into a public event.
+In November~2022, the release of ChatGPT put an instruction-tuned model in front of anyone with a browser and sent a shock wave well beyond the research community, showcasing the language model as a general-purpose advisor.
+Three years later, in December~2025, agentic coding crossed a practical threshold: a frontier model such as Anthropic's Opus~4.6 could carry a well-specified programming task about as reliably as a junior software engineer, turning much routine low-level coding into something a researcher directs rather than writes by hand.
+Neither was a new idea so much as a new level of a capability the sequence above had been building toward, which is why a legible, incremental progression is so often felt from outside as a sudden arrival.
 
 \section{The Progression Was Not Random}
 \label{section:NotRandom}
 
 Read as a list, the milestones above are a handful of loosely related papers.
 Read as a chain, each one removed a specific limitation of the last.
-This is a \emph{selected} teaching lineage, not a claim that each advance was the sole cause of the next --- larger datasets, faster hardware, and reinforcement learning from human feedback run alongside it.
+This is a \emph{selected} teaching lineage, not a claim that each advance was the sole cause of the next; larger datasets, faster hardware, and reinforcement learning from human feedback run alongside it.
 Word vectors gave meaning a computable form but handled only isolated words; sequence-to-sequence mapped whole sentences but squeezed them through one vector; the Transformer removed that bottleneck and made scale practical; pre-training made a single model's knowledge transferable across tasks; scale made that model steerable by plain text; retrieval grounded it in external, updatable knowledge; and instruction tuning and tool use let it act.
 Table~\ref{table:AgenticTimeline} lists the sequence; Figure~\ref{figure:AgenticChain} draws it as the dependency chain the prose describes, each arrow labelled with the limitation the next step removed.
 
 \begin{figure}[t]
 \centering
 \begin{tikzpicture}[
-  font=\small, line width=1pt,
+  font=\small, line width=1pt, >=stealth',
     box/.style={draw, rounded corners=3pt, minimum width=2.4cm, minimum height=0.95cm,
                 align=center, font=\small, fill=gray!12},
     hbox/.style={draw, rounded corners=3pt, minimum width=2.4cm, minimum height=0.95cm,
@@ -91,12 +104,12 @@ Table~\ref{table:AgenticTimeline} lists the sequence; Figure~\ref{figure:Agentic
     lim/.style={font=\scriptsize, text=black!55, align=left},
     yr/.style={font=\scriptsize, text=black!55},
 ]
-\node[hbox] (h1) at (1.5,6) {};
-\node[hbox] (h2) at (1.25,5.5) {};
-\node[hbox] (h3) at (1,5) {};
-\node[hbox] (h4) at (0.75,4.5) {};
-\node[hbox] (h5) at (0.5,4) {};
-\node[lim] at (1.5,6.75) {History};
+\node[hbox] (h1) at (1.5,4.75) {};
+\node[hbox] (h2) at (1.25,4.25) {};
+\node[hbox] (h3) at (1,3.75) {};
+\node[hbox] (h4) at (0.75,3.25) {};
+\node[hbox] (h5) at (0.5,2.75) {};
+\node[lim] at (1.5,5.5) {History};
 \node[box] (n1) at (6,7.5) {word2vec};
 \node[box] (n2) at (6,6) {seq2seq};
 \node[box] (n3) at (6,4.5) {transformer};
@@ -108,24 +121,33 @@ Table~\ref{table:AgenticTimeline} lists the sequence; Figure~\ref{figure:Agentic
 \draw[->] (n3) -- (n4);
 \draw[->] (n4) -- (n5);
 \draw[->] (n5) -- (n6);
-\node[lim] at (8.25,6.75) {isolated\\words};
-\node[lim] at (8.25,5.25) {fixed-vector\\bottleneck};
-\node[lim] at (8.25,3.75) {no transfer\\across tasks};
-\node[lim] at (8.25,2.25) {task-specific\\training};
-\node[lim] at (8.25,0.75) {frozen\\knowledge};
-\node[yr] at (4,7.5) {2013};
-\node[yr] at (4,6) {2014};
-\node[yr] at (4,4.5) {2017};
-\node[yr] at (4,3) {2018};
-\node[yr] at (4,1.5) {2020};
-\node[yr] at (4,0) {2020};
-\node[box, fill=green!15] (n7) at (12,5) {agents};
-\node[yr] at (12,4.25) {2022+};
-\node[lim] at (12,5.75) {can act};
+\node[lim,anchor=west] at (7.4,6.75) {isolated\\words};
+\node[lim,anchor=west] at (7.4,5.25) {fixed-vector\\bottleneck};
+\node[lim,anchor=west] at (7.4,3.75) {no transfer\\across tasks};
+\node[lim,anchor=west] at (7.4,2.25) {task-specific\\training};
+\node[lim,anchor=west] at (7.4,0.75) {frozen\\knowledge};
+\node[yr,anchor=east] at (4.6,7.5) {2013};
+\node[yr,anchor=east] at (4.6,6) {2014};
+\node[yr,anchor=east] at (4.6,4.5) {2017};
+\node[yr,anchor=east] at (4.6,3) {2018};
+\node[yr,anchor=east] at (4.6,1.5) {2020};
+\node[yr,anchor=east] at (4.6,0) {2020};
+\node[yr] at (11,7.75) {2022+};
+\node[box, fill=blue!15] (a0) at (11,7) {tuning};
+\node[box, fill=blue!15] (a1) at (11.5,5.75) {CoT};
+\node[box, fill=blue!15] (a2) at (12,4.5) {ReAct};
+\node[hbox] (f4) at (11.25,2.75) {};
+\node[hbox] (f5) at (11.5,2.25) {};
+\node[hbox] (f6) at (11.75,1.75) {};
+\node[box, fill=green!3] (a3) at (11,0) {};
+\node[box, fill=green!6] (a4) at (11.25,0) {};
+\node[box, fill=green!9] (a5) at (11.5,0) {};
+\node[box, fill=green!12] (a6) at (11.75,0) {};
+\node[box, fill=green!15] (a7) at (12,0) {Agents};
 \end{tikzpicture}
 \caption{The lineage as a causal chain.
-Each box is a milestone, with its year below; each arrow is labelled with the limitation of the step on its left that the step on its right removed.
-The point is not the list of names but the dependency between them: representing isolated words made mapping whole sequences the next problem, whose fixed-vector bottleneck made attention the next, and so on until a model that can act --- an agent.}
+Each box is a milestone, with its year to the left; each arrow is labelled with the limitation of the step on its left that the step on its right removed.
+The point is not the list of names but the dependency between them: representing isolated words made mapping whole sequences the next problem, whose fixed-vector bottleneck made attention the next, and so on until models that can act, agents.}
 \label{figure:AgenticChain}
 \end{figure}
 
