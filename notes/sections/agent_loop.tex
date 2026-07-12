@@ -204,6 +204,12 @@ The first mechanism makes schema-valid output far more likely and is preferable 
 Agents fail.
 Understanding the common failure modes enables the researcher to design more robust loops and to recognize failures before they propagate.
 
+\begin{remark}
+When a run misbehaves, the diagnostic unit is the \emph{action/observation trace} --- the logged sequence of \code{(tool call, arguments, observation)} triples --- not the final output.
+Walking that trace localizes the fault to one of four places: the wrong tool was chosen, its arguments were malformed, the tool's description was too thin for the model to use it correctly, or a correct observation was misread.
+Designing informative errors helps the model recover \emph{during} the loop; reading the trace is how the builder recovers \emph{after} it.
+\end{remark}
+
 \subsection{Hallucinated Tool Arguments}
 
 The model may produce tool calls with arguments that look plausible but are incorrect — for example, referencing a column name that does not exist in the dataset, or using a function from a library that is not installed.

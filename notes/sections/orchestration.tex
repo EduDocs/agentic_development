@@ -212,6 +212,7 @@ The memory file is the primary artifact of an orchestrated run: it records what 
 The single JSON file is the reproducible \emph{floor}, not the ceiling.
 Production agents increasingly back external memory with a vector store, so that ``already tried'' can match \emph{semantically equivalent} candidates rather than only string-identical ones, and with hierarchical or episodic memory for runs that span many sessions (as of 2026).
 The file-based version here is the minimal form that keeps a run resumable and honestly reportable; the richer stores are the same idea with a better index.
+Two 2025 studies formalize \emph{what} an agent should keep across runs: \emph{ReasoningBank} distills reusable reasoning strategies from past attempts, and \emph{Agentic Context Engineering} treats the agent's evolving context itself as the artifact to optimize (arXiv:2509.25140; arXiv:2510.04618).
 
 \section{Reliability Engineering}
 \label{section:Reliability}
@@ -310,6 +311,8 @@ The pivot is not a new topic; it is an addition to a loop already understood.
 \item Anthropic, ``Building Effective Agents,'' \emph{Anthropic Engineering}, 2024 — the composable workflow-pattern vocabulary (prompt chaining, routing, parallelization, orchestrator--workers, evaluator--optimizer) that names the patterns of this chapter.
 \item Anthropic, ``How We Built Our Multi-Agent Research System,'' \emph{Anthropic Engineering}, 2025 — a shipped orchestrator--worker system: parallel sub-agents in isolated contexts and the token-cost tradeoff of multi-agent designs.
 \item Anthropic, ``Effective Harnesses for Long-Running Agents,'' \emph{Anthropic Engineering}, 2025 — session-spanning harness design and external-memory checkpointing (progress log, task list, git history) for agents that outlast a single context window.
+\item Ouyang, S., et al., ``ReasoningBank: Scaling Agent Self-Evolving with Reasoning Memory,'' 2025 (arXiv:2509.25140) — distilling reusable reasoning strategies an agent carries across runs, one step past the string-matched ``already tried'' record.
+\item Zhang, Q., et al., ``Agentic Context Engineering: Evolving Contexts for Self-Improving Language Models,'' 2025 (arXiv:2510.04618) — treating the agent's evolving context as the object to optimize across runs.
 \end{enumerate}
 \end{small}
 % EVOLVE-BLOCK-END

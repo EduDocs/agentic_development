@@ -169,6 +169,12 @@ If the agent is fitting a model, inject the data schema and the eval harness int
 If the agent is proposing candidate functions, inject the domain notes and the current best result — not the fitting code.
 \end{principle}
 
+\begin{remark}
+Selectivity is a floor, not a license to over-engineer.
+Two failure modes bracket it: \emph{over-constraint} --- rules so exhaustive (``always run exactly three searches'') that the agent cannot handle a legitimate edge case --- and \emph{under-specification} --- instructions so vague that behavior is left to chance.
+Before a context design is trusted, it is worth checking against four properties: \emph{completeness} (it covers the scenarios that matter), \emph{clarity} (each instruction is unambiguous), \emph{consistency} (the parts do not contradict one another), and \emph{testability} (the resulting behavior can be verified against the harness of Chapter~\ref{chapter:Evaluation}).
+\end{remark}
+
 \subsection{Long-Context Strategies}
 
 When the necessary context exceeds what can be injected directly, three strategies extend the effective reach.

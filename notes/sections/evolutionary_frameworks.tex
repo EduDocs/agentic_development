@@ -19,6 +19,7 @@ For a problem whose solution lies inside the space the model can search internal
 Two things keep the loop irreducible when it is.
 First, the \emph{evaluator is an external oracle}: the model can reason \emph{about} whether a candidate works, but the ground-truth signal --- does this program run, what error does the simulator return, what does the measurement say --- comes from executing against the world, not from further thought (Spine~1 of Section~\ref{section:TwoSpines}, in its starkest form).
 Second, search over a large, rugged space of structured artifacts is a different regime from bounded per-call reasoning: the population, its memory of what has already failed, and the selection pressure across generations explore a landscape no single forward pass exhausts.
+Even a model that searches \emph{within} its own deliberation --- as in Tree-of-Thoughts (Yao et al., 2023), which explores intermediate reasoning steps for a single problem instance --- is doing internal, self-scored search, not the external, harness-scored search across a population this chapter builds.
 Extended thinking makes each \emph{proposal} smarter; it does not replace the external check or the search around it.
 \end{remark}
 
@@ -384,6 +385,8 @@ The capstone is therefore not a new topic; it is these components, finally point
 \item Romera-Paredes, B., et al., ``Mathematical Discoveries from Program Search with Large Language Models,'' \emph{Nature}, 2024 (online December 2023; DOI:10.1038/s41586-023-06924-6) — the FunSearch paper; the primary template for the capstone.
 \item DeepMind, ``AlphaEvolve: A Gemini-Powered Coding Agent for Designing Advanced Algorithms,'' technical report, 2025 — the scaled-up successor to FunSearch.
 \item Lu, C., et al., ``The AI Scientist: Towards Fully Automated Open-Ended Scientific Discovery,'' Sakana AI, 2024 (arXiv:2408.06292) — a related but distinct end-to-end research-automation workflow, referenced in this chapter's lineage discussion.
+\item Shinn, N., et al., ``Reflexion: Language Agents with Verbal Reinforcement Learning,'' \emph{NeurIPS}, 2023 (arXiv:2303.11366) — an evaluation signal turned into \emph{linguistic} feedback for the next attempt. Reflexion accumulates that feedback across repeated attempts at one task; the mutation operator here compares across a population of independent candidates --- related but distinct uses of language as a feedback signal.
+\item Yao, S., et al., ``Tree of Thoughts: Deliberate Problem Solving with Large Language Models,'' \emph{NeurIPS}, 2023 (arXiv:2305.10601) — search over intermediate reasoning steps \emph{within} a single model's deliberation; the internal-search foil to this chapter's external, population-based search.
 \item OpenEvolve repository — open-source AlphaEvolve implementation; see \code{benchmarks/README.md} for the course-specific setup.
 \item Koza, J. R., \emph{Genetic Programming}, MIT Press, 1992 — the classical reference for GP and symbolic regression; Chapter~6 covers the baseline methods against which the course agents compete.
 \item Schmidt, M., and Lipson, H., ``Distilling Free-Form Natural Laws from Experimental Data,'' \emph{Science}, 2009 (DOI:10.1126/science.1165893) — the origin of modern SR; PySR's scientific lineage traces here.
