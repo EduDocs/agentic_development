@@ -1,4 +1,4 @@
-\chapter{From Word Vectors to Agents}
+\chapter{From Words to Agents}
 \label{chapter:HowWeGotHere}
 % EVOLVE-BLOCK-START
 
@@ -44,7 +44,7 @@ Rather than train a fresh model for every task, one could \emph{pre-train}\index
 This paradigm set new results across many language tasks at once (Devlin et al., 2019).
 Contextual embeddings from this family are what many modern retrieval systems actually run on, the successor to the static word vectors of the previous section.
 A parallel effort pre-trained \emph{decoder} models for generation rather than understanding: the \emph{Generative Pre-trained Transformer} (GPT) line, from GPT and GPT-2 onward.
-The latter branch is the thread that leads to models many  agents are built from.
+The latter branch is the thread that leads to the models that many agents are built from.
 
 \section{Scale, Prompting, and Grounding (2020)}
 \label{section:ScaleAndGrounding}
@@ -63,7 +63,7 @@ This made knowledge updatable and, when the system preserves and validates prove
 
 A capable, promptable model is still not an agent.
 Further developments closed that gap.
-For isntance, \emph{instruction tuning} with human feedback aligned models to follow instructions helpfully rather than merely continue plausible text, making their behavior reliable enough to direct (Ouyang et al., 2022).
+For instance, \emph{instruction tuning} with human feedback aligned models to follow instructions helpfully rather than merely continue plausible text, making their behavior reliable enough to direct (Ouyang et al., 2022).
 \emph{Chain-of-thought} prompting showed that eliciting intermediate reasoning before a final answer improves performance on multi-step problems (Wei et al., 2022).
 And giving the model \emph{tools}, letting it act, observe the result, and act again turned a text generator into a system that operates in the world, formalized as the reason-and-act loop the course builds in Chapter~\ref{chapter:AgentLoop} (Yao et al., 2023).
 At that point the model is no longer only answering; it is perceiving, reasoning, and acting.
@@ -153,11 +153,13 @@ The point is not the list of names but the dependency between them: representing
 
 \begin{table}[t]
 \centering
+\setlength{\belowcaptionskip}{8pt}
 \caption{A high-level timeline of the milestones behind agentic language models.
 Each step removed a concrete limitation of the previous one; the course develops the ideas in the right-hand column in the chapters they anchor.
 Years mark when each result first appeared as a preprint; the publication venues given in the Further Reading sometimes lag by a year, as with BERT (2018 preprint, NAACL~2019).}
 \label{table:AgenticTimeline}
-\begin{tabular}{@{}l l p{8.3cm}@{}}
+\small
+\begin{tabular}{@{}l l p{6.8cm}@{}}
 \toprule
 Year & Breakthrough & What it unlocked \\
 \midrule
@@ -167,7 +169,7 @@ Year & Breakthrough & What it unlocked \\
 2018  & Pre-training                      & transferable, contextual representations \\
 2020  & Scale and few-shot                & steering a frozen model by text alone \\
 2020  & Retrieval-augmented generation    & grounding in external, updatable knowledge \\
-2022--23 & Instruction tuning, reasoning, tool use & following instructions and acting --- agents \\
+2022--23 & Instruction tuning, reasoning, tool use & following instructions and acting: agents \\
 2024--26 & Reasoning \& multimodality     & trained latent reasoning; the chain continues \\
 \bottomrule
 \end{tabular}
@@ -175,7 +177,15 @@ Year & Breakthrough & What it unlocked \\
 
 None of these steps was guaranteed in advance, and their nearness in time is why the field's current state is genuinely recent.
 But the sequence is not arbitrary: today's agents are where this particular chain of problems and solutions has led, and the same pressure that drove it --- extend what the system can reliably do --- is what drives the rest of these notes.
-With the timeline in place, the next chapter turns from how we got here to what an agent is, and why general-purpose tool-using models can accelerate research and discovery.
+
+For a researcher, this history is not a spectator's story.
+On tasks that are well-specified and verifiable --- writing and debugging analysis code, sweeping a method across many datasets, drafting a derivation, screening a design space --- a capable agent can compress into minutes work that once took hours or days: speedups of an order of magnitude, sometimes two, and enough on some tasks to change what a small group can attempt at all.
+The gains are uneven and should not be overstated; they shrink where judgment, genuine novelty, or hard-won trust is the bottleneck rather than throughput.
+Where they do apply, though, the leverage real; it is not confined to computer science: a biologist fitting population models, an economist searching model specifications, a physicist proposing and testing functional forms, and a chemist screening candidates all face the same well-specified, checkable inner loops.
+The reason to attend to this moment is therefore not novelty but \emph{discovery}: the parts of research that reduce to propose, run, check, and repeat are exactly the parts an agent can turn, and turning them faster changes the pace of finding things out.
+Learning to direct that process and, by the capstone, to let agents search on its own is what these notes are for.
+
+With the timeline in place, the next chapter turns from how we got here to what an agent \emph{is}: the vocabulary and structure the rest of the course builds on.
 
 \section*{Further Reading}
 
