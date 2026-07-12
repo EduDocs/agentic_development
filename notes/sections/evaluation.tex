@@ -212,7 +212,7 @@ Common attack surfaces in a model discovery harness:
 An optimizer can therefore hide capacity in constants: $\sin(c \cdot x)$ has only a handful of nodes, yet by tuning the single fitted constant $c$ it can fit arbitrarily many oscillations, so node count rates it ``simpler'' than a polynomial with the same number of free parameters.
 Counting fitted parameters, not just nodes, closes the loophole.
 \item \textbf{High-degree polynomial fitting.} A sufficiently high-degree polynomial can achieve near-zero MSE on any finite dataset — including the test set, if the harness leaks.
-\item \textbf{Memorizing the test set via complexity.} An artifact that memorizes $n$ test points as a piecewise constant function with $n$ pieces has zero MSE and complexity $O(n)$ — which may still produce a low composite score if $\lambda$ is too small.
+\item \textbf{Memorizing data via complexity.} An artifact that memorizes the training data as a piecewise-constant function with $n$ pieces drives its \emph{training} error to zero at complexity $O(n)$; and if the harness leaks (Principle~\ref{principle:TestSplitInviolable}), the same trick reaches the sealed split and can still post a low composite score when $\lambda$ is too small.
 \end{enumerate}
 
 Recognizing these attack surfaces in advance and closing them in the harness design is the primary defense.
