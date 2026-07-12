@@ -179,7 +179,7 @@
   \node[lbl, text width=2.55cm] at (0.78,8.66)
     {{\scriptsize\color{rigMuted} \textbf{Explorer}}};
   \node[lbl, text width=2.55cm] at (0.78,8.34)
-    {{\scriptsize\color{rigMuted} browse and open the project's files}};
+    {{\scriptsize\color{rigMuted} browse files}};
   \node[lbl, text width=2.5cm, font=\ttfamily\scriptsize, text=rigMuted] at (0.78,7.55)
     {my-project/\\
      \ \ src/\\
@@ -201,7 +201,7 @@
   % role badge
   \rigDoc{3.66}{8.55}{roleEdAcc}
   \node[lbl, text width=8cm] at (3.86,8.68)
-    {{\small\bfseries\color{roleEdAcc} File being edited}\ \ {\scriptsize\color{rigMuted} \textbf{Editor} \textemdash{} the file the agent reads and writes}};
+    {{\small\bfseries\color{roleEdAcc} File being edited}\ \ {\scriptsize\color{rigMuted} \textbf{Editor} \textemdash{} file the agent reads and writes}};
   % faux code lines with a line-number gutter
   \foreach \i/\w/\dx/\acc in {%
       0/2.4/0.0/1, 1/4.6/0.6/0, 2/3.1/0.6/0, 3/4.9/1.2/0,
@@ -223,7 +223,7 @@
   \node[lbl, text width=3.7cm] at (12.36,9.12)
     {{\small\bfseries\color{roleAgAcc} Agent}\ \ {\scriptsize\color{rigMuted} \textbf{Claude Code}}};
   \node[lbl, text width=3.85cm] at (12.0,8.55)
-    {{\scriptsize\color{rigMuted} chat with the agent \textemdash{} it plans, reads, and edits your files}};
+    {{\scriptsize\color{rigMuted} chat with agent \textemdash{} it plans, reads, and edits files}};
   % agent message bubble (left)
   \fill[rigCanvas, rounded corners=3pt] (12.05,5.95) rectangle (14.7,6.95);
   \draw[roleAgAcc!45, line width=0.4pt, rounded corners=3pt] (12.05,5.95) rectangle (14.7,6.95);
@@ -238,7 +238,7 @@
   \node[font=\sffamily\tiny, text=roleAgAcc, anchor=east] at (15.6,5.43) {you};
   % input box
   \draw[rigFrame, line width=0.5pt, rounded corners=3pt] (12.05,2.85) rectangle (15.8,3.55);
-  \node[font=\sffamily\scriptsize, text=rigMuted, anchor=west] at (12.2,3.2) {Ask Claude to build, fix, explain\dots};
+  \node[font=\sffamily\scriptsize, text=rigMuted, anchor=west] at (12.2,3.2) {Ask Claude};
   \fill[roleAgAcc, rounded corners=2pt] (15.15,2.97) rectangle (15.68,3.43);
 
   % ============================================================================
@@ -246,17 +246,15 @@
   % ============================================================================
   \rigPrompt{3.74}{2.28}{roleShFill}{roleShAcc}
   \node[lbl, text width=9cm] at (3.96,2.42)
-    {{\small\bfseries\color{white} Shell}\ \ {\scriptsize\color{roleShInk} \textbf{Terminal} \textemdash{} runs commands; the agent's shell output appears here}};
-  \node[font=\ttfamily\scriptsize, text=roleShInk, anchor=north west] at (3.7,1.86)
+    {{\small\bfseries\color{white} Shell}\ \ {\scriptsize\color{roleShInk} \textbf{Terminal} \textemdash{} runs commands; access to tools}};
+  \node[font=\ttfamily\scriptsize, text=roleShInk, anchor=north west] at (3.7,2.1)
     {\textcolor{roleShCmd}{\$} pytest -q};
-  \node[font=\ttfamily\scriptsize, text=roleShInk, anchor=north west] at (3.7,1.56)
+  \node[font=\ttfamily\scriptsize, text=roleShInk, anchor=north west] at (3.7,1.8)
     {........\ \ 12 passed in 0.42s};
-  \node[font=\ttfamily\scriptsize, text=roleShInk, anchor=north west] at (3.7,1.26)
+  \node[font=\ttfamily\scriptsize, text=roleShInk, anchor=north west] at (3.7,1.5)
     {\textcolor{roleShCmd}{\$} python app.py};
-  \node[font=\ttfamily\scriptsize, text=roleShInk, anchor=north west] at (3.7,0.96)
-    {ready.};
-  \node[font=\ttfamily\scriptsize, text=roleShCmd, anchor=north west] at (3.7,0.66)
-    {\$ \textcolor{white}{\rule[0.02cm]{0.06cm}{0.22cm}}};
+  \node[font=\ttfamily\scriptsize, text=roleShCmd, anchor=north west] at (3.7,1.2)
+    {\$ \textcolor{white}{\rule[-0.02cm]{0.1cm}{0.2cm}}};
 
   % ============================================================================
   %  STATUS BAR (VS Code chrome; kept neutral, not a rig role)
