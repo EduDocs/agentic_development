@@ -78,13 +78,14 @@ import numpy as np
 def cosine_similarity(a, b):
     return np.dot(a, b) / (np.linalg.norm(a) * np.linalg.norm(b))
 
-# embeddings returned by an embedding model (d = 1536)
+# embed(): stand-in for an embedding API call (cf. embed_fn below);
+# the printed values are illustrative, not computed here (d = 1536)
 emb_drag    = embed("Drag force scales as the square of velocity")
 emb_resist  = embed("Aerodynamic resistance increases with v^2")
 emb_density = embed("Material density is mass divided by volume")
 
-print(cosine_similarity(emb_drag, emb_resist))   # ~0.91 — similar
-print(cosine_similarity(emb_drag, emb_density))  # ~0.23 — much less similar
+print(cosine_similarity(emb_drag, emb_resist))   # ~0.91 (illustrative) — similar
+print(cosine_similarity(emb_drag, emb_density))  # ~0.23 (illustrative) — much less similar
 \end{lstlisting}
 \end{example}
 

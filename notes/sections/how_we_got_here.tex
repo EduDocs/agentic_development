@@ -17,7 +17,7 @@ The dates are close together --- the span from the first milestone to working ag
 
 The first step was to give words a form a machine could compute with.
 A \emph{word embedding}\index{Word embedding} maps each word to a vector so that words with similar meanings land near one another, and the \emph{word2vec}\index{word2vec} models showed that such a space could be learned cheaply from raw text at scale (Mikolov et al., 2013).
-A companion result added an efficient training objective and vectors for phrases, and displayed the now-famous regularity that simple vector arithmetic recovers analogies --- the step from \emph{king} to \emph{queen} mirrors the step from \emph{man} to \emph{woman} (Mikolov et al., 2013).
+A companion result added an efficient training objective and vectors for phrases, and displayed the now-famous regularity that simple vector arithmetic is meaningful in this space --- adding the vectors for \emph{Germany} and \emph{capital} lands near the vector for \emph{Berlin} (Mikolov et al., 2013).
 Meaning had become geometry: a trained space in which distance encodes similarity.
 This is the direct ancestor of the embeddings the course uses for retrieval (Chapter~\ref{chapter:Retrieval}, Definition~\ref{definition:Embedding}), one representational level down --- words rather than passages.
 
@@ -63,6 +63,11 @@ Three further developments closed that gap.
 And giving the model \emph{tools} --- letting it act, observe the result, and act again --- turned a text generator into a system that operates in the world, formalized as the reason-and-act loop the course builds in Chapter~\ref{chapter:AgentLoop} (Yao et al., 2023).
 At that point the model is no longer only answering; it is perceiving, reasoning, and acting --- the definition of an agent that opens Chapter~\ref{chapter:AgenticParadigm}.
 
+The chain did not stop at tool use.
+The most recent step folds reasoning back inside the model: \emph{reasoning models}\index{Reasoning model} are trained to carry out extended chains of thought internally before they answer, rather than being prompted to reason step by step, and models are increasingly \emph{multimodal}, taking images and other data alongside text.
+The practical consequences --- a latent reasoning trace that cannot be read as an audit log, and a thinking budget in place of a prompt scaffold --- are treated in Chapter~\ref{chapter:AgentLoop}.
+The progression this chapter traces is therefore still under way, but its shape is unchanged: each step extends what the system can reliably do on its own.
+
 \section{The Progression Was Not Random}
 \label{section:NotRandom}
 
@@ -74,7 +79,8 @@ Table~\ref{table:AgenticTimeline} lays out the sequence in one view.
 \begin{table}[t]
 \centering
 \caption{A high-level timeline of the milestones behind agentic language models.
-Each step removed a concrete limitation of the previous one; the course develops the ideas in the right-hand column in the chapters they anchor.}
+Each step removed a concrete limitation of the previous one; the course develops the ideas in the right-hand column in the chapters they anchor.
+Years mark when each result first appeared as a preprint; the publication venues given in the Further Reading sometimes lag by a year, as with BERT (2018 preprint, NAACL~2019).}
 \label{table:AgenticTimeline}
 \begin{tabular}{@{}l l p{6.4cm}@{}}
 \toprule
@@ -86,7 +92,8 @@ Year & Breakthrough & What it unlocked \\
 2018  & Pre-training (BERT; the GPT line) & transferable, contextual representations \\
 2020  & Scale and few-shot (GPT-3)        & steering a frozen model by text alone \\
 2020  & Retrieval-augmented generation    & grounding in external, updatable knowledge \\
-2022+ & Instruction tuning, reasoning, tools & following instructions and acting --- agents \\
+2022--23 & Instruction tuning, chain-of-thought, tools & following instructions and acting --- agents \\
+2024--26 & Reasoning models, multimodality   & trained latent reasoning; the chain continues \\
 \bottomrule
 \end{tabular}
 \end{table}
