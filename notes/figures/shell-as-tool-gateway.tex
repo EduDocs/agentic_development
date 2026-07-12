@@ -173,43 +173,43 @@
   \node[anchor=north west, font=\sffamily\scriptsize\bfseries, text=rigMuted] at (0.62,7.9)
     {YOUR MACHINE};
 
-  % ---- agent (violet) --------------------------------------------------------
-  \fill[roleAgFill, rounded corners=4pt] (0.85,4.55) rectangle (2.05,5.95);
-  \draw[roleAgAcc, line width=1pt, rounded corners=4pt] (0.85,4.55) rectangle (2.05,5.95);
-  \rigChat{1.45}{5.5}{roleAgAcc}
-  \node[font=\sffamily\scriptsize\bfseries, text=roleAgAcc] at (1.45,5.05) {agent};
+  % ---- agent (violet) — top-left corner of the panel -------------------------
+  \fill[roleAgFill, rounded corners=4pt] (0.85,6.75) rectangle (2.05,7.4);
+  \draw[roleAgAcc, line width=1pt, rounded corners=4pt] (0.85,6.75) rectangle (2.05,7.4);
+  \rigChat{1.45}{7.32}{roleAgAcc}
+  \node[font=\sffamily\scriptsize\bfseries, text=roleAgAcc] at (1.45,6.78) {agent};
 
-  % ---- shell GATEWAY (slate doorway with >_ ; the same shell, expanded) -------
-  \fill[roleShAcc] (2.75,4.25) rectangle (2.95,6.35);      % left post
-  \fill[roleShAcc] (3.35,4.25) rectangle (3.55,6.35);      % right post
-  \fill[roleShAcc] (2.75,6.15) rectangle (3.55,6.35);      % lintel
-  \fill[roleShAcc] (2.75,4.25) rectangle (3.55,4.45);      % base
+  % ---- shell GATEWAY (slate doorway) — directly below the agent, centred ------
+  \fill[roleShAcc] (1.05,4.35) rectangle (1.25,6.25);      % left post
+  \fill[roleShAcc] (1.65,4.35) rectangle (1.85,6.25);      % right post
+  \fill[roleShAcc] (1.05,6.05) rectangle (1.85,6.25);      % lintel
+  \fill[roleShAcc] (1.05,4.35) rectangle (1.85,4.55);      % base
   % >_ on the lintel
   \draw[white, line width=1pt, line cap=round, line join=round]
-        (3.02,6.30) -- (3.10,6.25) -- (3.02,6.20);
-  \draw[white, line width=1pt, line cap=round] (3.14,6.20) -- (3.26,6.20);
-  \node[font=\sffamily\scriptsize\bfseries, text=roleShAcc] at (3.15,4.02) {shell};
-  \node[font=\sffamily\tiny, text=rigMuted] at (3.15,3.75) {the gateway};
+        (1.32,6.20) -- (1.40,6.15) -- (1.32,6.10);
+  \draw[white, line width=1pt, line cap=round] (1.44,6.10) -- (1.56,6.10);
+  \node[font=\sffamily\scriptsize\bfseries, text=roleShAcc] at (1.45,4.12) {shell};
+  \node[font=\sffamily\tiny, text=rigMuted] at (1.45,3.85) {the gateway};
 
-  % conduit: agent → through the shell → tools
-  \draw[conduit] (2.08,5.3) -- (2.72,5.3);
-  \draw[conduit] (3.58,5.3) -- (4.35,5.3);
+  % conduit: agent → shell (down), then shell → the tool column on the right
+  \draw[conduit] (1.45,6.73) -- (1.45,6.27);
+  \draw[roleShAcc, line width=2.2pt] (1.87,5.1) -- (5.05,5.1);     % trunk to the column
+  \draw[roleShAcc, line width=1.8pt] (5.05,7.05) -- (5.05,3.15);   % distribution bus
+  \foreach \yy in {7.05,5.75,4.45,3.15}{
+    \draw[reach] (5.05,\yy) -- (5.22,\yy);}
 
-  % ---- your machine's tools (reachable) --------------------------------------
-  \rigToolbox{4.65}{6.75}{toolAcc}
-  \node[anchor=west, font=\sffamily\scriptsize\bfseries, text=rigInk] at (4.9,6.75)
-    {your machine's tools};
-  \node[tile] (tA) at (5.25,5.75) [minimum width=1.55cm, minimum height=0.8cm] {};
-  \node[font=\sffamily\scriptsize, text=rigInk, align=center] at (5.25,5.75) {licensed\\apps};
-  \node[tile] (tB) at (6.95,5.75) [minimum width=1.55cm, minimum height=0.8cm] {};
-  \node[font=\sffamily\scriptsize, text=rigInk, align=center] at (6.95,5.75) {compiled\\binaries};
-  \node[tile] (tC) at (5.25,4.7) [minimum width=1.55cm, minimum height=0.8cm] {};
-  \node[font=\sffamily\scriptsize, text=rigInk, align=center] at (5.25,4.7) {domain\\tools \& CLIs};
-  % "your files" tile = file-system role (green)
+  % ---- your machine's tools — one vertical column on the right ---------------
+  \node[tile] at (6.2,7.05) [minimum width=2.0cm, minimum height=0.9cm] {};
+  \node[font=\sffamily\scriptsize, text=rigInk, align=center] at (6.2,7.05) {licensed\\apps};
+  \node[tile] at (6.2,5.75) [minimum width=2.0cm, minimum height=0.9cm] {};
+  \node[font=\sffamily\scriptsize, text=rigInk, align=center] at (6.2,5.75) {domain\\tools \& CLIs};
+  \node[tile] at (6.2,4.45) [minimum width=2.0cm, minimum height=0.9cm] {};
+  \node[font=\sffamily\scriptsize, text=rigInk, align=center] at (6.2,4.45) {compiled\\binaries};
+  % local file system tile = file-system role (green)
   \node[draw=roleFsAcc, line width=0.6pt, fill=roleFsFill, rounded corners=2.5pt]
-        (tD) at (6.95,4.7) [minimum width=1.55cm, minimum height=0.8cm] {};
-  \rigFolder{6.45}{4.72}{roleFsAcc}
-  \node[font=\sffamily\scriptsize, text=roleFsAcc, anchor=west] at (6.62,4.7) {your files};
+        at (6.2,3.15) [minimum width=2.0cm, minimum height=0.9cm] {};
+  \rigFolder{6.2}{3.42}{roleFsAcc}
+  \node[font=\sffamily\scriptsize, text=roleFsAcc, align=center] at (6.2,2.98) {local\\file system};
 
   % caption
   \node[lbl, text width=7.0cm, font=\sffamily\scriptsize] at (0.4,1.3)
