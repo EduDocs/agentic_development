@@ -235,18 +235,40 @@ Two safeguards follow: grade the \emph{outcome} --- the final artifact or state 
 This is the evaluation-side form of the fitness-decay caution of Chapter~\ref{chapter:AgenticParadigm}, and it returns for evolutionary search in Chapter~\ref{chapter:EvolutionaryFrameworks}.
 \end{remark}
 
-\section{LLM-as-Judge Evaluation}
+\section{The Evaluability Spectrum: Oracles and Judges}
 \label{section:LLMJudge}
 
-Not every research output can be scored by a formula.
-When the artifact is a proof sketch, a literature summary, a piece of code judged for quality, or an experimental design, there is no ground-truth vector against which to compute an MSE.
-The \emph{LLM-as-judge}\index{LLM-as-judge} pattern fills this gap: a capable model is given the candidate output and a rubric, and returns a score --- often with a justification --- for each criterion.
-This is the same harness contract of Definition~\ref{definition:EvalHarness}, with the scoring function realized by a model call rather than a numerical metric, and it is the standard way to evaluate open-ended agentic outputs where an automatic metric cannot be constructed~(Zheng et al., 2023).
+Not every research output can be scored by a formula, and how a harness computes its score varies along a spectrum of \emph{evaluability}\index{Evaluability} set by the task itself (Figure~\ref{figure:EvaluabilitySpectrum}).
 
-The power comes with a characteristic risk: the judge's biases become the harness's biases.
+At the \emph{verifiable} end, an unambiguous oracle settles quality automatically: the density of a sphere packing, whether a program passes its tests against a defined interface or schema, the mean-squared error of a fitted model.
+The scoring function is a check the artifact either passes or does not, cheap to run and hard to argue with.
+This is the regime the harness of this chapter has assumed, and, not by coincidence, the regime where automated evolutionary search has reached furthest (Chapter~\ref{chapter:EvolutionaryFrameworks}): a clean oracle is exactly what a tireless optimizer needs.
+
+At the \emph{judgment} end, no formula exists.
+When the artifact is a proof sketch, a literature summary, an experimental design, or a piece of prose, there is no ground-truth vector against which to compute an error, and a capable model must act as the evaluator.
+The \emph{LLM-as-judge}\index{LLM-as-judge} pattern fills this gap: a model is given the candidate and a rubric and returns a score, often with a justification, for each criterion (Zheng et al., 2023).
+This is the same harness contract of Definition~\ref{definition:EvalHarness}, with the scoring function realized by a model call rather than a numerical metric; it is \emph{automatic} in the sense the fitness principle requires, no human in the loop, without being objective.
+
+\begin{figure}[htb!]
+\begin{center}
+\input{figures/evaluation-spectrum}
+\caption{The evaluability spectrum.
+A \emph{verifiable} task has an oracle, a formula or check that settles quality objectively and cheaply; a \emph{judgment} task has none, so a capable model acts as a \emph{critic}, scoring an artifact against a rubric.
+Which end a task falls on is a property of the problem, not a preference.
+The critic and the evaluator are distinct where a formula exists (the critic of Chapter~\ref{chapter:Orchestration} filters candidates the oracle then scores) and merge where none does, where judging and scoring are one step.}
+\label{figure:EvaluabilitySpectrum}
+\end{center}
+\end{figure}
+
+Two nuances keep the spectrum honest.
+First, verifiability is a property of the \emph{problem}, not a choice, and a single artifact can straddle the poles depending on how it is posed: a mathematical proof is a matter of judgment at the research frontier, but becomes verifiable the moment it is formalized in a proof assistant such as Lean or Coq, where a checker accepts or rejects it outright.
+Second, the boundary is moving: as models grow more capable, the judgment end becomes trustworthy enough that strict formula-based evaluation is no longer the only norm, which widens the range of research an evolutionary loop can be pointed at beyond the cleanly verifiable.
+
+The judgment end carries a characteristic risk: the judge's biases become the harness's biases.
 A judge model may prefer verbose answers, favor its own stylistic habits, be sensitive to the order in which candidates are presented, or itself be vulnerable to prompt injection from the content it is scoring.
 The mitigations mirror those for any harness: pin the judge model and rubric, calibrate the judge against a small human-scored set, and prefer relative judgments (is $A$ better than $B$?) to absolute scores where possible.
-Because a judge is itself a target for the optimizer, Principle~\ref{principle:GoodhartsLaw} applies with full force --- an evolutionary search will find and exploit a weak judge as readily as a weak metric.
+Because a judge is itself a target for the optimizer, Principle~\ref{principle:GoodhartsLaw} applies with full force: an evolutionary search will find and exploit a weak judge as readily as a weak metric.
+This is why the verifiable end, where it exists, stays the gold standard, and why a judge is reached for when the task leaves no alternative rather than by default.
 
 \section{The Harness as a Contract}
 \label{section:HarnessContract}

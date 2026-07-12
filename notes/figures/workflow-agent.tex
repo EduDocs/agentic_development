@@ -3,9 +3,9 @@
 \input{figures/concept-style}
 \begin{tikzpicture}
 % the spectrum the two sit on
-\draw[conceptflow, <->] (-2.1,1.2) -- (8.1,1.2);
-\node[conceptlabel, anchor=south] at (-1.4,1.25) {code sets each step};
-\node[conceptlabel, anchor=south] at (7.4,1.25) {the model sets each step};
+\draw[conceptflow, <->] (-2.1,1.2) -- (8,1.2);
+\node[conceptlabel, anchor=south] at (-1.4,1.25) {code specifies each step};
+\node[conceptlabel, anchor=south] at (7.4,1.25) {model sets each step};
 % the two blocks
 \node[conceptbox, fill=blue!15,  minimum width=3cm] (wf) at (0,0) {Workflow};
 \node[conceptbox, fill=green!15, minimum width=3cm] (ag) at (6,0) {Agent};
@@ -13,5 +13,5 @@
 \node[conceptlabel, text width=4.4cm, anchor=north] at (0,-0.75)
   {steps fixed in code\\control flow known in advance\\predictable and cheaper\\chaining, routing, parallelization};
 \node[conceptlabel, text width=4.4cm, anchor=north] at (6,-0.75)
-  {model chooses the next step at run time\\loops until the task is done\\flexible and open-ended\\higher cost, more room for error};
+  {model chooses next step at run time\\loops until task is completed\\flexible and open-ended\\higher cost, more room for error};
 \end{tikzpicture}

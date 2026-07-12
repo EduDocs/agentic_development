@@ -1,0 +1,21 @@
+%% evaluation-spectrum.tex — the evaluability spectrum (Chapter 7). House conceptual style.
+%% Verifiable oracle (left) contrasted with a model-as-judge critic (right), with the
+%% critic/evaluator convergence noted below.
+\input{figures/concept-style}
+\begin{tikzpicture}
+% the spectrum the two poles sit on
+\draw[conceptflow, <->] (-2.1,1.2) -- (8.1,1.2);
+\node[conceptlabel, anchor=south] at (-1.3,1.25) {verifiable};
+\node[conceptlabel, anchor=south] at (7.3,1.25) {judgment};
+% the two poles
+\node[conceptbox, fill=gray!15,   minimum width=3.2cm] (ev) at (0,0) {Evaluator};
+\node[conceptbox, fill=violet!15, minimum width=3.2cm] (cr) at (6,0) {Critic};
+% distinctions, listed below each (outside the node)
+\node[conceptlabel, text width=4.6cm, anchor=north] at (0,-0.75)
+  {an oracle: formula, test, or check\\objective and automatic\\unambiguous, cheap\\sphere packing, code, MSE};
+\node[conceptlabel, text width=4.6cm, anchor=north] at (6,-0.75)
+  {a capable model scoring a rubric\\automatic but not objective\\contextual, biased, gameable\\proof, prose, an idea};
+% the convergence, along the bottom
+\node[conceptlabel, text width=10.5cm, anchor=north, text=black!55] at (3,-2.75)
+  {Distinct where a formula exists (the critic only filters what the oracle scores); they merge where none does (the critic \emph{is} the evaluator).};
+\end{tikzpicture}

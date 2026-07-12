@@ -7,5 +7,5 @@
 \draw[conceptflow] (obs)    -- (reason) node[midway, above, conceptlabel] {context};
 \draw[conceptflow] (reason) -- (act)    node[midway, above, conceptlabel] {action};
 \draw[conceptflow] (act) to[out=270, in=270, looseness=0.6]
-      node[below, conceptlabel] {tool result / new state} (obs);
+      node[above, conceptlabel] {tool result / new state} (obs);
 \end{tikzpicture}

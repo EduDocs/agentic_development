@@ -122,8 +122,8 @@ The user writes tool definitions, assembles a control loop, and decides how stru
 An evaluation harness is also introduced at this rung: the agent must be judged by something more reliable than intuition.
 
 \paragraph{Orchestrate.}
-Orchestrating an agent means composing multiple agents or steps into a reliable workflow.
-This rung introduces failure handling, logging, memory, and the \emph{proposer–critic} pattern, in which one agent generates candidates and a second verifies or scores them.
+This rung involves composing multiple agents or steps into a reliable workflow.
+It often entails failure handling, logging, memory, and the \emph{proposer–critic} pattern, in which one agent generates candidates and a second verifies or scores them.
 A reliable orchestration that can run unattended for hours is a prerequisite for the next rung: an evolutionary search cannot be trusted if it fails silently.
 
 \paragraph{Evolve.}
@@ -141,38 +141,52 @@ Modern evolutionary frameworks harness randomness through additional mechanisms 
 Two threads connect every rung of the ladder.\index{Two spines}
 They are called \emph{spines} because every unit hangs from them.
 
-\subsection{Spine 1 — Evaluation Becomes Fitness}
+\subsection{Spine 1: Evaluation Becomes Fitness}
 
 You cannot trust an agent you cannot score, and you cannot evolve an artifact you cannot score automatically.
-Because the model generates by plausible continuation rather than lookup, its output is fluent whether or not it is correct --- which is precisely why trust must come from an external score rather than from the confidence of the text itself.
-Evaluation is therefore introduced when the student first builds an agent (Challenge~2) and reused in every subsequent unit.
+Because the model generates by plausible continuation rather than lookup, its output is fluent whether or not it is correct, which is precisely why trust must come from an external score rather than from the confidence of the text itself.
+Evaluation is therefore introduced when a researcher first builds an agent (Challenge~2) and reused in every subsequent unit.
 The key moment comes at the capstone pivot: the evaluation harness, which has been used to \emph{compare methods}, is now used to \emph{drive search}.
 Nothing about the harness changes; its role changes.
-One caveat travels with this promotion: a fixed evaluation loses discriminating power as capability rises --- a capability-relative echo of Goodhart's law that returns as benchmark saturation in Chapter~\ref{chapter:Evaluation} --- so the fitness function is best treated as an evolving artifact to be refreshed, not a fixed target.
-This transition — evaluation becoming fitness — is the conceptual hinge of the course.
+One caveat travels with this promotion: a fixed evaluation loses discriminating power as capability rises (a capability-relative echo of Goodhart's law that returns as benchmark saturation in Chapter~\ref{chapter:Evaluation}), so the fitness function is best treated as an evolving artifact to be refreshed, not a fixed target.
+This transition, evaluation becoming fitness, is the conceptual hinge of the course.
 There is also a pedagogical reason evaluation is promoted to a spine rather than left to habit.
-Not every competence is learned the same way: some --- shaping context, reusing a project setup --- tend to accrue with ordinary exposure, whereas the discernment to catch a wrong assumption or a plausible-but-false claim shows little tendency to grow on its own, an asymmetry consistent with Anthropic's analysis of how researchers use these tools (Anthropic, 2025).
+Not every competence is learned the same way: some (shaping context, reusing a project setup) tend to accrue with ordinary exposure, whereas the discernment to catch a wrong assumption or a plausible-but-false claim shows little tendency to grow on its own, an asymmetry consistent with Anthropic's analysis of how researchers use these tools (Anthropic, 2025).
 Because discernment does not come free with practice, it must be taught deliberately and revisited at every rung.
 
 \begin{principle}
 \label{principle:EvalFitness}
-A reusable validation harness built for comparison can serve as the fitness function for evolutionary search --- but not every harness can, and not without care.
+A reusable validation harness built for comparison can serve as the fitness function for evolutionary search, but not every harness can, and not without care.
 It must be \emph{automatic} (it runs without human judgment), \emph{leakage-resistant} (it cannot be gamed by artifacts that overfit the split it scores), cheap and stable enough to be queried many times over, and distinct from any final-test split held back for a one-shot audit.
 A benchmark that is too costly, too noisy, non-stationary, unsafe under repeated use, or reserved for final reporting is not a drop-in fitness function.
 \end{principle}
 
-\subsection{Spine 2 — Context Engineering}
+How that automatic score is computed depends on the task, along a spectrum of \emph{evaluability}.
+At one end are \emph{verifiable} problems, where an unambiguous oracle settles quality: the density of a sphere packing, whether a program passes its tests against a defined interface, the error of a fitted model.
+At the other are problems of \emph{judgment}, where no formula exists and a capable model must act as the evaluator, a \emph{critic} scoring an artifact against a rubric: the soundness of a proof at the research frontier, the quality of a written argument, the promise of an idea.
+Which end a task falls on is a property of the problem, not a preference.
+The verifiable end is where evaluation-becomes-fitness is cleanest, and where automated search has so far reached furthest; the judgment end is softer and more easily gamed, yet as models grow more capable it becomes usable, so strict formula-based evaluation is no longer the only norm.
+Chapter~\ref{chapter:Evaluation} develops both ends.
+
+\subsection{Spine 2: Context Engineering}
 
 An LLM is a function of its context.
 What the model proposes, generates, or decides depends entirely on what it reads.
-Context engineering — the deliberate construction of what goes into the context window — is therefore the primary lever available to the agent builder.
+Context engineering, the deliberate construction of what goes into the context window, is therefore the primary lever available to the agent builder.
 
-This thread begins in week~1 with prompt engineering and automated context management, deepens in Challenge~3 as retrieval-augmented grounding, and reaches its culmination in the evolutionary capstone: the LLM mutation operator is most effective when its context contains the lineage of what has been tried, the domain priors, and the current population's best candidates.
+This lever has itself matured through three levels.
+\emph{Prompting}, the mode of early and web-based use around 2023, was about which question to ask and how to phrase it.
+\emph{Context engineering} arrived with large windows and persistent profiles: the question became how to fill a hundred-thousand- or million-token window well, where to position each element within it, when caching earlier tokens pays off, and when to clear the window rather than let it accumulate.
+\emph{Agentic context engineering} is the current shift, and the reason this spine is named with that adjective in mind: the context is increasingly assembled not by the researcher but by an agent, such as Claude or Codex, working on the researcher's own machine, which is what motivates giving that agent access to one's files, tools, and knowledge.
+The questions move accordingly, toward how to keep a file hierarchy an agent can navigate, how to make a corpus searchable with ordinary unix tools (\code{grep}, \code{sed}, \code{awk}), which file formats are cheap in tokens and time, and how to curate the tools, instruction files (\code{CLAUDE.md}, \code{AGENTS.md}), skills, and connectors an agent draws on.
+Chapters~\ref{chapter:AgenticRig} and~\ref{chapter:ContextEngineering} take up these subtleties; here it is enough to feel the richness, that the lever has moved from wording a prompt to shaping the environment an agent builds its own context from.
+
+This thread begins with prompt engineering and agentic context management, deepens in Challenge~3 as retrieval-augmented grounding, and reaches its culmination in the evolutionary capstone: the LLM mutation operator is most effective when its context contains the lineage of what has been tried, the domain priors, and the current population's best candidates.
 Evolution is context engineering in a loop.
 
 \section{Why Now}
 
-Agentic AI systems have existed in various forms for decades — rule-based expert systems, reinforcement learning agents, robotic planning systems.
+Agentic AI systems have existed in various forms for decades: rule-based expert systems, reinforcement learning agents, robotic planning systems.
 What makes the current moment distinct is the arrival of \emph{general-purpose tool-using language models}: systems that can read natural language instructions for a new task, decide which tools to invoke, interpret unstructured results, and adapt mid-task without domain-specific engineering.
 
 Three capabilities combine to make this shift significant.
@@ -180,11 +194,11 @@ Three capabilities combine to make this shift significant.
 \paragraph{Instruction following.}
 Modern language models follow complex, nuanced instructions expressed in natural language with high reliability.
 An agent builder need not program the model's behavior in code; they write a system prompt.
-This dramatically lowers the cost of specifying what an agent should do.
-A geologist who wants an agent to download seismic records, filter them by magnitude, and produce a summary figure writes that goal in plain English --- not in a programming language the geologist may not speak fluently.
+This lowers the barrier to specifying what an agent should do: a matter of clear description, not programming.
+A geologist who wants an agent to download seismic records, filter them by magnitude, and produce a summary figure writes that goal in plain English, not in a programming language the geologist may not speak fluently.
 
 \paragraph{Tool use.}
-Tool-calling capability, now standard in frontier models, allows a language model to take actions in the world — reading files, running code, searching the web — and incorporate the results into subsequent reasoning.
+Tool-calling capability, now standard in frontier models, allows a language model to take actions in the world (reading files, running code, searching the web) and incorporate the results into subsequent reasoning.
 The model can, in principle, perform the same actions a human researcher performs at a computer.
 
 \paragraph{Structured output.}
@@ -193,13 +207,13 @@ This is the glue of multi-agent orchestration.
 
 Together, these capabilities make a language model a plausible substrate for a research assistant that can be directed, composed, and evaluated programmatically.
 The course is concerned with doing this \emph{well}: reliably, reproducibly, and honestly.
-Doing it well requires a working rig --- the terminal, version control, and API access on which everything else rests --- and that is where the next chapter begins.
+Doing it well requires a working rig (the terminal, version control, and API access on which everything else rests), and that is where the next chapter begins.
 
 \begin{remark}
-A fair question hangs over everything that follows: if the platform keeps improving --- automatic context management, better tool use, longer windows, models that reason before they act --- does the researcher's own engineering simply get absorbed?
+A fair question hangs over everything that follows: if the platform keeps improving (automatic context management, better tool use, longer windows, models that reason before they act), does the researcher's own engineering simply get absorbed?
 Part of it does, and should: generic prompt-crafting and transport-level tuning (how context is cached and ordered, when to compact a conversation) are being standardized into the platform, and a wise builder lets them be.
 What does not compress away is the part specific to your problem: the design of an evaluation that measures what \emph{you} mean by better, the curation of a corpus that encodes your field's judgment, and the architecture of the loop that composes these into something trustworthy.
-This is why the chapters ahead spend their effort on evaluation, grounding, and orchestration rather than on prompt wording --- the durable skill is building the parts a general system cannot know to build for you.
+This is why the chapters ahead spend their effort on evaluation, grounding, and orchestration rather than on prompt wording: the durable skill is building the parts a general system cannot know to build for you.
 \end{remark}
 
 \section*{Further Reading}

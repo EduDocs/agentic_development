@@ -11,7 +11,7 @@ A mutation operator derives new candidates from survivors by making structured, 
 Survivors that score well carry structure worth preserving; mutation explores variations on that structure.
 Over generations, the population improves because good structure is inherited and refined.
 
-This chapter formalizes the evolutionary loop, develops the components that make it work, and traces the lineage from classical genetic programming through FunSearch and AlphaEvolve to the systems students build in the capstone.
+This chapter formalizes the evolutionary loop, develops the components that make it work, and traces the lineage from classical genetic programming through FunSearch and AlphaEvolve to the systems a researcher builds in the capstone.
 
 \begin{remark}
 It is worth asking why an \emph{external} loop is needed at all, now that a capable model can reason at length before it answers --- iterating, reconsidering, and backtracking within a single call (Chapter~\ref{chapter:AgentLoop}).
@@ -168,7 +168,7 @@ This is the simplest strategy and is the default in the course.
 Diversity is the fuel of evolution: without variation, the mutation operator has nothing to vary on, and the search stagnates at a local optimum.
 
 \begin{remark}
-Population collapse is one of the most common failure modes in student implementations.
+Population collapse is one of the most common failure modes in early implementations.
 If the leaderboard score of the evolutionary run does not improve over the GES loop (Challenge~4), the most likely cause is collapse: the population converged early, and the mutation operator is spinning on a single form without finding anything new.
 \end{remark}
 
@@ -318,7 +318,7 @@ The researcher can read and critique the discovered model.
 
 \subsection{The Baseline Ladder}
 
-The course maintains a \emph{baseline ladder}\index{Baseline ladder}: a sequence of methods of increasing sophistication against which each student's system is compared.
+The course maintains a \emph{baseline ladder}\index{Baseline ladder}: a sequence of methods of increasing sophistication against which each researcher's system is compared.
 
 \begin{table}[htb!]
 \begin{center}

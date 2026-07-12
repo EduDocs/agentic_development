@@ -1,7 +1,7 @@
 %% capability-ladder.tex — the four-rung capability ladder (Chapter 2). House conceptual style.
 \input{figures/concept-style}
 \begin{tikzpicture}[
-    rung/.style={conceptbox, minimum width=3cm, font=\small\bfseries},
+    rung/.style={conceptbox, minimum width=3cm, font=\small},
     lbl/.style={font=\scriptsize, align=left, text width=6.2cm},
 ]
 \node[rung, fill=gray!15]   (op)  at (0,0)    {Operate};
@@ -11,8 +11,8 @@
 \draw[conceptflow] (op)  -- (bld);
 \draw[conceptflow] (bld) -- (orc);
 \draw[conceptflow] (orc) -- (evl);
-\node[lbl, right=0.6cm of op]  {Terminal, shell, version control, model API};
-\node[lbl, right=0.6cm of bld] {Tool definitions, the agent loop, an evaluation harness};
+\node[lbl, right=0.6cm of op]  {App, terminal, version control, model API};
+\node[lbl, right=0.6cm of bld] {Tool definitions, agent loop, evaluation harness};
 \node[lbl, right=0.6cm of orc] {Multi-agent workflows, retrieval, reliability};
 \node[lbl, right=0.6cm of evl] {generate $\rightarrow$ evaluate $\rightarrow$ select $\rightarrow$ mutate};
 \end{tikzpicture}
