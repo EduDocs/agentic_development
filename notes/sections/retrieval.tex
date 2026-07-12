@@ -200,10 +200,9 @@ A \emph{retrieval-augmented} agent extends the basic loop with a retrieval step 
 
 \begin{figure}[htb!]
 \begin{center}
-\resizebox{\textwidth}{!}{%
 \begin{tikzpicture}[
-    node distance=0.85cm,
-    box/.style={draw, rounded corners=4pt, minimum width=2.3cm,
+    node distance=0.7cm,
+    box/.style={draw, rounded corners=4pt, minimum width=2.2cm,
                 minimum height=1.0cm, align=center, font=\small},
     store/.style={draw, dashed, rounded corners=3pt, fill=gray!8,
                   minimum width=3.0cm, minimum height=1.0cm, align=center, font=\small},
@@ -221,8 +220,7 @@ A \emph{retrieval-augmented} agent extends the basic loop with a retrieval step 
 \draw[arr] (idx)  -- node[above,font=\scriptsize]{$k$-NN}    (topk);
 \draw[arr] (topk) -- node[above,font=\scriptsize]{inject}    (model);
 \draw[arr] (corpus) -- (idx);
-\end{tikzpicture}%
-}
+\end{tikzpicture}
 \caption{The retrieval-augmented generation pipeline.
 At query time (left to right) the query is embedded, matched against the vector index by $k$-nearest-neighbor search, and its top-$k$ passages are injected into the context the model reads.
 The corpus $\mathcal{K}$ is chunked and embedded once, offline (dashed), and sealed thereafter --- exactly the discipline of Section~\ref{section:VectorSearch}.

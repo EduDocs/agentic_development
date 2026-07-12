@@ -2,29 +2,29 @@
 \addcontentsline{toc}{chapter}{Preface}
 % EVOLVE-BLOCK-START
 
-These notes accompany the graduate course \emph{Agentic Development in Research}.
+These notes accompany the graduate course \emph{Agentic Development \& Discovery}.
 The course trains researchers to build, orchestrate, and evolve agentic AI systems for use in real research work.
-These notes collect the conceptual foundations that lectures and studio sessions draw on.
-They do not replace hands-on practice with the tools; they equip students to understand what they are doing and why.
+These notes collect the conceptual foundations that lectures and sessions draw on.
+They do not replace hands-on practice with the tools; they equip learners to better understand what they are doing and why.
 
-The notes follow a \emph{capability ladder}: students progress from \emph{operating} a professional agentic rig, to \emph{building} a research agent, to \emph{orchestrating} multi-step workflows, and finally to \emph{evolving} artifacts through automated search.
+The notes follow a \emph{capability ladder}: learners progress from \emph{operating} an agentic rig, to \emph{building} a research agent, to \emph{orchestrating} multi-step workflows, and finally to \emph{evolving} artifacts through automated search.
 Two conceptual threads run the length of this ladder.
-The first is \emph{evaluation}: the course treats automatic, honest evaluation as the foundation of every trustworthy agentic system, and reveals how an evaluation harness becomes a fitness function once the system evolves.
-The second is \emph{context engineering}: the discipline of deciding what information the agent holds in its context window, and constructing that context deliberately.
+The first is \emph{evaluation}: the course treats honest evaluation as a foundation for a trustworthy agentic system, and reveals how an evaluation harness becomes a fitness function once the system evolves.
+The second is \emph{context engineering}: the discipline of informing the agent about what to hold in its context window, deliberately constructing an environment where autonomous context building is efficient, and anchoring agentic development in domain expertise.
 
-The capability ladder and these two spines are the organizing contribution of these notes, and they position the course deliberately between two kinds of existing material.
-On one side are vendor tool tutorials, which teach the mechanics of a particular agentic rig but stop at \emph{operating} it.
-On the other are standard machine-learning and NLP courses, which teach models but not the surrounding discipline of building, orchestrating, evaluating, and evolving an autonomous system around one.
-These notes are neither: the rig is treated as an on-ramp rather than the subject, and a single research task — model discovery from data — is carried the full length of the ladder so that each capability is introduced because that task demands it, and every technique earns its place by advancing the same evolving artifact.
+The capability ladder and these two spines are the organizing contribution of these notes, and they position the course deliberately between two types of existing material.
+On one side are vendor tool tutorials, which teach the mechanics of a particular agentic rig but stop at \emph{usage}.
+On the other are foundational machine-learning courses, which teach concepts and models, but not the surrounding discipline of building, orchestrating, evaluating, and evolving autonomous discover engine for research in compute-adjacent fields.
+These notes are neither: the rig is treated as an on-ramp rather than the subject, and a single research task --- agent-assisted discovery from data --- is carried the full length of the ladder so that each capability is introduced because that task demands it, and every technique earns its place by advancing the same evolving artifact.
 
 \paragraph{Chapter by chapter.}
-The book opens with a short history and then follows the capability ladder; a student entering the course mid-stream can locate any chapter here.
+The notes open with a short history and then follows the capability ladder; a learner entering the course mid-stream can review the topic progression here.
 \begin{itemize}
 \item Chapter~\ref{chapter:HowWeGotHere} traces, at a high level, how the field reached agentic AI --- from word embeddings to models that act --- so the timeline is in place before the formal material begins.
-\item Chapter~\ref{chapter:AgenticParadigm} defines the agent, the capability ladder, and the two spines the rest of the book builds on.
-\item Chapter~\ref{chapter:AgenticRig} assembles the working rig — terminal, version control, model API, instruction files, and permissions — the tools one \emph{operates} before building anything.
+\item Chapter~\ref{chapter:AgenticParadigm} defines the agent, the capability ladder, and the two spines the rest of the notes builds on.
+\item Chapter~\ref{chapter:AgenticRig} assembles the working rig: terminal, version control, model API, instruction files, and permissions. These are the tools one \emph{operates} to building agentic discovery workflows in the course.
 \item Chapter~\ref{chapter:ContextEngineering} treats the model as a function of its context and the deliberate construction of that context as the primary lever.
-\item Chapter~\ref{chapter:AgenticCoding} directs an agent to write code the researcher still owns, with reading the diff as the central discipline.
+\item Chapter~\ref{chapter:AgenticCoding} directs an agent to write code the researcher still owns, with reading the diff or testing as the central discipline.
 \item Chapter~\ref{chapter:AgentLoop} builds the loop from scratch — tool definitions, the ReAct pattern, structured outputs, and failure modes.
 \item Chapter~\ref{chapter:Evaluation} builds the evaluation harness — the object that becomes the fitness function in Chapter~\ref{chapter:EvolutionaryFrameworks}.
 \item Chapter~\ref{chapter:Retrieval} grounds an agent in domain knowledge, and is honest about the cases where grounding hurts.
@@ -36,6 +36,5 @@ The expected background is some Python experience and general quantitative abili
 No prior knowledge of agents, the shell, or professional development tooling is assumed; the course starts there.
 Examples are drawn from \emph{model discovery from data} (symbolic regression), a domain-portable task that researchers across quantitative fields can connect to their own work.
 
-A note on formalism: where these notes adopt mathematical notation, the goal is sharpness of intuition rather than formal rigor.
-A definition that names something precisely is more useful than three paragraphs of informal description, even when the thing being named is fundamentally a system to be built rather than a theorem to be proved.
+A note on formalism: where these notes adopt abstract notation, the goal is sharpness of intuition rather than formal rigor.
 % EVOLVE-BLOCK-END
