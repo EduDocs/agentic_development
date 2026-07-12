@@ -32,11 +32,22 @@ Removing that bottleneck was the next breakthrough.
 \label{section:TransformerEra}
 
 \emph{Attention}\index{Attention} came first as a patch to the bottleneck: additive attention let a recurrent decoder look back over all of the encoder's states rather than a single summary vector (Bahdanau et al., 2015), which relieved the pressure on long inputs but kept the sequential recurrence.
-The \emph{Transformer}\index{Transformer} took the more radical step of discarding recurrence entirely and building the model out of attention alone (Vaswani et al., 2017).
+The \emph{Transformer}\index{Transformer} took the more radical step of discarding recurrence entirely and building the model out of attention alone (Vaswani et al., 2017; Figure~\ref{figure:Transformer}).
 It let every position in a sequence attend directly to every other, and made it practical to train much larger models on much more data because attention is parallel where recurrence is serial.
 Every large language model the course uses is a Transformer.
 Its attention mechanism also carries a cost --- a hard architectural one (comparing every token with every other makes compute and memory grow quadratically with length) and a softer behavioral one (longer contexts empirically tend to reduce a model's effective use of any one relevant token).
 The latter, often framed as a finite ``attention budget,'' is a useful heuristic rather than a theorem, since attention is computed per head, per layer, and per query and can be learned to concentrate sharply; Chapter~\ref{chapter:ContextEngineering} develops it and its limits.
+
+\begin{figure}[t]
+\centering
+\input{figures/transformer}
+\caption{This figure illustrates a Transformer, schematically, following Vaswani et al.\ (2017).
+An input embedding is combined with a \emph{positional encoding} and passed through a stack of decoder blocks (repeated $n$ times).
+Each block applies masked self-attention, then encoder-decoder attention, then a position-wise feed-forward layer, with every sublayer wrapped in a residual connection and layer normalization (add \& normalize).
+A final linear projection and softmax turn the top-layer representation into a conditional probability distribution over the next token.
+The reader need not follow every box; the point is that the whole model is built from attention and feed-forward layers, and its output is a probability distribution.}
+\label{figure:Transformer}
+\end{figure}
 
 The Transformer was an architecture; the next move was a \emph{recipe} for using it.
 Rather than train a fresh model for every task, one could \emph{pre-train}\index{Pre-training} a single Transformer on a large corpus of unlabeled text and then adapt it to specific tasks with comparatively little further training.
@@ -82,7 +93,8 @@ The progression this chapter traces is therefore still under way, but its shape 
 Two moments turned this gradual research into a public event.
 In November~2022, the release of ChatGPT put an instruction-tuned model in front of anyone with a browser and sent a shock wave well beyond the research community, showcasing the language model as a general-purpose advisor.
 Three years later, in December~2025, agentic coding crossed a practical threshold: a frontier model such as Anthropic's Opus~4.6 could carry a well-specified programming task about as reliably as a junior software engineer, turning much routine low-level coding into something a researcher directs rather than writes by hand.
-Neither was a new idea so much as a new level of a capability the sequence above had been building toward, which is why a legible, incremental progression is so often felt from outside as a sudden arrival.
+Neither was a new idea so much as a new level of a capability the sequence above had been building toward.
+Still, a legible, incremental progression is often felt from outside as a sudden arrival.
 
 \section{The Progression Was Not Random}
 \label{section:NotRandom}
@@ -179,13 +191,14 @@ None of these steps was guaranteed in advance, and their nearness in time is why
 But the sequence is not arbitrary: today's agents are where this particular chain of problems and solutions has led, and the same pressure that drove it --- extend what the system can reliably do --- is what drives the rest of these notes.
 
 For a researcher, this history is not a spectator's story.
-On tasks that are well-specified and verifiable --- writing and debugging analysis code, sweeping a method across many datasets, drafting a derivation, screening a design space --- a capable agent can compress into minutes work that once took hours or days: speedups of an order of magnitude, sometimes two, and enough on some tasks to change what a small group can attempt at all.
+On tasks that are well-specified and verifiable; writing and debugging analysis code, sweeping a method across many datasets, drafting a derivation, screening a design space; a capable agent can compress into minutes work that once took hours or days: speedups of an order of magnitude, sometimes two, and enough on some tasks to change what a small group can attempt independently.
 The gains are uneven and should not be overstated; they shrink where judgment, genuine novelty, or hard-won trust is the bottleneck rather than throughput.
-Where they do apply, though, the leverage real; it is not confined to computer science: a biologist fitting population models, an economist searching model specifications, a physicist proposing and testing functional forms, and a chemist screening candidates all face the same well-specified, checkable inner loops.
+Where they do apply, though, the leverage is real.
+It is not confined to computer science; a biologist fitting population models, an economist searching model specifications, a physicist proposing and testing functional forms, and a chemist screening candidates all face a similar well-specified, checkable inner loops.
+
 The reason to attend to this moment is therefore not novelty but \emph{discovery}: the parts of research that reduce to propose, run, check, and repeat are exactly the parts an agent can turn, and turning them faster changes the pace of finding things out.
 Learning to direct that process and, by the capstone, to let agents search on its own is what these notes are for.
 
-With the timeline in place, the next chapter turns from how we got here to what an agent \emph{is}: the vocabulary and structure the rest of the course builds on.
 
 \section*{Further Reading}
 
