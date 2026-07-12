@@ -64,7 +64,7 @@ def score(model, X_test, y_test):
     The return value is a non-negative float.
     Raise ValueError if arrays have incompatible shapes."""
 \end{lstlisting}
-The second version leaves the agent no room to misunderstand the task.
+The second version leaves far less room to misunderstand the task; a precise interface constrains ambiguity, though it cannot rule out semantic misunderstanding entirely.
 \end{example}
 
 \subsection{Cite the Files That Matter}
@@ -190,6 +190,7 @@ An agent that is given broad latitude will often produce long sessions of change
 
 An \emph{atomic commit}\index{Atomic commit} is a commit that contains exactly one conceptual change.
 Atomic commits make the history navigable: each commit can be understood, reverted, or cherry-picked independently.
+A cohesive change and the tests that verify it are one conceptual change, not two: splitting an implementation from its tests leaves commits that do not pass on their own, so the aim is a commit that is coherent, tested, and independently reviewable rather than merely small.
 
 \begin{principle}
 \label{principle:AtomicCommits}

@@ -85,7 +85,8 @@ Classical \emph{genetic programming}\index{Genetic programming} (GP) represents 
 \item \textbf{Point mutation}: replace an operator or terminal at a randomly chosen node.
 \item \textbf{Crossover}: swap subtrees between two parent expressions.
 \end{itemize}
-These operations are \emph{blind}: they apply random changes regardless of whether the change is likely to improve fitness.
+These operations are \emph{blind} as \emph{variation}: the mutation and crossover operators propose changes without regard to whether the change improves fitness, and direction enters only later, through selection.
+(Classical practice is not monolithic --- genetic-programming variants, symbolic-regression packages, and program synthesis differ, and some add typed or guided operators --- but undirected variation is the shared baseline the next section improves on.)
 GP is effective when the search space is smooth enough that random perturbations frequently produce useful variation.
 
 \subsection{LLM as Mutation Operator}
@@ -301,6 +302,9 @@ Given a dataset $\mathcal{D} = \{(x_i, y_i)\}_{i=1}^{N}$ and a space of expressi
 where $\Score$ is the composite score of~\eqref{equation:CompositeScore} and $\mathcal{D}_{\mathrm{val}}$ is the validation (fitness) split of the harness (Definition~\ref{definition:EvalHarness}); the discovered $\hat{m}^*$ is then reported once against the untouched final-test split.
 \end{definition}
 
+A note on convention: the course \emph{minimizes} throughout, so the composite score is a \emph{loss} (lower is better); we nonetheless call the same quantity \emph{fitness} where it drives selection, so ``worse fitness'' means a higher score.
+Where evolutionary computation would have fitness increase with quality, read the usage here as selecting for lower loss.
+
 SR is the teaching vehicle for the course because it is:
 \begin{enumerate}
 \item \textbf{Automatically evaluable.} The fitness is a number computed without human judgment.
@@ -362,6 +366,8 @@ Like the parsimony weight $\lambda$ (Section~\ref{subsection:MultiObjectiveScori
 Its units are fitness per dollar, so its scale depends on both the MSE scale of the dataset and the dollar cost of a typical mutation.
 A workable default fixes $\alpha$ so that halving an artifact's cost is worth the same as a small, stated fraction of the MSE gap between adjacent baselines.
 For research purposes the primary leaderboard uses unadjusted fitness so that discovery quality is the dominant signal; the cost analysis is reported separately, enabling the reader to understand the resource requirements of each method.
+More fundamentally, generation cost is a property of the \emph{path} that produced an artifact, not of the artifact itself --- the same expression can be reached cheaply or expensively --- so folding cost into an artifact's fitness can distort survivor selection.
+Read the cost-adjusted scalar as scoring a search \emph{policy} rather than an artifact, and prefer a run-level budget or an explicit Pareto view (quality, complexity, dollars, wall-clock) when quality and cost cannot be honestly collapsed into one number.
 \end{remark}
 
 \section{What You Have Built}
