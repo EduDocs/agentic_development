@@ -71,7 +71,9 @@ The practical rule follows directly from the curve's shape: place load-bearing i
 The lost-in-the-middle effect implies that simply extending the context window does not proportionally extend the effective working memory of the model.
 Early framings of large windows treated raw capacity as a near-substitute for careful selection --- the 2023 case for a 100,000-token window emphasized feeding in whole documents and letting the model synthesize across them (Anthropic, 2023) --- but the effect characterized shortly afterward (Liu et al., 2024) showed that capacity and effective working memory are not the same thing.
 Structuring the context so that the most important information appears near the beginning or end — or citing it explicitly in the instruction — is more reliable than relying on a long window to make everything equally accessible.
-A later framing gives this a mechanistic reading: because transformer attention forms pairwise relationships across the sequence, the same attention is spread more thinly as tokens are added, so recall of any single fact tends to fall as the token count rises --- an effect Anthropic (2025) calls \emph{context rot}\index{Context rot} and frames as a finite ``attention budget.''
+A common framing gives this an intuitive --- not a rigorous --- reading: because transformer attention weighs every token against every other, the metaphor goes, the same attention is ``spread more thinly'' as tokens are added, so recall of any single fact tends to fall as the token count rises, an effect Anthropic (2025) calls \emph{context rot}\index{Context rot} and frames as a finite ``attention budget.''
+Treat this as a heuristic rather than a theorem: attention is computed per head, per layer, and per query, and a model can learn to concentrate it sharply where it matters, so longer context degrades retrieval empirically without any fixed per-token budget being literally exhausted.
+Keep the two costs separate --- the architectural one, that standard attention's compute and memory grow quadratically with length, is exact; the behavioral one, that longer contexts can distract the model and reduce effective retrieval, is empirical and is what the ``budget'' language names.
 On this view the lost-in-the-middle curve is the visible signature of a budget stretched too thin, which is why adding raw capacity does not buy proportional working memory.
 \end{remark}
 
@@ -117,9 +119,12 @@ Where possible, break multi-part tasks into explicit stages.
 
 \subsection{Chain-of-Thought Prompting}
 
-\emph{Chain-of-thought prompting}\index{Chain-of-thought prompting} (Wei et al., 2022) encourages the model to reason through a task step by step before producing a final answer.
-The instruction ``Think through this step by step before giving your final answer'' can substantially improve accuracy on tasks that require multi-step reasoning.
-The reasoning trace is not wasted computation: it conditions the final answer on intermediate conclusions, which reduces errors that arise from premature closure.
+\emph{Chain-of-thought prompting}\index{Chain-of-thought prompting} (Wei et al., 2022) encourages the model to work through a task before committing to a final answer.
+On tasks that require multi-step reasoning, prompting for intermediate steps --- classically, ``think step by step'' --- can substantially improve accuracy, because it conditions the final answer on intermediate conclusions and reduces errors from premature closure.
+The general principle is to \emph{allocate reasoning effort where the task benefits} and to ask for concise, checkable evidence --- a short derivation, the values used, the alternative rejected --- rather than reasoning for its own sake.
+Two cautions keep this current.
+Exposed step-by-step text is neither required nor guaranteed: modern reasoning models perform the reasoning internally and expose only a summary, or nothing at all (Chapter~\ref{chapter:HowWeGotHere}), and even when a trace is shown it is not a faithful audit log of how the answer was actually reached.
+The remedy is the one these notes use throughout: judge the \emph{answer} against an external check (Chapter~\ref{chapter:Evaluation}), not the plausibility of the reasoning presented with it.
 
 In the context of the agent loop (Chapter~\ref{chapter:AgentLoop}), the model's scratchpad — the reasoning text before the first tool call — is an instance of chain-of-thought reasoning.
 

@@ -16,7 +16,7 @@ This is part of why the current moment feels sudden even though the path is legi
 \section{Meaning as Geometry (2013--2014)}
 \label{section:MeaningAsGeometry}
 
-An imprtant step was to give words a form a machine could compute with.
+An important step was to give words a form a machine could compute with.
 A \emph{word embedding}\index{Word embedding} maps each word to a vector so that words with similar meanings land near one another, and the \emph{word2vec}\index{word2vec} models showed that such a space could be learned cheaply from raw text at scale (Mikolov et al., 2013).
 A companion result added an efficient training objective and vectors for phrases, and displayed the now-famous regularity that simple vector arithmetic is meaningful in this space --- adding the vectors for \emph{Germany} and \emph{capital} lands near the vector for \emph{Berlin} (Mikolov et al., 2013).
 Meaning had become geometry: a trained space in which distance encodes similarity.
@@ -35,13 +35,14 @@ Removing that bottleneck was the next breakthrough.
 The \emph{Transformer}\index{Transformer} took the more radical step of discarding recurrence entirely and building the model out of attention alone (Vaswani et al., 2017).
 It let every position in a sequence attend directly to every other, and made it practical to train much larger models on much more data because attention is parallel where recurrence is serial.
 Every large language model the course uses is a Transformer.
-Its attention mechanism is also why context has a cost: because attention normalizes its weights with a softmax over all positions, each added token dilutes the weight any single token can receive, so a finite attention budget is spread more thinly as the input grows; this effect is developed in Chapter~\ref{chapter:ContextEngineering}.
+Its attention mechanism also carries a cost --- a hard architectural one (comparing every token with every other makes compute and memory grow quadratically with length) and a softer behavioral one (longer contexts empirically tend to reduce a model's effective use of any one relevant token).
+The latter, often framed as a finite ``attention budget,'' is a useful heuristic rather than a theorem, since attention is computed per head, per layer, and per query and can be learned to concentrate sharply; Chapter~\ref{chapter:ContextEngineering} develops it and its limits.
 
 The Transformer was an architecture; the next move was a \emph{recipe} for using it.
 Rather than train a fresh model for every task, one could \emph{pre-train}\index{Pre-training} a single Transformer on a large corpus of unlabeled text and then adapt it to specific tasks with comparatively little further training.
 \emph{BERT}\index{BERT} did this with a bidirectional encoder trained to fill in masked words, producing \emph{contextual} representations --- a word's vector now depends on the sentence around it --- and set new results across many language tasks at once (Devlin et al., 2019).
-Contextual embeddings from this family are what many modern retrieval actually runs on, the successor to the static word vectors of the previous section.
-A parallel line pre-trained \emph{decoder} models for generation rather than understanding; that branch is the one that leads to the models an agent is built from.
+Contextual embeddings from this family are what many modern retrieval systems actually run on, the successor to the static word vectors of the previous section.
+A parallel line pre-trained \emph{decoder} models for generation rather than understanding --- the GPT line, from GPT and GPT-2 onward --- and that branch is the one that leads to the models an agent is built from.
 
 \section{Scale, Prompting, and Grounding (2020)}
 \label{section:ScaleAndGrounding}
@@ -53,7 +54,7 @@ It is also where the honest limits come into view; few-shot performance is uneve
 
 A frozen model's knowledge is fixed at training time: it cannot cite its sources, and it is hard to update.
 \emph{Retrieval-augmented generation}\index{Retrieval-augmented generation} addressed this by pairing the model's parametric memory with a non-parametric one: retrieve relevant passages from an external corpus, then generate an answer conditioned on them (Lewis et al., 2020).
-This made knowledge updatable and attributable, and it is a basis of the grounding developed in Chapter~\ref{chapter:Retrieval}.
+This made knowledge updatable and, when the system preserves and validates provenance, attributable, and it is a basis of the grounding developed in Chapter~\ref{chapter:Retrieval}.
 
 \section{From Models to Agents (2022 onward)}
 \label{section:FromModelsToAgents}
@@ -75,6 +76,7 @@ The progression this chapter traces is therefore still under way, but its shape 
 
 Read as a list, the milestones above are a handful of loosely related papers.
 Read as a chain, each one removed a specific limitation of the last.
+This is a \emph{selected} teaching lineage, not a claim that each advance was the sole cause of the next --- larger datasets, faster hardware, and reinforcement learning from human feedback run alongside it.
 Word vectors gave meaning a computable form but handled only isolated words; sequence-to-sequence mapped whole sentences but squeezed them through one vector; the Transformer removed that bottleneck and made scale practical; pre-training made a single model's knowledge transferable across tasks; scale made that model steerable by plain text; retrieval grounded it in external, updatable knowledge; and instruction tuning and tool use let it act.
 Table~\ref{table:AgenticTimeline} lists the sequence; Figure~\ref{figure:AgenticChain} draws it as the dependency chain the prose describes, each arrow labelled with the limitation the next step removed.
 
@@ -143,7 +145,7 @@ Year & Breakthrough & What it unlocked \\
 2018  & Pre-training                      & transferable, contextual representations \\
 2020  & Scale and few-shot                & steering a frozen model by text alone \\
 2020  & Retrieval-augmented generation    & grounding in external, updatable knowledge \\
-2022--23 & Chain-of-thought               & following instructions and acting --- agents \\
+2022--23 & Instruction tuning, reasoning, tool use & following instructions and acting --- agents \\
 2024--26 & Reasoning \& multimodality     & trained latent reasoning; the chain continues \\
 \bottomrule
 \end{tabular}

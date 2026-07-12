@@ -6,8 +6,8 @@ A research agent that cannot be evaluated cannot be trusted.\index{Evaluation ha
 Evaluation is not a post-hoc check performed after a system is built; it is the foundation on which every comparison, every improvement claim, and eventually every evolutionary search rests.
 This chapter develops the theory and practice of the evaluation harness — the reusable module that scores an agent's output against ground truth.
 
-The harness introduced in this chapter is the same object that becomes the fitness function of the evolutionary framework in Chapter~\ref{chapter:EvolutionaryFrameworks}.
-Build it cleanly; you will live with it for the rest of the course.
+The reusable validation harness introduced in this chapter is the same object that becomes the fitness function of the evolutionary framework in Chapter~\ref{chapter:EvolutionaryFrameworks}; a separate final-test harness, evaluated once, remains an audit of the winner.
+Build them cleanly; you will live with them for the rest of the course.
 
 \section{The Evaluation Principle}
 \label{section:EvaluationPrinciple}
@@ -17,24 +17,27 @@ An \emph{evaluation harness}\index{Evaluation harness} is a function that takes 
 \label{definition:EvalHarness}
 An \emph{evaluation harness} is a tuple $(\mathcal{D}, \Score)$ where
 \begin{itemize}
-\item $\mathcal{D} = (\mathcal{D}_{\mathrm{train}}, \mathcal{D}_{\mathrm{test}})$ is a partition of the data into a training split and a held-out test split, and
-\item $\Score : \Artifacts \times \mathcal{D}_{\mathrm{test}} \to \RealNumbers$ is a scoring function that evaluates a candidate artifact $a \in \Artifacts$ against the test split.
+\item $\mathcal{D} = (\mathcal{D}_{\mathrm{train}}, \mathcal{D}_{\mathrm{val}}, \mathcal{D}_{\mathrm{test}})$ partitions the data into a \emph{training} split (on which the agent may fit parameters), a \emph{validation} --- or \emph{fitness} --- split (against which candidates are scored and selected, repeatedly, across a search), and a held-out \emph{final-test} split (reserved for a single audit), and
+\item $\Score : \Artifacts \times \mathcal{D}_{\mathrm{val}} \to \RealNumbers$ is the reusable scoring function that evaluates a candidate artifact $a \in \Artifacts$ against the validation split.
 \end{itemize}
-The score of artifact $a$ is $\Score(a, \mathcal{D}_{\mathrm{test}})$.
+The reusable score of artifact $a$ is $\Score(a, \mathcal{D}_{\mathrm{val}})$; the final-test metric $\Score(a^{\star}, \mathcal{D}_{\mathrm{test}})$ is computed once, for the selected artifact $a^{\star}$ alone, after every modeling and selection choice is frozen.
 \end{definition}
 
 A note on terminology: we write $a \in \Artifacts$ for a \emph{candidate artifact} --- in the symbolic-regression setting, a \emph{candidate expression} --- to keep it distinct from the language model $M$ of Chapter~\ref{chapter:ContextEngineering}.
 ``Model'' in these notes always means the language model; the discovered symbolic expression is the candidate (or, once selected, the discovered model \emph{of the data}), and we flag the latter reading explicitly wherever it appears.
 
-The separation of training and test data, and the requirement that the score be computed on the test split alone, are the most important properties of the harness.
-They are also the easiest to violate accidentally.
+Three roles must stay distinct.
+A \emph{training} objective fits an artifact's parameters; a \emph{validation} (fitness) objective selects among artifacts and is what the search --- and later the evolutionary loop --- queries repeatedly; a \emph{final-test} metric supports the one generalization claim made at the end.
+Collapsing validation into test is the most common and most damaging error: a sequence of validation scores is an information channel, so an optimizer that selects against the validation split slowly overfits it --- \emph{adaptive overfitting}\index{Adaptive overfitting} --- even when it never sees a raw row.
+The held-out final test, evaluated once after all choices are frozen, is what stays trustworthy after that erosion.
+These separations are the most important properties of the harness, and the easiest to violate accidentally.
 
 \subsection{Why Evaluation Must Be Automatic}
 
 Automatic evaluation — a numerical score computed without human judgment — has three decisive advantages for agentic and evolutionary systems.
 \begin{enumerate}
 \item \textbf{Speed.} An automated harness scores hundreds of candidates in the time a human would score one.
-\item \textbf{Consistency.} Automated scores are deterministic; human judgments vary.
+\item \textbf{Consistency.} Automated scores are repeatable under controlled conditions --- fixed data, seed, and environment --- where human judgments vary; a stochastic evaluator or an LLM judge is only repeatable once its randomness is pinned (Section~\ref{section:LLMJudge}).
 \item \textbf{Composability.} A numerical score can be directly compared, optimized, and used as a fitness signal.
 \end{enumerate}
 These properties are requirements for the evolutionary half of the course.
@@ -54,19 +57,19 @@ A good score is:
 \section{Held-Out Data and Leakage}
 \label{section:Leakage}
 
-\subsection{The Train/Test Split}
+\subsection{The Train/Validation/Test Split}
 
-The fundamental practice of supervised evaluation is to partition the data before any modeling begins and to hold the test split entirely in reserve.\index{Train/test split}
+The fundamental practice of supervised evaluation is to partition the data before any modeling begins, to score and select against the validation (fitness) split, and to hold the final-test split entirely in reserve.\index{Train/validation/test split}
 
 \begin{principle}
 \label{principle:TestSplitInviolable}
-The test split is inviolable.
-It must not be used to select hyperparameters, tune the model, or make any decision about the artifact.
-The moment any information about the test split influences the artifact, the test score is optimistic and the comparison is compromised.
+The final-test split is inviolable.
+It must not be used to fit parameters, select hyperparameters, choose among candidates, or make any other decision about the artifact; it is read once, for the selected artifact, at final reporting.
+The moment any information about it influences the artifact, the test score is optimistic and the generalization claim is compromised.
 \end{principle}
 
-In practice: load the full dataset, split immediately (before looking at the data), and pass only $\mathcal{D}_{\mathrm{train}}$ to the agent.
-The test split is sealed inside the harness; the agent never sees it.
+The validation (fitness) split is held out from \emph{fitting} but is queried repeatedly during search, so it is not inviolable in the same way: repeated selection against it erodes it through adaptive overfitting, which is precisely why a separate, untouched final test is kept.
+In practice: load the full dataset, split immediately (before looking at the data), pass only $\mathcal{D}_{\mathrm{train}}$ to the agent, expose $\mathcal{D}_{\mathrm{val}}$ only through the scoring function, and seal $\mathcal{D}_{\mathrm{test}}$ behind a one-shot report the search cannot call.
 
 Leakage is not only a static property of how the data was split.
 When the artifact under test is a tool-using agent --- one that can search the web or run code --- it can, at evaluation time, actively retrieve the benchmark's own answer key or public discussion of it, collapsing ``solve the task'' into ``solve the evaluation.''
@@ -103,7 +106,7 @@ Figure~\ref{figure:Leakage} shows the sanctioned data flow and the forbidden pat
                       node[midway, font=\large]{$\times$} (agent);
 \end{tikzpicture}
 \caption{The sanctioned data flow of an evaluation harness, and the one forbidden path.
-The dataset is split before any modeling; only $\mathcal{D}_{\mathrm{train}}$ reaches the agent, and the sealed test split is used exactly once, in the final scoring step.
+The dataset is split before any modeling; only $\mathcal{D}_{\mathrm{train}}$ reaches the agent, and the sealed held-out split is never exposed to it, feeding only the scoring step.
 \emph{Leakage} is any influence of $\mathcal{D}_{\mathrm{test}}$ on how the candidate is built or selected (dashed red): every form in the example above --- scoring on training data, whole-dataset feature construction, adaptive re-splitting --- is a disguised version of this arrow, and each inflates the score in violation of Principle~\ref{principle:TestSplitInviolable}.}
 \label{figure:Leakage}
 \end{center}
@@ -124,22 +127,24 @@ The resulting split is no longer independent of the artifact.
 
 A leakage-resistant harness separates the split from the fit from the score into three independent stages:
 \begin{lstlisting}[language=python]
-def build_harness(data, test_fraction=0.2, seed=42):
-    """Split data and return a scorer sealed over the test set."""
+def build_harness(data, val_fraction=0.2, seed=42):
+    """Split off a validation split; return a fitness scorer sealed over it."""
     X, y = data['X'], data['y']
     idx = np.random.default_rng(seed).permutation(len(y))
-    n_test = int(len(y) * test_fraction)
-    train_idx, test_idx = idx[n_test:], idx[:n_test]
-    X_test, y_test = X[test_idx], y[test_idx]
+    n_val = int(len(y) * val_fraction)
+    train_idx, val_idx = idx[n_val:], idx[:n_val]
+    X_val, y_val = X[val_idx], y[val_idx]
 
-    def score(model):
-        """Score model on the sealed test set."""
-        y_pred = model.predict(X_test)
-        return float(np.mean((y_pred - y_test) ** 2))  # MSE
+    def fitness_score(model):
+        """Score a candidate on the sealed validation split (reusable)."""
+        y_pred = model.predict(X_val)
+        return float(np.mean((y_pred - y_val) ** 2))  # MSE
 
-    return score   # the scorer is a closure over X_test, y_test
+    return fitness_score   # a closure over X_val, y_val
 \end{lstlisting}
-The caller receives only a scoring function; the test data itself is inaccessible.
+The caller receives only a scoring function; the validation rows are not handed back.
+This is a convenience and a reminder, not a security boundary --- a Python closure can be inspected, and, more to the point, querying the same validation split thousands of times adaptively overfits it even when no raw row is ever exposed.
+The held-out final test therefore lives behind a separate, one-shot report the search cannot call.
 This is the design pattern used in the course harness.
 
 \section{Scoring Functions}
@@ -240,7 +245,7 @@ Because a judge is itself a target for the optimizer, Principle~\ref{principle:G
 \section{The Harness as a Contract}
 \label{section:HarnessContract}
 
-The evaluation harness is used across Challenges~2, 3, and 4, and becomes the fitness function in the capstone.
+The reusable validation harness is used across Challenges~2, 3, and 4, and becomes the fitness function in the capstone.
 Its interface must be \emph{stable} across this span.
 
 \begin{definition}
@@ -255,6 +260,10 @@ A harness satisfying this interface can be dropped into any unit in the course w
 
 If the harness interface must change — for example, because a new scoring dimension is added in a later challenge — the change must be documented and applied consistently to all prior baselines.
 An inconsistent harness produces incomparable leaderboard entries.
+
+This contract is the \emph{validation} (fitness) interface --- the reusable one the search calls many times over.
+The final test is deliberately \emph{not} part of it: it is a separate, one-shot report, invoked once for the selected artifact and never wired into the loop.
+The organizing idea of the course is sharpest in this form: \emph{a reusable validation harness becomes fitness; a final-test harness remains an audit.}
 
 Beyond this course's numeric harness, the field compares agents on shared \emph{capability benchmarks} --- SWE-bench for resolving real GitHub issues, and WebArena and related suites for web tasks --- so a claim that ``my agent scores $X$'' is a claim against a named, public harness with its own contract (Anthropic, 2025--2026).
 The mean-squared-error-plus-parsimony harness built here is one domain-specific instance of that general practice, not a different kind of thing: the discipline --- a sealed test set, a stable interface, a leakage-resistant score --- is the same at any scale.

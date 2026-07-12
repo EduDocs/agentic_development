@@ -142,7 +142,7 @@ scikit-learn==1.6.1
 scipy==1.14.1
 \end{lstlisting}
 The loose specification allows a collaborator to install a different version than the author used, potentially changing numerical results.
-The pinned specification guarantees the same environment.
+The pinned specification pins the Python package versions --- a necessary step toward reproducibility, though not by itself a guarantee of an identical environment (see the following remark).
 \end{example}
 
 \begin{remark}
@@ -209,7 +209,7 @@ Uninformative and informative commit messages for the same change:
 git commit -m "fix bug"
 
 # better
-git commit -m "Score on test split, not full dataset (was leaking into eval)"
+git commit -m "Score on validation split, not full dataset (was leaking into fitness)"
 \end{lstlisting}
 The second message names the bug and explains why it matters.
 Six months later, the author will be grateful for it.

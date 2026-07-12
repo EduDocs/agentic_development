@@ -12,6 +12,7 @@ It opens by defining the agent and its perceive--reason--act loop; Section~\ref{
 
 The core of an agentic system is the \emph{perceive–reason–act loop}.\index{Perceive–reason–act loop}
 At each step the agent receives some \emph{observation} from the environment — a file listing, a tool result, a user message — forms a \emph{plan} or \emph{reasoning trace}, and emits an \emph{action} — a tool call, a response, a file write.
+These three names describe the system's observable behavior, not cognition inside the model: ``reason'' here refers to the intermediate text or plan the loop produces and then acts on, whatever process generated it.
 The action changes the environment, producing the next observation.
 The loop repeats until the task is complete or the agent determines it cannot proceed.
 
@@ -192,8 +193,9 @@ Because discernment does not come free with practice, it must be taught delibera
 
 \begin{principle}
 \label{principle:EvalFitness}
-Every evaluation harness built for comparison can, without modification, serve as a fitness function for evolutionary search.
-The prerequisite is that the harness be \emph{automatic} (it runs without human judgment) and \emph{leakage-resistant} (it cannot be gamed by artifacts that overfit the test set).
+A reusable validation harness built for comparison can serve as the fitness function for evolutionary search --- but not every harness can, and not without care.
+It must be \emph{automatic} (it runs without human judgment), \emph{leakage-resistant} (it cannot be gamed by artifacts that overfit the split it scores), cheap and stable enough to be queried many times over, and distinct from any final-test split held back for a one-shot audit.
+A benchmark that is too costly, too noisy, non-stationary, unsafe under repeated use, or reserved for final reporting is not a drop-in fitness function.
 \end{principle}
 
 \subsection{Spine 2 — Context Engineering}

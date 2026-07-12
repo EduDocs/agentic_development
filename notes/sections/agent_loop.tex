@@ -23,7 +23,7 @@ In the Anthropic API, a tool is specified as a JSON object with the following st
 {
   "name": "fit_model",
   "description": "Fit a candidate symbolic expression to the training
-    data and return the mean squared error on the held-out test set.
+    data and return the mean squared error on the held-out validation split.
     The expression must be a Python-evaluable string using variables
     x0, x1, ... corresponding to the feature columns.",
   "input_schema": {
@@ -173,7 +173,7 @@ from pydantic import BaseModel
 
 class ModelResult(BaseModel):
     expression: str          # the discovered expression
-    mse: float               # mean squared error on the test set
+    mse: float               # mean squared error on the validation split
     complexity: int          # number of nodes in the expression tree
     score: float             # composite score (accuracy + parsimony)
     justification: str       # one-paragraph rationale
@@ -238,7 +238,7 @@ The model fits a model to the wrong data, reports a score on that data, and sele
 Defense against cascading errors requires:
 \begin{itemize}
 \item validation at each tool boundary (verify that the data loaded correctly before fitting),
-\item explicit checks in the loop for known failure conditions (is the test set non-empty?), and
+\item explicit checks in the loop for known failure conditions (is the validation set non-empty?), and
 \item inspection of intermediate outputs, not just final results.
 \end{itemize}
 

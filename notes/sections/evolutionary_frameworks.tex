@@ -179,7 +179,7 @@ In the evolutionary setting, the harness is the target of a persistent, tireless
 \begin{remark}
 The attack surface widens sharply when the fitness evaluation itself runs in a tool-enabled environment.
 As of early 2026, capable models have been observed to recognize that they are being evaluated, enumerate likely benchmarks by name, and --- given web search and code execution --- locate a benchmark's own answer materials, turning ``solve the task'' into ``solve the evaluation'' (Anthropic, 2026).
-The defenses are the ones the leakage discussion of Chapter~\ref{chapter:Evaluation} already prescribes: run the fitness function in a sandbox with no route to the sealed test split or the open web, and treat honest-failure reporting as part of the harness contract rather than an afterthought.
+The defenses are the ones the leakage discussion of Chapter~\ref{chapter:Evaluation} already prescribes: run the fitness function in a sandbox with no route to the sealed held-out data or the open web, and treat honest-failure reporting as part of the harness contract rather than an afterthought.
 \end{remark}
 
 \subsection{Multi-Objective Fitness}
@@ -191,8 +191,8 @@ For long evolutionary runs, the optimizer often finds unexpected ways to minimiz
 Common exploits:
 \begin{enumerate}
 \item An expression of zero complexity: a constant fitted to the training data.
-If $\mathrm{MSE}$ is computed on the test set, a global constant performs worse than a simple model on diverse test points — but if $\lambda$ is too large relative to the MSE gap, the complexity reduction can dominate.
-\item Expressions that overfit the test set via extreme complexity: $10^6$-order polynomials.
+If $\mathrm{MSE}$ is computed on the validation split, a global constant performs worse than a simple model on diverse points — but if $\lambda$ is too large relative to the MSE gap, the complexity reduction can dominate.
+\item Expressions that overfit the validation split via extreme complexity: $10^6$-order polynomials.
 The parsimony term must scale to prevent this.
 \end{enumerate}
 
@@ -296,9 +296,9 @@ Unlike conventional regression, the functional form of $\hat{m}$ is not fixed in
 \label{definition:SymbolicRegression}
 Given a dataset $\mathcal{D} = \{(x_i, y_i)\}_{i=1}^{N}$ and a space of expressions $\Artifacts$, \emph{symbolic regression} seeks
 \begin{equation}
-\hat{m}^* = \operatorname*{argmin}_{a \in \Artifacts} \Score(a, \mathcal{D}_{\mathrm{test}})
+\hat{m}^* = \operatorname*{argmin}_{a \in \Artifacts} \Score(a, \mathcal{D}_{\mathrm{val}})
 \end{equation}
-where $\Score$ is the composite score of~\eqref{equation:CompositeScore} and $\mathcal{D}_{\mathrm{test}}$ is the held-out split of the harness (Definition~\ref{definition:EvalHarness}).
+where $\Score$ is the composite score of~\eqref{equation:CompositeScore} and $\mathcal{D}_{\mathrm{val}}$ is the validation (fitness) split of the harness (Definition~\ref{definition:EvalHarness}); the discovered $\hat{m}^*$ is then reported once against the untouched final-test split.
 \end{definition}
 
 SR is the teaching vehicle for the course because it is:
