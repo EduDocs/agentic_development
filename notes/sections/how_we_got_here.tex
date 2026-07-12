@@ -41,11 +41,12 @@ The latter, often framed as a finite ``attention budget,'' is a useful heuristic
 \begin{figure}[t]
 \centering
 \input{figures/transformer}
-\caption{This figure illustrates a Transformer, schematically, following Vaswani et al.\ (2017).
-An input embedding is combined with a \emph{positional encoding} and passed through a stack of decoder blocks (repeated $n$ times).
-Each block applies masked self-attention, then encoder-decoder attention, then a position-wise feed-forward layer, with every sublayer wrapped in a residual connection and layer normalization (add \& normalize).
-A final linear projection and softmax turn the top-layer representation into a conditional probability distribution over the next token.
-The reader need not follow every box; the point is that the whole model is built from attention and feed-forward layers, and its output is a probability distribution.}
+\caption{The original Transformer of Vaswani et al.\ (2017): a sequence-to-sequence \emph{encoder-decoder} architecture.
+On the left, an input embedding combined with a \emph{positional encoding} passes through a stack of \emph{encoder} blocks (repeated $n$ times), each a self-attention sublayer followed by a position-wise feed-forward layer.
+On the right, a \emph{decoder} stack builds the output, each block adding \emph{masked} self-attention and an \emph{encoder-decoder attention} sublayer that reads the encoder's output; a final linear projection and softmax turn the top-layer representation into a probability distribution over the next token.
+Every sublayer is wrapped in a residual connection and layer normalization (add \& normalize).
+The reader need not follow every box; the point is that the whole model is built from attention and feed-forward layers, with no recurrence.
+The decoder-only lineage that leads to GPT (Section~\ref{section:ScaleAndGrounding}) keeps a stack like the right-hand one but drops the encoder and its encoder-decoder attention.}
 \label{figure:Transformer}
 \end{figure}
 
@@ -159,7 +160,8 @@ Table~\ref{table:AgenticTimeline} lists the sequence; Figure~\ref{figure:Agentic
 \end{tikzpicture}
 \caption{The lineage as a causal chain.
 Each box is a milestone, with its year to the left; each arrow is labelled with the limitation of the step on its left that the step on its right removed.
-The point is not the list of names but the dependency between them: representing isolated words made mapping whole sequences the next problem, whose fixed-vector bottleneck made attention the next, and so on until models that can act, agents.}
+The point is not the list of names but the dependency between them: representing isolated words made mapping whole sequences the next problem, whose fixed-vector bottleneck made attention the next, and so on until models that can act, agents.
+The pale stacked cards on the left (labelled \emph{History}) stand for the much longer prehistory this chapter does not retrace; the faded nodes on the right, for the fast-growing landscape now forming around agents (new techniques, stronger pipelines, and applications across fields) that these notes sample rather than survey.}
 \label{figure:AgenticChain}
 \end{figure}
 

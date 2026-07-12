@@ -145,7 +145,7 @@ Second, it produces an \emph{audit trail}: by reading the thought steps, the res
 \subsection{Reasoning Models and Implicit ReAct}
 
 The ReAct pattern makes the thought step \emph{explicit}: the model is prompted to write its reasoning into the transcript before each action.
-Frontier \emph{reasoning models}\index{Reasoning model} --- Claude's extended thinking and the o3-class models --- move this step inward, reasoning internally before emitting a tool call, so the thought becomes latent rather than a visible transcript entry.
+Frontier \emph{reasoning models}\index{Reasoning model} --- Claude's extended thinking and the o3-class models, to name two families current as of Fall~2026 --- move this step inward, reasoning internally before emitting a tool call, so the thought becomes latent rather than a visible transcript entry.
 This is the same chain-of-thought mechanism introduced in Chapter~\ref{chapter:ContextEngineering}, now performed by the model on its own rather than elicited by a ``think step by step'' instruction.
 These two placements are complementary rather than exclusive: reasoning can happen \emph{before} the first action, as planning over the initial prompt, or \emph{during} the loop, as a deliberate step that reasons over a freshly returned tool result before the next call.
 The latter can be induced even without a reasoning model by exposing a no-op ``think'' tool --- a tool with no external effect whose only job is to give the model a scratchpad turn mid-loop --- which reportedly helps most in policy-heavy or long sequential-decision settings and little on simple parallel calls (Anthropic, 2025).

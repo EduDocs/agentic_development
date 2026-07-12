@@ -79,7 +79,7 @@ On this view the lost-in-the-middle curve is the visible signature of a budget s
 
 \subsection{Temperature and Sampling}
 
-The model samples an action from the distribution $M(\mathcal{C})$.
+The model samples an action from the distribution $M(C)$.
 The \emph{temperature}\index{Temperature} parameter divides the logits by the temperature before the softmax; the limiting case of temperature~0 is taken to mean deterministic greedy selection of the highest-logit token (the argmax) rather than a literal division by zero, and higher temperatures flatten the distribution and produce more varied output.
 
 For most agentic tasks, low temperature (0--0.3) is preferred: the agent should follow instructions precisely rather than improvising.

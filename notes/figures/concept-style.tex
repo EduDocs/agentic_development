@@ -1,0 +1,20 @@
+%% concept-style.tex — shared TikZ styles for the course's CONCEPTUAL block diagrams.
+%%
+%% \input this at the top of every conceptual figure (before \begin{tikzpicture})
+%% so each such diagram speaks one visual language: rounded "block" nodes, stealth
+%% arrows, and natural `<hue>!15' fills. Redefining these styles on each \input is
+%% idempotent and harmless. The reference for the house parameters is
+%% resources/STYLE-figures.md. Figure~\ref{figure:AgentLoop} is the exemplar.
+%%
+%% Scope: use for conceptual/relational diagrams (boxes-and-arrows). Do NOT use for
+%% product mock-ups (the rig figures have their own shared language) or for
+%% data/plot figures.
+\tikzset{
+  % the standard block node: geometry only — apply a `fill=<hue>!15' per node.
+  conceptbox/.style={draw, rounded corners=4pt, minimum width=2.4cm,
+                     minimum height=0.85cm, align=center, font=\small},
+  % a flow arrow between blocks.
+  conceptflow/.style={->, >=stealth', thick},
+  % an edge/annotation label.
+  conceptlabel/.style={font=\scriptsize, align=center},
+}

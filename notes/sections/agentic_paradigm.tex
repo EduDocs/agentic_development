@@ -17,16 +17,16 @@ The action changes the environment, producing the next observation.
 The loop repeats until the task is complete or the agent determines it cannot proceed.
 
 \begin{definition}
-An \emph{agent} is built from four parts, named here because the rest of these notes refer to them: a \emph{model} $M$, which reads the current context and chooses the next action; a set of \emph{tools} $\mathcal{T}$ the model can invoke; a \emph{context} $\mathcal{C}$, the information the model is given to read at each step; and a \emph{loop} $L$, which runs the model, carries out the action it chooses, feeds the result back as the next observation, and repeats until the task is done or the agent cannot proceed.
+An \emph{agent} is built from four parts, named here because the rest of these notes refer to them: a \emph{model} $M$, which reads the current context and chooses the next action; a set of \emph{tools} $T$ the model can invoke; a \emph{context} $C$, the information the model is given to read at each step; and a \emph{loop} $L$, which runs the model, carries out the action it chooses, feeds the result back as the next observation, and repeats until the task is done or the agent cannot proceed.
 \end{definition}
 
 The components interact in a specific way.
-The context $\mathcal{C}$ is assembled from the system prompt, the task description, a history of previous observations and actions, and any additional information injected by the loop.
-The model $M$ reads the full context and selects an action: either a \emph{tool call} (drawn from $\mathcal{T}$) or a \emph{final response}.
+The context $C$ is assembled from the system prompt, the task description, a history of previous observations and actions, and any additional information injected by the loop.
+The model $M$ reads the full context and selects an action: either a \emph{tool call} (drawn from $T$) or a \emph{final response}.
 The loop $L$ executes the tool call, appends the result to the context as a new observation, and invokes $M$ again.
 
 \begin{remark}
-The model $M$ is not a database and not a classical reasoner; it is a next-token predictor conditioned on $\mathcal{C}$, and four properties of that substrate govern where an agent built on it will fail (Anthropic, 2025).
+The model $M$ is not a database and not a classical reasoner; it is a next-token predictor conditioned on $C$, and four properties of that substrate govern where an agent built on it will fail (Anthropic, 2025).
 It generates by statistical continuation, so it produces fluent text that may be confidently wrong, the failure mode called \emph{hallucination}.
 Its knowledge is a frozen snapshot fixed at a training cutoff, blind to anything more recent or too rare to have been well represented in training.
 Its working memory is exactly the context window introduced below and developed in Chapter~\ref{chapter:ContextEngineering}: bounded, non-persistent, and unevenly attended.
@@ -36,21 +36,7 @@ Each rung of the ladder that follows is, in part, a discipline for managing one 
 
 \begin{figure}[htb!]
 \begin{center}
-\begin{tikzpicture}[
-    node distance=1.8cm and 2.2cm,
-    box/.style={draw, rounded corners=4pt, minimum width=2.4cm,
-                minimum height=0.85cm, align=center, font=\small},
-    arr/.style={->, >=stealth', thick}
-]
-\node[box, fill=blue!15]  (obs)  {Observe};
-\node[box, fill=orange!20, right=of obs] (reason) {Reason};
-\node[box, fill=green!20,  right=of reason] (act) {Act};
-
-\draw[arr] (obs)    -- (reason) node[midway, above, font=\scriptsize] {context};
-\draw[arr] (reason) -- (act)    node[midway, above, font=\scriptsize] {action};
-\draw[arr] (act)    to[out=270,in=270,looseness=0.6]
-            node[below, font=\scriptsize] {tool result / new state} (obs);
-\end{tikzpicture}
+\input{figures/agent-loop}
 \caption{The perceive--reason--act loop.
 The agent observes the current state of the environment, reasons to select an action, executes the action via a tool call, and receives the result as the next observation.}
 \label{figure:AgentLoop}
@@ -64,43 +50,37 @@ A more recent tool type is \emph{computer use}\index{Computer use}: instead of c
 Tools are described to the model as structured specifications (a name, a natural-language description, and a parameter schema), so the model knows what each tool does and how to call it.
 Chapter~\ref{chapter:AgentLoop} treats tool definitions in depth.
 
-The tool set $\mathcal{T}$ determines what the agent can \emph{do}, while the model $M$ determines what it \emph{chooses} to do.
+The tool set $T$ determines what the agent can \emph{do}, while the model $M$ determines what it \emph{chooses} to do.
 A capable model with a sparse tool set is limited by its reach; a rich tool set with a weak model produces unreliable actions.
-Designing the right tool set for a task is one of the first decisions in building an agent.
+Designing the right tool set for a task and selecting a model are two of the early decisions in building an agentic environment.
 
 \subsection{Context}
 
 The \emph{context window}\index{Context window} is the finite-length sequence of tokens the model reads at each invocation.
-Everything the agent knows at a given step — its instructions, its history, domain knowledge, tool results — must fit within this window.
-Context is not persistent: what the model does not read, it does not know.
+Everything the agent knows at a given step such as its instructions, its history, domain knowledge, tool results must fit within this window.
+Unless managed explicitly, context is not persistent: what the model does not hold in its context window, it does not know.
 
 This constraint makes the management of context one of the central engineering problems in agentic systems.
 Chapter~\ref{chapter:ContextEngineering} develops context engineering as a discipline; Chapter~\ref{chapter:Retrieval} shows how retrieval extends the effective knowledge available within a fixed window.
 
 \begin{remark}
 A common misconception is that a larger context window reduces the need for context engineering.
-This misconception is as old as large windows themselves --- the first hundred-thousand-token windows were pitched as a way to simply feed the model everything --- yet in practice models exhibit \emph{position bias} (both developed in Chapter~\ref{chapter:ContextEngineering}): information at the beginning and end of the context tends to receive more attention than information buried in the middle.
+This misconception is as old as large windows themselves; the first hundred-thousand-token windows were pitched as a way to simply feed the model everything, yet in practice models exhibit \emph{position bias} and \emph{context rot} (both developed in Chapter~\ref{chapter:ContextEngineering}).
+Information at the beginning and end of the context tends to receive more attention than information buried in the middle.
+Context with dissonant content interfere with inference tasks, reasonaing, and prediction.
 Choosing what to put in the window, and where, remains consequential even as windows grow.
 \end{remark}
 
 \begin{remark}
 Not every task needs the full loop.
-The distinction between an \emph{agent} --- which lets the model dynamically direct its own process and tool use --- and a \emph{workflow} --- which routes the model through predetermined code paths --- is worth drawing early (Anthropic, 2024; Figure~\ref{figure:WorkflowAgentSpectrum}).
+The distinction between an \emph{agent}, which lets the model dynamically direct its own process and tool use, and a \emph{workflow}, which routes the model through predetermined code paths, is worth drawing early (Anthropic, 2024; Figure~\ref{figure:WorkflowAgentSpectrum}).
 A workflow fits predictable, well-scoped tasks whose steps are known in advance; an agent fits open-ended problems where the number of steps cannot be fixed ahead of time, at the price of higher cost and more room for compounding error.
 The rungs that follow, and the orchestration patterns of Chapter~\ref{chapter:Orchestration}, move along this spectrum rather than leaping to full autonomy; the durable advice, as of this writing in 2026, is to reach for a workflow when the task allows it and reserve full agency for problems that require it.
 \end{remark}
 
 \begin{figure}[htb!]
 \begin{center}
-\begin{tikzpicture}[
-    box/.style={draw, rounded corners=4pt, minimum width=4.4cm,
-                minimum height=1.6cm, align=center, font=\small},
-    arr/.style={->, >=stealth', thick}
-]
-\node[box, fill=blue!12]                   (wf) {\textbf{Workflow}\\[2pt]\scriptsize the sequence of steps is fixed\\\scriptsize in code (chaining, routing,\\\scriptsize parallelization, orchestrator--workers,\\\scriptsize evaluator--optimizer)};
-\node[box, fill=green!15, right=3.2cm of wf] (ag) {\textbf{Agent}\\[2pt]\scriptsize the model chooses the next\\\scriptsize step and its tools at run time,\\\scriptsize looping until the task is done};
-\draw[arr] (wf) -- node[above, font=\scriptsize, align=center]{who controls\\the next step} (ag);
-\end{tikzpicture}
+\input{figures/workflow-agent}
 \caption{The workflow--agent spectrum (Anthropic, 2024).
 A \emph{workflow} routes the model through predetermined code paths; an \emph{agent} lets the model direct its own loop and tool use.
 The added flexibility of an agent is bought with higher cost and more room for compounding error, so the durable advice is to reach for a workflow when the steps are known in advance and reserve full agency for open-ended tasks that genuinely need it.}
@@ -117,26 +97,7 @@ The ladder has four rungs.
 
 \begin{figure}[htb!]
 \begin{center}
-\begin{tikzpicture}[
-    rung/.style={draw, rounded corners=3pt, minimum width=3cm, minimum height=0.75cm,
-                 align=center, font=\small\bfseries},
-    lbl/.style={font=\scriptsize, align=left, text width=3.8cm},
-    arr/.style={->, >=stealth', thick}
-]
-\node[rung, fill=gray!15]   (op)  at (0,0)   {Operate};
-\node[rung, fill=blue!15]   (bld) at (0,1.25) {Build};
-\node[rung, fill=orange!15] (orc) at (0,2.5)  {Orchestrate};
-\node[rung, fill=green!15]  (evl) at (0,3.75) {Evolve};
-
-\draw[arr] (op)  -- (bld);
-\draw[arr] (bld) -- (orc);
-\draw[arr] (orc) -- (evl);
-
-\node[lbl, right=0.6cm of op]  {Terminal, shell, git, API — Task week 1};
-\node[lbl, right=0.6cm of bld] {Tool definitions, agent loop, eval harness — Challenges 1–2};
-\node[lbl, right=0.6cm of orc] {Multi-agent workflows, retrieval, reliability — Challenges 3–4};
-\node[lbl, right=0.6cm of evl] {generate→evaluate→select→mutate — Capstone};
-\end{tikzpicture}
+\input{figures/capability-ladder}
 \caption{The capability ladder of the course.
 Each rung is a prerequisite for the one above it.
 The arrows indicate this dependency order.}
@@ -146,13 +107,18 @@ The arrows indicate this dependency order.}
 
 \paragraph{Operate.}
 The foundation is being able to drive an existing agent reliably and reproducibly.
-The habit most worth instilling first is deceptively plain --- stating the objective before the agent acts --- which appears to track downstream proficiency more closely than knowledge of any particular feature (Anthropic, 2025); so this rung trains goal clarity before any tooling.
-This means working from the terminal, using version control, accessing a model through an API, and giving the agent instructions that produce predictable, revisable results.
-Many researchers skip this rung and never develop the habit of \emph{reading every change} the agent makes — a deficit that grows more costly with each rung climbed.
+The habit most worth instilling first is deceptively plain, stating the objective before the agent acts, which appears to track downstream proficiency more closely than knowledge of any particular feature (Anthropic, 2025).
+This rung trains goal clarity before any tooling.
+This means understanding the terminal, using version control, accessing a model through an API, and giving the agent instructions that produce predictable, revisable results.
+Many researchers skip this rung and never develop the habit of \emph{assessing modifications} the agent makes, a deficit that can grow more costly with each rung climbed.
+There is a genuine tailwind here: as agentic tooling improves, operating the rig gets steadily easier in practice, so the mechanical barrier to entry keeps falling.
+Asking Claude or Codex how to commit your work to git, once a real hurdle, is now trivial.
+What does not get easier is the judgment underneath: understanding \emph{why} version control is of paramount importance, and when a commit is the right one, remains the researcher's to hold.
+The same pattern recurs one rung up: getting an agent to write a piece of code for a task is increasingly dependable, but ensuring the build and architecture are conducive to discovery, rather than merely running, stays a cognitive challenge that the tooling does not carry for you.
 
 \paragraph{Build.}
-Building an agent means implementing the loop and the tools from scratch rather than simply configuring a pre-existing system.
-The student writes tool definitions, assembles a control loop, and decides how structured outputs will be formatted and validated.
+Building an agentic evolutionary framework  means implementing the loop and the tools from scratch rather than simply configuring a pre-existing system.
+The user writes tool definitions, assembles a control loop, and decides how structured outputs will be formatted and validated.
 An evaluation harness is also introduced at this rung: the agent must be judged by something more reliable than intuition.
 
 \paragraph{Orchestrate.}
@@ -162,9 +128,12 @@ A reliable orchestration that can run unattended for hours is a prerequisite for
 
 \paragraph{Evolve.}
 Evolution is orchestration plus a mutation operator and a fitness function.
-A system that generates candidates, evaluates them, and selects the best is an evolutionary algorithm — whether or not it is called that.
+A system that generates candidates, evaluates them, and selects the best is an evolutionary algorithm whether or not it is called that.
 The key insight developed at the capstone is that the evaluation harness built in Challenge~2, reused through Challenges 3 and 4, \emph{is} the fitness function of the evolutionary search.
-The student has been building toward evolution without necessarily knowing it.
+The practitioner has been building toward evolution without necessarily knowing it.
+It is worth noting where the randomness that drives an evolutionary search naturally comes from.
+A language model's output is a \emph{probability distribution} over next tokens, and sampling from it is, at its core, a mechanism for exploration: two runs of the same prompt can take different paths.
+Modern evolutionary frameworks harness randomness through additional mechanisms (which candidates survive, how they are mutated and recombined), but it is worth noting that stochastic, divergent paths are native to this substrate rather than bolted on.
 
 \section{The Two Spines}
 \label{section:TwoSpines}

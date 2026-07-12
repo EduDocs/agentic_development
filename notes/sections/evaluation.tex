@@ -86,28 +86,34 @@ Figure~\ref{figure:Leakage} shows the sanctioned data flow and the forbidden pat
 \begin{figure}[htb!]
 \begin{center}
 \begin{tikzpicture}[
-    node distance=1.1cm and 1.6cm,
-    box/.style={draw, rounded corners=4pt, minimum width=2.6cm,
+    box/.style={draw, rounded corners=4pt, minimum width=2.7cm,
                 minimum height=0.8cm, align=center, font=\small},
     arr/.style={->, >=stealth', thick},
     leak/.style={->, >=stealth', thick, dashed, red}
 ]
-\node[box, fill=gray!15]                                  (data)  {dataset $\mathcal{D}$};
-\node[box, fill=blue!15,   below left=1.1cm and 0.9cm of data]  (train) {$\mathcal{D}_{\mathrm{train}}$};
-\node[box, fill=orange!20, below right=1.1cm and 0.9cm of data] (test)  {$\mathcal{D}_{\mathrm{test}}$ (sealed)};
-\node[box, fill=green!20,  below=1.3cm of train]          (agent) {agent constructs\\candidate $a$};
-\node[box, fill=gray!15,   below=1.3cm of test]           (score) {$\Score(a, \mathcal{D}_{\mathrm{test}})$};
-\draw[arr] (data)  -- node[above left, font=\scriptsize]{split first} (train);
-\draw[arr] (data)  -- (test);
+\node[box, fill=gray!15]   (data)  at (0,0)      {dataset $\mathcal{D}$};
+\node[box, fill=blue!15]    (train) at (-4.3,-1.9) {$\mathcal{D}_{\mathrm{train}}$};
+\node[box, fill=yellow!35]  (val)   at (0,-1.9)    {$\mathcal{D}_{\mathrm{val}}$ (fitness)};
+\node[box, fill=orange!25]  (test)  at (4.3,-1.9)  {$\mathcal{D}_{\mathrm{test}}$ (sealed)};
+\node[box, fill=green!20]   (agent) at (-4.3,-4.0) {agent builds\\candidate $a$};
+\node[box, fill=gray!15]    (fit)   at (0,-4.0)    {$\Score(a, \mathcal{D}_{\mathrm{val}})$};
+\node[box, fill=gray!15]    (final) at (4.3,-4.0)  {$\Score(a^\star, \mathcal{D}_{\mathrm{test}})$};
+\draw[arr] (data) -- node[above left, font=\scriptsize]{split first} (train);
+\draw[arr] (data) -- (val);
+\draw[arr] (data) -- (test);
 \draw[arr] (train) -- (agent);
-\draw[arr] (test)  -- (score);
-\draw[arr] (agent) -- node[above, font=\scriptsize]{$a$} (score);
-\draw[leak] (test) -- node[above, sloped, font=\scriptsize]{leakage (forbidden)}
-                      node[midway, font=\large]{$\times$} (agent);
+\draw[arr] (val)  -- (fit);
+\draw[arr] (test) -- node[right, font=\scriptsize]{one-shot} (final);
+\draw[arr] (agent) -- node[above, font=\scriptsize]{$a$} (fit);
+\draw[arr] (fit) to[bend left=45] node[below, font=\scriptsize]{queried many times} (agent);
+\draw[arr] (fit) -- node[above, font=\scriptsize]{winner $a^\star$} (final);
+\draw[leak] (test.north) to[out=115, in=65, looseness=1.1]
+                      node[midway, font=\scriptsize, above]{leakage (forbidden)}
+                      node[pos=0.5, font=\large]{$\times$} (agent.north);
 \end{tikzpicture}
 \caption{The sanctioned data flow of an evaluation harness, and the one forbidden path.
-The dataset is split before any modeling; only $\mathcal{D}_{\mathrm{train}}$ reaches the agent, and the sealed held-out split is never exposed to it, feeding only the scoring step.
-\emph{Leakage} is any influence of $\mathcal{D}_{\mathrm{test}}$ on how the candidate is built or selected (dashed red): every form in the example above --- scoring on training data, whole-dataset feature construction, adaptive re-splitting --- is a disguised version of this arrow, and each inflates the score in violation of Principle~\ref{principle:TestSplitInviolable}.}
+The dataset is split before any modeling into three roles: $\mathcal{D}_{\mathrm{train}}$ reaches the agent; $\mathcal{D}_{\mathrm{val}}$ feeds the reusable fitness score the search queries many times; and the sealed $\mathcal{D}_{\mathrm{test}}$ is read once, to audit the selected winner $a^\star$.
+\emph{Leakage} is any influence of the held-out data on how a candidate is built or selected (dashed red): every form in the example above --- scoring on training data, whole-dataset feature construction, adaptive re-splitting --- is a disguised version of this arrow, and each inflates the score in violation of Principle~\ref{principle:TestSplitInviolable}.}
 \label{figure:Leakage}
 \end{center}
 \end{figure}
