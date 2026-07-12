@@ -1,0 +1,292 @@
+%% claudecode-app-layout.tex — the same four roles, relocated on macOS (figure 2 of 3)
+%%
+%% One of a COHERENT SET OF THREE rig figures sharing a single visual language
+%% (see the "SHARED RIG VISUAL LANGUAGE" block below):
+%%   1. vscode-layout.tex          — the four roles in one VS Code window
+%%   2. claudecode-app-layout.tex  — the same four roles relocated on macOS   (this file)
+%%   3. shell-as-tool-gateway.tex  — the shell as the gateway to tools
+%%
+%% Purpose: show that the rig's four roles do not disappear off the IDE — they
+%% relocate to separate macOS hosts. The layout is deliberately PARALLEL to
+%% figure 1 (same colours, same quadrant positions) so a reader maps role-to-role
+%% at a glance. The "file being edited" role has no dedicated panel here, so it is
+%% drawn dashed/soft to signal that it is implicit, not a fixed pane.
+%%
+%% Dual-use (standalone preview vs. \input into the book): same guard as figure 1.
+\ifdefined\tikzpicture\else
+  \documentclass[border=10pt]{standalone}
+  \usepackage[T1]{fontenc}
+  \usepackage[scaled]{helvet}
+  \usepackage[varqu]{inconsolata}
+  \usepackage{xcolor}
+  \usepackage{tikz}
+  \usetikzlibrary{positioning,fit,backgrounds,calc,shapes.geometric,shapes.misc,%
+                  arrows.meta,decorations.pathreplacing}
+  \begin{document}
+  \def\rigEND{\end{document}}
+\fi
+
+% ======================================================================
+%  SHARED RIG VISUAL LANGUAGE  — keep this block byte-identical in all three
+%  rig figures (vscode-layout, claudecode-app-layout, shell-as-tool-gateway).
+%  Four roles, one colour + one glyph each, used the same way everywhere:
+%     file system  → green   + folder glyph
+%     file edited  → amber   + document glyph
+%     agent        → violet  + chat glyph
+%     shell        → slate   + prompt (>_) glyph   [always the DARK element]
+%  \definecolor is safe to repeat; the glyph/legend macros are \providecommand
+%  so including several of these figures in one document never clashes.
+% ======================================================================
+\definecolor{roleFsAcc}{HTML}{2E8B67}   % file system — green accent
+\definecolor{roleFsFill}{HTML}{E4F2EB}  % file system — soft fill
+\definecolor{roleEdAcc}{HTML}{C6902B}   % file edited — amber accent
+\definecolor{roleEdFill}{HTML}{F8EDD6}  % file edited — soft fill
+\definecolor{roleAgAcc}{HTML}{7A5EA8}   % agent — violet accent
+\definecolor{roleAgFill}{HTML}{ECE6F5}  % agent — soft fill
+\definecolor{roleShAcc}{HTML}{37424F}   % shell — slate (the dark element)
+\definecolor{roleShFill}{HTML}{DFE4EA}  % shell — soft fill (legends/edges)
+\definecolor{roleShInk}{HTML}{D7DCE2}   % shell — light text on slate
+\definecolor{roleShCmd}{HTML}{8FC7A6}   % shell — command echo (soft green)
+\definecolor{rigInk}{HTML}{2C2C2E}      % primary label text
+\definecolor{rigMuted}{HTML}{6E6E76}    % captions / secondary text
+\definecolor{rigFrame}{HTML}{BFC2C7}    % window / panel borders
+\definecolor{rigSep}{HTML}{D9D9DE}      % thin separators
+\definecolor{rigChrome}{HTML}{ECECEE}   % window chrome (title bars)
+\definecolor{rigCanvas}{HTML}{FFFFFF}   % editor / page white
+%
+% ---- role glyphs (tiny silhouettes, ~0.34cm wide, drawn centred at (x,y)) ----
+\providecommand{\rigFolder}[3]{% (x,y,colour)
+  \begin{scope}[shift={(#1,#2)}]
+    \fill[#3] (-0.17,0.02) rectangle (-0.02,0.11);
+    \fill[#3] (-0.17,-0.11) rectangle (0.17,0.06);
+  \end{scope}}
+\providecommand{\rigDoc}[3]{% (x,y,colour)
+  \begin{scope}[shift={(#1,#2)}]
+    \fill[#3] (-0.12,-0.13) -- (-0.12,0.13) -- (0.04,0.13)
+              -- (0.12,0.05) -- (0.12,-0.13) -- cycle;
+  \end{scope}}
+\providecommand{\rigChat}[3]{% (x,y,colour)
+  \begin{scope}[shift={(#1,#2)}]
+    \fill[#3, rounded corners=2pt] (-0.15,-0.02) rectangle (0.15,0.13);
+    \fill[#3] (-0.10,-0.02) -- (-0.03,-0.02) -- (-0.10,-0.12) -- cycle;
+  \end{scope}}
+\providecommand{\rigPrompt}[4]{% (x,y,boxcolour,inkcolour)
+  \begin{scope}[shift={(#1,#2)}]
+    \fill[#3, rounded corners=1.5pt] (-0.17,-0.12) rectangle (0.17,0.13);
+    \draw[#4, line width=0.9pt, line cap=round, line join=round]
+          (-0.09,0.05) -- (-0.02,-0.005) -- (-0.09,-0.065);
+    \draw[#4, line width=0.9pt, line cap=round] (0.01,-0.065) -- (0.10,-0.065);
+  \end{scope}}
+%
+% ---- shared role key (identical on every figure) --------------------------
+\providecommand{\rigLegend}[2]{% lower-left of the key sits near (#1,#2)
+  \begin{scope}[shift={(#1,#2)}, font=\sffamily]
+    \node[anchor=east, text=rigMuted, font=\sffamily\scriptsize] at (-0.15,0) {THE RIG};
+    % file system
+    \fill[roleFsFill] (0.10,-0.16) rectangle (0.42,0.16);
+    \draw[roleFsAcc, line width=0.7pt] (0.10,-0.16) rectangle (0.42,0.16);
+    \rigFolder{0.26}{0}{roleFsAcc}
+    \node[anchor=west, text=rigInk, font=\sffamily\scriptsize] at (0.52,0) {File system};
+    % file edited
+    \fill[roleEdFill] (2.55,-0.16) rectangle (2.87,0.16);
+    \draw[roleEdAcc, line width=0.7pt] (2.55,-0.16) rectangle (2.87,0.16);
+    \rigDoc{2.71}{0}{roleEdAcc}
+    \node[anchor=west, text=rigInk, font=\sffamily\scriptsize] at (2.97,0) {File being edited};
+    % agent
+    \fill[roleAgFill] (5.55,-0.16) rectangle (5.87,0.16);
+    \draw[roleAgAcc, line width=0.7pt] (5.55,-0.16) rectangle (5.87,0.16);
+    \rigChat{5.71}{-0.01}{roleAgAcc}
+    \node[anchor=west, text=rigInk, font=\sffamily\scriptsize] at (5.97,0) {Agent};
+    % shell (always the dark swatch)
+    \fill[roleShAcc, rounded corners=1pt] (7.35,-0.16) rectangle (7.67,0.16);
+    \draw[white, line width=0.9pt, line cap=round, line join=round]
+          (7.44,0.05) -- (7.51,-0.005) -- (7.44,-0.065);
+    \draw[white, line width=0.9pt, line cap=round] (7.54,-0.065) -- (7.63,-0.065);
+    \node[anchor=west, text=rigInk, font=\sffamily\scriptsize] at (7.77,0) {Shell};
+  \end{scope}}
+% ======================================================================
+%  END SHARED BLOCK
+% ======================================================================
+
+% ---- macOS chrome (local to this figure; not part of the shared language) ----
+\definecolor{macRed}{HTML}{ED6A5E}
+\definecolor{macYel}{HTML}{F5BF4F}
+\definecolor{macGrn}{HTML}{61C555}
+\definecolor{macTitle}{HTML}{F5F6F8}   % window title bar
+\definecolor{macMenu}{HTML}{F4F5F7}    % top menu bar
+\definecolor{macDeskA}{HTML}{D9E2EE}   % wallpaper (top)
+\definecolor{macDeskB}{HTML}{C3D2E4}   % wallpaper (bottom)
+
+\begin{tikzpicture}[
+    font=\sffamily,
+    x=1cm, y=1cm,
+    lbl/.style={anchor=north west, align=left, inner sep=0pt, text=rigInk},
+  ]
+
+  % ---- figure super-title ----------------------------------------------------
+  \node[anchor=south west, font=\sffamily\bfseries, text=rigInk] at (0,10.18)
+    {The same four roles, relocated on macOS — the Claude Code app};
+  \node[anchor=south east, font=\sffamily\scriptsize, text=rigMuted] at (16,10.22)
+    {same roles, separate apps};
+
+  % ---- desktop wallpaper + soft shadow ---------------------------------------
+  \begin{scope}[on background layer]
+    \fill[black!9, rounded corners=6pt] (0.10,-0.12) rectangle (16.10,9.88);
+  \end{scope}
+  \shade[top color=macDeskA, bottom color=macDeskB, rounded corners=6pt] (0,0) rectangle (16,10);
+  \draw[rigFrame, line width=0.8pt, rounded corners=6pt] (0,0) rectangle (16,10);
+
+  % ---- macOS menu bar (the "this is macOS" cue) ------------------------------
+  \begin{scope}
+    \clip[rounded corners=6pt] (0,0) rectangle (16,10);
+    \fill[macMenu] (0,9.55) rectangle (16,10);
+  \end{scope}
+  \draw[rigSep, line width=0.4pt] (0,9.55) -- (16,9.55);
+  % apple mark (small silhouette)
+  \fill[rigInk] (0.34,9.76) ellipse (0.085 and 0.10);
+  \fill[macMenu] (0.45,9.80) circle (0.06);                       % the "bite"
+  \fill[rigInk] (0.36,9.90) ellipse (0.045 and 0.03);             % leaf
+  \node[anchor=west, font=\sffamily\scriptsize\bfseries, text=rigInk] at (0.52,9.77) {Claude Code};
+  \node[anchor=west, font=\sffamily\scriptsize, text=rigMuted] at (2.0,9.77)
+    {File\quad Edit\quad View\quad Window\quad Help};
+  \node[anchor=east, font=\sffamily\scriptsize, text=rigInk] at (15.8,9.77) {Fri\ \ 3:14\,PM};
+  % tiny battery + wifi cues to the left of the clock
+  \draw[rigInk, line width=0.5pt, rounded corners=0.5pt] (12.95,9.71) rectangle (13.23,9.83);
+  \fill[rigInk] (12.95,9.71) rectangle (13.14,9.83);
+  \fill[rigInk] (13.23,9.735) rectangle (13.26,9.805);
+  \foreach \r in {0.09,0.15,0.21}{\draw[rigInk, line width=0.5pt] (13.62,9.70) ++(140:\r) arc (140:40:\r);}
+  \fill[rigInk] (13.62,9.70) circle (0.02);
+
+  % =====================================================================
+  %  FILE SYSTEM — Finder (left column, green) — parallels fig 1 Explorer
+  % =====================================================================
+  \begin{scope}
+    \clip[rounded corners=5pt] (0.4,1.0) rectangle (3.5,9.25);
+    \fill[rigCanvas] (0.4,1.0) rectangle (3.5,9.25);
+    \fill[roleFsFill] (0.4,1.0) rectangle (1.45,9.25);           % Finder sidebar tint
+    \fill[macTitle]  (0.4,8.75) rectangle (3.5,9.25);            % title bar
+  \end{scope}
+  \draw[roleFsAcc, line width=1.1pt, rounded corners=5pt] (0.4,1.0) rectangle (3.5,9.25);
+  \draw[rigSep, line width=0.4pt] (0.4,8.75) -- (3.5,8.75);
+  \draw[rigSep, line width=0.4pt] (1.45,1.0) -- (1.45,8.75);
+  \fill[macRed] (0.60,9.0) circle (0.052);
+  \fill[macYel] (0.77,9.0) circle (0.052);
+  \fill[macGrn] (0.94,9.0) circle (0.052);
+  \rigFolder{1.24}{9.0}{roleFsAcc}
+  \node[anchor=west, font=\sffamily\scriptsize\bfseries, text=roleFsAcc] at (1.42,9.0) {Finder};
+  % role label
+  \node[lbl, text width=3.0cm] at (0.55,8.55)
+    {{\small\bfseries\color{roleFsAcc} File system}\ {\scriptsize\color{rigMuted}— Finder}};
+  \node[lbl, text width=2.9cm] at (0.55,8.12)
+    {{\scriptsize\color{rigMuted} browse your files on disk}};
+  % sidebar favourites
+  \foreach \i/\t in {0/Recents, 1/Documents, 2/Desktop, 3/Downloads}{
+    \node[anchor=west, font=\sffamily\tiny, text=rigMuted] at (0.55,7.6-\i*0.36) {\t};}
+  % file list (main pane)
+  \foreach \i/\t in {0/{app.py}, 1/{utils.py}, 2/{README.md}, 3/{data.csv}, 4/{figures}}{
+    \rigDoc{1.7}{7.62-\i*0.42}{rigMuted}
+    \node[anchor=west, font=\ttfamily\tiny, text=rigMuted] at (1.9,7.62-\i*0.42) {\t};}
+
+  % =====================================================================
+  %  FILE BEING EDITED — no fixed pane (amber, DASHED/soft) — parallels Editor
+  % =====================================================================
+  \begin{scope}
+    \clip[rounded corners=5pt] (3.95,2.95) rectangle (11.45,9.25);
+    \fill[roleEdFill] (3.95,2.95) rectangle (11.45,9.25);
+    \fill[macTitle] (3.95,8.75) rectangle (11.45,9.25);
+  \end{scope}
+  \draw[roleEdAcc, line width=1.1pt, rounded corners=5pt, dashed, dash pattern=on 4pt off 3pt]
+        (3.95,2.95) rectangle (11.45,9.25);
+  \fill[macRed] (4.15,9.0) circle (0.052);
+  \fill[macYel] (4.32,9.0) circle (0.052);
+  \fill[macGrn] (4.49,9.0) circle (0.052);
+  \rigDoc{4.80}{9.0}{roleEdAcc}
+  \node[anchor=west, font=\sffamily\scriptsize\bfseries, text=roleEdAcc] at (4.98,9.0) {Preview / default app};
+  \node[lbl, text width=7.2cm] at (4.1,8.5)
+    {{\small\bfseries\color{roleEdAcc} File being edited}\ {\scriptsize\color{rigMuted}— no fixed pane: files open in their default app / a viewer}};
+  % faint document preview page (soft — signals "implicit, not a fixed panel")
+  \begin{scope}[opacity=0.55]
+    \fill[rigCanvas, rounded corners=2pt] (6.15,3.55) rectangle (9.25,7.75);
+    \draw[roleEdAcc!55, line width=0.5pt, rounded corners=2pt] (6.15,3.55) rectangle (9.25,7.75);
+    \foreach \i/\w in {0/2.4, 1/2.6, 2/1.7, 3/2.6, 4/2.2, 5/2.6, 6/1.3}{
+      \fill[roleEdAcc!22, rounded corners=1pt] (6.45,7.25-\i*0.44) rectangle (6.45+\w,7.25-\i*0.44+0.14);}
+  \end{scope}
+  \node[anchor=north, font=\sffamily\footnotesize\itshape, text=rigMuted] at (7.7,3.45)
+    {opens in Preview, TextEdit, a browser\dots\ — whatever owns the file};
+
+  % =====================================================================
+  %  AGENT — inside the Claude Code app window (right, violet) — parallels Claude
+  % =====================================================================
+  \begin{scope}
+    \clip[rounded corners=5pt] (11.9,2.95) rectangle (15.7,9.25);
+    \fill[roleAgFill] (11.9,2.95) rectangle (15.7,9.25);
+    \fill[macTitle] (11.9,8.75) rectangle (15.7,9.25);
+  \end{scope}
+  \draw[roleAgAcc, line width=1.1pt, rounded corners=5pt] (11.9,2.95) rectangle (15.7,9.25);
+  \draw[rigSep, line width=0.4pt] (11.9,8.75) -- (15.7,8.75);
+  \fill[macRed] (12.10,9.0) circle (0.052);
+  \fill[macYel] (12.27,9.0) circle (0.052);
+  \fill[macGrn] (12.44,9.0) circle (0.052);
+  \rigChat{12.74}{9.0}{roleAgAcc}
+  \node[anchor=west, font=\sffamily\scriptsize\bfseries, text=roleAgAcc] at (12.92,9.0) {Claude Code};
+  \node[lbl, text width=3.7cm] at (12.05,8.5)
+    {{\small\bfseries\color{roleAgAcc} Agent}\ {\scriptsize\color{rigMuted}— Claude Code app}};
+  \node[lbl, text width=3.55cm] at (12.05,8.08)
+    {{\scriptsize\color{rigMuted} lives here; drives the other apps}};
+  % agent bubble
+  \fill[rigCanvas, rounded corners=3pt] (12.1,6.05) rectangle (14.7,7.0);
+  \draw[roleAgAcc!45, line width=0.4pt, rounded corners=3pt] (12.1,6.05) rectangle (14.7,7.0);
+  \fill[roleAgFill, rounded corners=1pt] (12.3,6.62) rectangle (14.45,6.78);
+  \fill[roleAgFill, rounded corners=1pt] (12.3,6.36) rectangle (14.0,6.52);
+  \node[font=\sffamily\tiny, text=roleAgAcc, anchor=west] at (12.3,6.86) {agent};
+  % user bubble
+  \fill[roleAgAcc!16, rounded corners=3pt] (12.9,4.75) rectangle (15.5,5.7);
+  \draw[roleAgAcc!38, line width=0.4pt, rounded corners=3pt] (12.9,4.75) rectangle (15.5,5.7);
+  \fill[roleAgAcc!38, rounded corners=1pt] (13.1,5.32) rectangle (15.3,5.48);
+  \fill[roleAgAcc!38, rounded corners=1pt] (13.1,5.06) rectangle (14.6,5.22);
+  \node[font=\sffamily\tiny, text=roleAgAcc, anchor=east] at (15.3,5.56) {you};
+  % input box
+  \draw[rigFrame, line width=0.5pt, rounded corners=3pt] (12.1,3.25) rectangle (15.5,3.95);
+  \node[font=\sffamily\scriptsize, text=rigMuted, anchor=west] at (12.25,3.6) {Ask Claude\dots};
+  \fill[roleAgAcc, rounded corners=2pt] (14.9,3.37) rectangle (15.4,3.83);
+
+  % =====================================================================
+  %  SHELL — Terminal.app (bottom, slate/dark) — parallels fig 1 Terminal
+  % =====================================================================
+  \begin{scope}
+    \clip[rounded corners=5pt] (3.95,1.0) rectangle (15.7,2.55);
+    \fill[roleShAcc] (3.95,1.0) rectangle (15.7,2.55);
+    \fill[roleShAcc!85] (3.95,2.15) rectangle (15.7,2.55);       % slightly lighter title bar
+  \end{scope}
+  \draw[roleShAcc, line width=1.1pt, rounded corners=5pt] (3.95,1.0) rectangle (15.7,2.55);
+  \draw[roleShInk!30, line width=0.4pt] (3.95,2.15) -- (15.7,2.15);
+  \fill[macRed] (4.15,2.36) circle (0.052);
+  \fill[macYel] (4.32,2.36) circle (0.052);
+  \fill[macGrn] (4.49,2.36) circle (0.052);
+  \rigPrompt{4.80}{2.35}{roleShFill}{roleShAcc}
+  \node[anchor=west, font=\sffamily\scriptsize\bfseries, text=white] at (4.98,2.36) {Terminal};
+  \node[anchor=west, font=\sffamily\scriptsize, text=roleShInk] at (6.05,2.36)
+    {{\bfseries\color{white} Shell}\ — Terminal.app: runs commands};
+  \node[font=\ttfamily\scriptsize, text=roleShInk, anchor=north west] at (4.15,1.92)
+    {\textcolor{roleShCmd}{\$} pandoc notes.md -o notes.pdf};
+  \node[font=\ttfamily\scriptsize, text=roleShInk, anchor=north west] at (4.15,1.62)
+    {\textcolor{roleShCmd}{\$} python analyze.py};
+  \node[font=\ttfamily\scriptsize, text=roleShInk, anchor=north west] at (4.15,1.32)
+    {done. \textcolor{white}{\rule[0.02cm]{0.06cm}{0.22cm}}};
+
+  % ---- macOS Dock (parallels fig 1 status bar position) ----------------------
+  \begin{scope}
+    \fill[white, opacity=0.55, rounded corners=6pt] (5.3,0.16) rectangle (10.7,0.74);
+    \draw[white, opacity=0.7, line width=0.4pt, rounded corners=6pt] (5.3,0.16) rectangle (10.7,0.74);
+  \end{scope}
+  \foreach \i/\c in {0/roleFsAcc, 1/roleShAcc, 2/roleAgAcc, 3/roleEdAcc, 4/macGrn, 5/macRed}{
+    \fill[\c, rounded corners=2.5pt] (5.55+\i*0.85,0.26) rectangle (5.55+\i*0.85+0.5,0.66);}
+
+  % =====================================================================
+  %  SHARED ROLE KEY
+  % =====================================================================
+  \rigLegend{4.4}{-0.72}
+
+\end{tikzpicture}
+
+\ifdefined\rigEND\rigEND\fi

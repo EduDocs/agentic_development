@@ -23,6 +23,11 @@ build/
 *.synctex.gz
 *.toc
 
+# Standalone figure previews — compiled from figures/*.tex for eyeballing;
+# the book \inputs the .tex sources directly, so only those are tracked.
+figures/*.pdf
+figures/*-preview-*.png
+
 # worktrees live outside the repo by default, but ignore if anyone puts
 # them inside:
 nano-evolve-runs/
