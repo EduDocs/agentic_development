@@ -1,11 +1,194 @@
-% references.bib — project bibliography.
-% Add your sources here; cite them with \cite{key} in sections/*.tex.
-% Papers ingested into resources/ via the get-arxiv skill can be cited from here.
+% references.bib -- project bibliography, built primarily from arXiv sources.
+% arXiv is the preferred source; entries were generated and verified against the
+% arXiv API. The notes use annotated \section*{Further Reading} lists as the
+% reader-facing surface; this database backs them and is ready if \cite is wired in.
 
-@book{hardy1952inequalities,
-  author    = {Hardy, G. H. and Littlewood, J. E. and P{\'o}lya, G.},
-  title     = {Inequalities},
-  edition   = {2nd},
-  publisher = {Cambridge University Press},
-  year      = {1952},
+@misc{mikolov2013distributed,
+  title         = {{Distributed Representations of Words and Phrases and their Compositionality}},
+  author        = {Mikolov, Tomas and Sutskever, Ilya and Chen, Kai and Corrado, Greg and Dean, Jeffrey},
+  year          = {2013},
+  eprint        = {1310.4546},
+  archivePrefix = {arXiv},
+  primaryClass  = {cs.CL},
+}
+
+@misc{mikolov2013efficient,
+  title         = {{Efficient Estimation of Word Representations in Vector Space}},
+  author        = {Mikolov, Tomas and Chen, Kai and Corrado, Greg and Dean, Jeffrey},
+  year          = {2013},
+  eprint        = {1301.3781},
+  archivePrefix = {arXiv},
+  primaryClass  = {cs.CL},
+}
+
+@misc{bahdanau2014neural,
+  title         = {{Neural Machine Translation by Jointly Learning to Align and Translate}},
+  author        = {Bahdanau, Dzmitry and Cho, Kyunghyun and Bengio, Yoshua},
+  year          = {2014},
+  eprint        = {1409.0473},
+  archivePrefix = {arXiv},
+  primaryClass  = {cs.CL},
+}
+
+@misc{sutskever2014sequence,
+  title         = {{Sequence to Sequence Learning with Neural Networks}},
+  author        = {Sutskever, Ilya and Vinyals, Oriol and Le, Quoc V.},
+  year          = {2014},
+  eprint        = {1409.3215},
+  archivePrefix = {arXiv},
+  primaryClass  = {cs.CL},
+}
+
+@misc{johnson2017billion,
+  title         = {{Billion-scale similarity search with GPUs}},
+  author        = {Johnson, Jeff and Douze, Matthijs and Jégou, Hervé},
+  year          = {2017},
+  eprint        = {1702.08734},
+  archivePrefix = {arXiv},
+  primaryClass  = {cs.CV},
+}
+
+@misc{vaswani2017attention,
+  title         = {{Attention Is All You Need}},
+  author        = {Vaswani, Ashish and Shazeer, Noam and Parmar, Niki and Uszkoreit, Jakob and Jones, Llion and Gomez, Aidan N. and Kaiser, Lukasz and Polosukhin, Illia},
+  year          = {2017},
+  eprint        = {1706.03762},
+  archivePrefix = {arXiv},
+  primaryClass  = {cs.CL},
+}
+
+@misc{devlin2018bert,
+  title         = {{BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding}},
+  author        = {Devlin, Jacob and Chang, Ming-Wei and Lee, Kenton and Toutanova, Kristina},
+  year          = {2018},
+  eprint        = {1810.04805},
+  archivePrefix = {arXiv},
+  primaryClass  = {cs.CL},
+}
+
+@misc{brown2020language,
+  title         = {{Language Models are Few-Shot Learners}},
+  author        = {Brown, Tom B. and Mann, Benjamin and Ryder, Nick and Subbiah, Melanie and Kaplan, Jared and Dhariwal, Prafulla and Neelakantan, Arvind and Shyam, Pranav and Sastry, Girish and Askell, Amanda and Agarwal, Sandhini and Herbert-Voss, Ariel and Krueger, Gretchen and Henighan, Tom and Child, Rewon and Ramesh, Aditya and Ziegler, Daniel M. and Wu, Jeffrey and Winter, Clemens and Hesse, Christopher and Chen, Mark and Sigler, Eric and Litwin, Mateusz and Gray, Scott and Chess, Benjamin and Clark, Jack and Berner, Christopher and McCandlish, Sam and Radford, Alec and Sutskever, Ilya and Amodei, Dario},
+  year          = {2020},
+  eprint        = {2005.14165},
+  archivePrefix = {arXiv},
+  primaryClass  = {cs.CL},
+}
+
+@misc{lewis2020retrieval,
+  title         = {{Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks}},
+  author        = {Lewis, Patrick and Perez, Ethan and Piktus, Aleksandra and Petroni, Fabio and Karpukhin, Vladimir and Goyal, Naman and Küttler, Heinrich and Lewis, Mike and Yih, Wen-tau and Rocktäschel, Tim and Riedel, Sebastian and Kiela, Douwe},
+  year          = {2020},
+  eprint        = {2005.11401},
+  archivePrefix = {arXiv},
+  primaryClass  = {cs.CL},
+}
+
+@misc{kapoor2022leakage,
+  title         = {{Leakage and the Reproducibility Crisis in ML-based Science}},
+  author        = {Kapoor, Sayash and Narayanan, Arvind},
+  year          = {2022},
+  eprint        = {2207.07048},
+  archivePrefix = {arXiv},
+  primaryClass  = {cs.LG},
+}
+
+@misc{ouyang2022training,
+  title         = {{Training language models to follow instructions with human feedback}},
+  author        = {Ouyang, Long and Wu, Jeff and Jiang, Xu and Almeida, Diogo and Wainwright, Carroll L. and Mishkin, Pamela and Zhang, Chong and Agarwal, Sandhini and Slama, Katarina and Ray, Alex and Schulman, John and Hilton, Jacob and Kelton, Fraser and Miller, Luke and Simens, Maddie and Askell, Amanda and Welinder, Peter and Christiano, Paul and Leike, Jan and Lowe, Ryan},
+  year          = {2022},
+  eprint        = {2203.02155},
+  archivePrefix = {arXiv},
+  primaryClass  = {cs.CL},
+}
+
+@misc{wei2022chain,
+  title         = {{Chain-of-Thought Prompting Elicits Reasoning in Large Language Models}},
+  author        = {Wei, Jason and Wang, Xuezhi and Schuurmans, Dale and Bosma, Maarten and Ichter, Brian and Xia, Fei and Chi, Ed and Le, Quoc and Zhou, Denny},
+  year          = {2022},
+  eprint        = {2201.11903},
+  archivePrefix = {arXiv},
+  primaryClass  = {cs.CL},
+}
+
+@misc{yao2022react,
+  title         = {{ReAct: Synergizing Reasoning and Acting in Language Models}},
+  author        = {Yao, Shunyu and Zhao, Jeffrey and Yu, Dian and Du, Nan and Shafran, Izhak and Narasimhan, Karthik and Cao, Yuan},
+  year          = {2022},
+  eprint        = {2210.03629},
+  archivePrefix = {arXiv},
+  primaryClass  = {cs.CL},
+}
+
+@misc{gao2023retrieval,
+  title         = {{Retrieval-Augmented Generation for Large Language Models: A Survey}},
+  author        = {Gao, Yunfan and Xiong, Yun and Gao, Xinyu and Jia, Kangxiang and Pan, Jinliu and Bi, Yuxi and Dai, Yi and Sun, Jiawei and Wang, Meng and Wang, Haofen},
+  year          = {2023},
+  eprint        = {2312.10997},
+  archivePrefix = {arXiv},
+  primaryClass  = {cs.CL},
+}
+
+@misc{hong2023metagpt,
+  title         = {{MetaGPT: Meta Programming for A Multi-Agent Collaborative Framework}},
+  author        = {Hong, Sirui and Zhuge, Mingchen and Chen, Jiaqi and Zheng, Xiawu and Cheng, Yuheng and Zhang, Ceyao and Wang, Jinlin and Wang, Zili and Yau, Steven Ka Shing and Lin, Zijuan and Zhou, Liyang and Ran, Chenyu and Xiao, Lingfeng and Wu, Chenglin and Schmidhuber, Jürgen},
+  year          = {2023},
+  eprint        = {2308.00352},
+  archivePrefix = {arXiv},
+  primaryClass  = {cs.AI},
+}
+
+@misc{liu2023lost,
+  title         = {{Lost in the Middle: How Language Models Use Long Contexts}},
+  author        = {Liu, Nelson F. and Lin, Kevin and Hewitt, John and Paranjape, Ashwin and Bevilacqua, Michele and Petroni, Fabio and Liang, Percy},
+  year          = {2023},
+  eprint        = {2307.03172},
+  archivePrefix = {arXiv},
+  primaryClass  = {cs.CL},
+}
+
+@misc{shinn2023reflexion,
+  title         = {{Reflexion: Language Agents with Verbal Reinforcement Learning}},
+  author        = {Shinn, Noah and Cassano, Federico and Berman, Edward and Gopinath, Ashwin and Narasimhan, Karthik and Yao, Shunyu},
+  year          = {2023},
+  eprint        = {2303.11366},
+  archivePrefix = {arXiv},
+  primaryClass  = {cs.AI},
+}
+
+@misc{wang2023survey,
+  title         = {{A Survey on Large Language Model based Autonomous Agents}},
+  author        = {Wang, Lei and Ma, Chen and Feng, Xueyang and Zhang, Zeyu and Yang, Hao and Zhang, Jingsen and Chen, Zhiyuan and Tang, Jiakai and Chen, Xu and Lin, Yankai and Zhao, Wayne Xin and Wei, Zhewei and Wen, Ji-Rong},
+  year          = {2023},
+  eprint        = {2308.11432},
+  archivePrefix = {arXiv},
+  primaryClass  = {cs.AI},
+  doi           = {10.1007/s11704-024-40231-1},
+}
+
+@misc{wu2023autogen,
+  title         = {{AutoGen: Enabling Next-Gen LLM Applications via Multi-Agent Conversation}},
+  author        = {Wu, Qingyun and Bansal, Gagan and Zhang, Jieyu and Wu, Yiran and Li, Beibin and Zhu, Erkang and Jiang, Li and Zhang, Xiaoyun and Zhang, Shaokun and Liu, Jiale and Awadallah, Ahmed Hassan and White, Ryen W and Burger, Doug and Wang, Chi},
+  year          = {2023},
+  eprint        = {2308.08155},
+  archivePrefix = {arXiv},
+  primaryClass  = {cs.AI},
+}
+
+@misc{zheng2023judging,
+  title         = {{Judging LLM-as-a-Judge with MT-Bench and Chatbot Arena}},
+  author        = {Zheng, Lianmin and Chiang, Wei-Lin and Sheng, Ying and Zhuang, Siyuan and Wu, Zhanghao and Zhuang, Yonghao and Lin, Zi and Li, Zhuohan and Li, Dacheng and Xing, Eric P. and Zhang, Hao and Gonzalez, Joseph E. and Stoica, Ion},
+  year          = {2023},
+  eprint        = {2306.05685},
+  archivePrefix = {arXiv},
+  primaryClass  = {cs.CL},
+}
+
+@misc{lu2024ai,
+  title         = {{The AI Scientist: Towards Fully Automated Open-Ended Scientific Discovery}},
+  author        = {Lu, Chris and Lu, Cong and Lange, Robert Tjarko and Foerster, Jakob and Clune, Jeff and Ha, David},
+  year          = {2024},
+  eprint        = {2408.06292},
+  archivePrefix = {arXiv},
+  primaryClass  = {cs.AI},
 }
