@@ -66,7 +66,7 @@ The agent observes the current state of the environment, reasons to select an ac
 \subsection{Tools}
 
 A \emph{tool}\index{Tool} is any capability the model can invoke as a discrete action: reading a file, running a shell command, calling a web API, querying a database, or invoking another model.
-A more recent tool type is \emph{computer use}\index{Computer use}: instead of calling a purpose-built API, the model observes a screenshot and issues keyboard and mouse actions, which lets it operate arbitrary desktop software that exposes no programmatic interface (Anthropic, 2024).
+A more recent tool type is \emph{computer use}\index{Computer use}: instead of calling a purpose-built API, the model observes a screenshot and issues keyboard and mouse actions, which lets it operate arbitrary desktop software that exposes no programmatic interface.
 Tools are described to the model as structured specifications (a name, a natural-language description, and a parameter schema), so the model knows what each tool does and how to call it.
 Chapter~\ref{chapter:AgentLoop} treats tool definitions in depth.
 
@@ -85,7 +85,7 @@ Chapter~\ref{chapter:ContextEngineering} develops context engineering as a disci
 
 \begin{remark}
 A common misconception is that a larger context window reduces the need for context engineering.
-This misconception is as old as large windows themselves --- the first hundred-thousand-token windows were pitched as a way to simply feed the model everything (Anthropic, 2023) --- yet in practice models exhibit \emph{position bias} (Liu et al., 2024): information at the beginning and end of the context tends to receive more attention than information buried in the middle.
+This misconception is as old as large windows themselves --- the first hundred-thousand-token windows were pitched as a way to simply feed the model everything --- yet in practice models exhibit \emph{position bias} (both developed in Chapter~\ref{chapter:ContextEngineering}): information at the beginning and end of the context tends to receive more attention than information buried in the middle.
 Choosing what to put in the window, and where, remains consequential even as windows grow.
 \end{remark}
 
@@ -185,7 +185,7 @@ Because the model generates by plausible continuation rather than lookup, its ou
 Evaluation is therefore introduced when the student first builds an agent (Challenge~2) and reused in every subsequent unit.
 The key moment comes at the capstone pivot: the evaluation harness, which has been used to \emph{compare methods}, is now used to \emph{drive search}.
 Nothing about the harness changes; its role changes.
-One caveat travels with this promotion: a fixed evaluation loses discriminating power as capability rises --- a capability-relative echo of Goodhart's law that returns as benchmark saturation in Chapter~\ref{chapter:Evaluation} --- so the fitness function is best treated as an evolving artifact to be refreshed, not a fixed target (Anthropic, 2026).
+One caveat travels with this promotion: a fixed evaluation loses discriminating power as capability rises --- a capability-relative echo of Goodhart's law that returns as benchmark saturation in Chapter~\ref{chapter:Evaluation} --- so the fitness function is best treated as an evolving artifact to be refreshed, not a fixed target.
 This transition — evaluation becoming fitness — is the conceptual hinge of the course.
 There is also a pedagogical reason evaluation is promoted to a spine rather than left to habit.
 Not every competence is learned the same way: some --- shaping context, reusing a project setup --- tend to accrue with ordinary exposure, whereas the discernment to catch a wrong assumption or a plausible-but-false claim shows little tendency to grow on its own, an asymmetry consistent with Anthropic's analysis of how researchers use these tools (Anthropic, 2025).
@@ -241,11 +241,13 @@ This is why the chapters ahead spend their effort on evaluation, grounding, and 
 
 \section*{Further Reading}
 
+\emph{The engineering-blog and product references below are Fall~2026 snapshots of a fast-moving surface; titles and locations may have since changed.}
+
 \begin{small}
 \begin{enumerate}
-\item Yao, S., et al., ``ReAct: Synergizing Reasoning and Acting in Language Models,'' \emph{ICLR}, 2023 — the canonical formalization of the observe–reason–act loop.
+\item Yao, S., et al., ``ReAct: Synergizing Reasoning and Acting in Language Models,'' \emph{ICLR}, 2023 (arXiv:2210.03629) — the canonical formalization of the observe–reason–act loop.
 \item Anthropic, \emph{Claude's Tool Use Guide}, available at \href{https://docs.anthropic.com}{docs.anthropic.com} — the practical tool-calling interface used throughout the course.
-\item Wang, L., et al., ``A Survey on Large Language Model Based Autonomous Agents,'' \emph{Frontiers of Computer Science}, 2024 — a comprehensive taxonomy of agent architectures.
+\item Wang, L., et al., ``A Survey on Large Language Model Based Autonomous Agents,'' \emph{Frontiers of Computer Science}, 2024 (arXiv:2308.11432) — a comprehensive taxonomy of agent architectures.
 \item Anthropic, \emph{AI Fluency} (the four-properties and the four-competency ``4Ds'' framing) together with its accompanying analysis of agent-usage patterns, 2025 — the source for this chapter's substrate-properties framing and for the observation that goal clarity and discernment track proficiency more than feature knowledge does.
 \item Anthropic, ``Building Effective Agents,'' \emph{Anthropic Engineering}, 2024 — the workflow-versus-agent distinction adopted here, with a catalogue of composable workflow patterns and the counsel to prefer the simplest design a task allows.
 \end{enumerate}

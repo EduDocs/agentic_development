@@ -27,7 +27,7 @@ Formally: given a query $q$ (the agent's current task description or question) a
 
 \begin{remark}
 Retrieval is not automatically the right tool.
-When the entire relevant corpus fits comfortably in the context window --- a threshold on the order of a few hundred pages for current models --- loading it directly can beat retrieval on questions that require synthesis across the whole document (Anthropic, 2023, 2024), because no relevant passage can be missed.
+When the entire relevant corpus fits comfortably in the context window --- a threshold on the order of a few hundred pages for current models --- loading it directly can beat retrieval on questions that require synthesis across the whole document (Chapter~\ref{chapter:ContextEngineering}), because no relevant passage can be missed.
 Retrieval earns its place when $\mathcal{K}$ is far larger than any window, when only a small slice is relevant per query, or when injecting irrelevant material would crowd out what matters.
 The course corpora are deliberately small, so this boundary is worth checking before building an index at all.
 \end{remark}
@@ -297,11 +297,13 @@ A dataset where grounding helps and a dataset where it hurts, analyzed together,
 
 \section*{Further Reading}
 
+\emph{The engineering-blog and product references below are Fall~2026 snapshots of a fast-moving surface; titles and locations may have since changed.}
+
 \begin{small}
 \begin{enumerate}
-\item Lewis, P., et al., ``Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks,'' \emph{NeurIPS}, 2020 — the original RAG paper.
-\item Gao, Y., et al., ``Retrieval-Augmented Generation for Large Language Models: A Survey,'' \emph{arXiv}, 2023 — a comprehensive survey of RAG architectures and applications.
-\item Johnson, J., Douze, M., and Jégou, H., ``Billion-Scale Similarity Search with GPUs,'' \emph{IEEE Transactions on Big Data}, 2021 — the paper behind FAISS, the most widely used ANN library.
+\item Lewis, P., et al., ``Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks,'' \emph{NeurIPS}, 2020 (arXiv:2005.11401) — the original RAG paper.
+\item Gao, Y., et al., ``Retrieval-Augmented Generation for Large Language Models: A Survey,'' arXiv:2312.10997, 2023 — a comprehensive survey of RAG architectures and applications.
+\item Johnson, J., Douze, M., and Jégou, H., ``Billion-Scale Similarity Search with GPUs,'' \emph{IEEE Transactions on Big Data}, 2021 (arXiv:1702.08734) — the paper behind FAISS, the most widely used ANN library.
 \item Anthropic, ``Introducing Contextual Retrieval,'' 2024 — prepending chunk-specific context before embedding and keyword indexing, with reranking; the source for Section~\ref{section:ContextualRetrieval}.
 \end{enumerate}
 \end{small}

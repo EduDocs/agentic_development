@@ -145,7 +145,7 @@ Second, it produces an \emph{audit trail}: by reading the thought steps, the res
 \subsection{Reasoning Models and Implicit ReAct}
 
 The ReAct pattern makes the thought step \emph{explicit}: the model is prompted to write its reasoning into the transcript before each action.
-Frontier \emph{reasoning models}\index{Reasoning model} --- Claude's extended thinking (Anthropic, 2025) and the o3-class models --- move this step inward, reasoning internally before emitting a tool call, so the thought becomes latent rather than a visible transcript entry.
+Frontier \emph{reasoning models}\index{Reasoning model} --- Claude's extended thinking and the o3-class models --- move this step inward, reasoning internally before emitting a tool call, so the thought becomes latent rather than a visible transcript entry.
 This is the same chain-of-thought mechanism introduced in Chapter~\ref{chapter:ContextEngineering}, now performed by the model on its own rather than elicited by a ``think step by step'' instruction.
 These two placements are complementary rather than exclusive: reasoning can happen \emph{before} the first action, as planning over the initial prompt, or \emph{during} the loop, as a deliberate step that reasons over a freshly returned tool result before the next call.
 The latter can be induced even without a reasoning model by exposing a no-op ``think'' tool --- a tool with no external effect whose only job is to give the model a scratchpad turn mid-loop --- which reportedly helps most in policy-heavy or long sequential-decision settings and little on simple parallel calls (Anthropic, 2025).
@@ -244,11 +244,13 @@ Defense against cascading errors requires:
 
 \section*{Further Reading}
 
+\emph{The engineering-blog and product references below are Fall~2026 snapshots of a fast-moving surface; titles and locations may have since changed.}
+
 \begin{small}
 \begin{enumerate}
-\item Yao, S., et al., ``ReAct: Synergizing Reasoning and Acting in Language Models,'' \emph{ICLR}, 2023 — the original formulation of the thought–action–observation pattern.
+\item Yao, S., et al., ``ReAct: Synergizing Reasoning and Acting in Language Models,'' \emph{ICLR}, 2023 (arXiv:2210.03629) — the original formulation of the thought–action–observation pattern.
 \item Anthropic, \emph{Tool Use Guide} — the Anthropic API reference for tool definitions, tool-use messages, and enforcing structured outputs.
-\item Shinn, N., et al., ``Reflexion: Language Agents with Verbal Reinforcement Learning,'' \emph{NeurIPS}, 2023 — on agents that detect and recover from their own failures.
+\item Shinn, N., et al., ``Reflexion: Language Agents with Verbal Reinforcement Learning,'' \emph{NeurIPS}, 2023 (arXiv:2303.11366) — on agents that detect and recover from their own failures.
 \item Anthropic, ``Writing Effective Tools for Agents --- with Agents,'' \emph{Anthropic Engineering}, 2025 — a tool definition and its returned result are both prompt surfaces; namespace related tools and return high-signal, human-readable output.
 \item Anthropic, ``The `Think' Tool: Enabling Claude to Stop and Think in Complex Tool Use Situations,'' \emph{Anthropic Engineering}, 2025 — a no-op scratchpad tool that adds a mid-loop reasoning turn, with a per-domain evaluation of when it helps.
 \item Anthropic, ``Introducing Advanced Tool Use on the Claude Developer Platform,'' \emph{Anthropic Engineering}, 2025 — tool definitions as a context cost, on-demand tool discovery, and programmatic tool calling.
