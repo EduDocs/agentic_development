@@ -64,7 +64,19 @@ site: site-links
     {{VENV}}/bin/mkdocs build --strict
     @echo "Built site/ — open site/index.html"
 
-# Publish to the gh-pages branch (GitHub Pages)
+# Requires `gh auth login` and, one-time, the repo's Pages source set to
+# "GitHub Actions" (Settings -> Pages). Deploys the *pushed* state of the
+# default branch, so commit and push first.
+
+# Deploy the site via GitHub Actions (build in CI, publish to Pages)
+deploy:
+    gh workflow run pages.yml
+    @echo "Deploy started. Watch progress with:  gh run watch"
+
+# The older alternative to `just deploy`. Pick ONE Pages source in repo settings:
+# "GitHub Actions" for `deploy`, or "Deploy from a branch: gh-pages" for this one.
+
+# Local alternative to `deploy`: build and force-push to the gh-pages branch
 site-deploy:
     {{VENV}}/bin/mkdocs gh-deploy --force
 

@@ -1,0 +1,77 @@
+name: Deploy course site
+
+# Builds the MkDocs course site and deploys it to GitHub Pages.
+#
+# Mirrors the probability repo's pattern: the site is built in CI and published
+# via the *GitHub Actions* Pages source (not the gh-pages branch). The build step
+# runs `mkdocs build --strict`, so a broken link or a missing nav file fails the
+# run rather than shipping a broken site: that is the "test" in build/test/deploy.
+#
+# One-time setup in the repo's GitHub settings:
+#   Settings -> Pages -> Build and deployment -> Source: "GitHub Actions".
+#
+# Manual only: this site deploys when you ask it to, never automatically on a
+# push. Trigger it with:  just deploy   (or `gh workflow run pages.yml`).
+# It deploys the *pushed* state of the default branch, so commit and push first.
+on:
+  workflow_dispatch:
+
+# Least-privilege token: read the repo, publish to Pages.
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Only one deploy at a time; newer runs cancel in-flight ones.
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v5
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
+      - name: Install MkDocs Material
+        run: python3 -m pip install --upgrade mkdocs-material
+
+      # site-src/ holds the homepage plus symlinks to the real course folders.
+      # The symlinks are not committed, so regenerate them here (this mirrors the
+      # `just site-links` recipe exactly).
+      - name: Regenerate site-src symlinks
+        run: |
+          mkdir -p site-src
+          for d in syllabus tasks challenges projects tutorials benchmarks assessment resources; do
+            ln -sfn "../$d" "site-src/$d"
+          done
+          for f in PROGRESSION.md DECISIONS.md CLAUDE.md; do
+            ln -sfn "../$f" "site-src/$f"
+          done
+
+      # Build (and test) the static site into site/. --strict fails on broken
+      # links and nav warnings.
+      - name: Build the site (strict)
+        run: mkdocs build --strict
+
+      - name: Upload the Pages artifact
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v5
