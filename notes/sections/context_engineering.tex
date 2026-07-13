@@ -264,7 +264,7 @@ The first is bounded by the window and by your own reading; the second is bounde
 \end{principle}
 
 What makes a file system conducive to this is ordinary structure, not special infrastructure.
-A useful research corpus is \emph{legible}, stored as plain text or \LaTeX{} source rather than opaque PDF, so that \code{grep}, \code{sed}, and \code{ack} work on it directly; it is indexed by a \emph{catalog} the agent reads first, a single file mapping each identifier to a one-line description; and it is fronted by per-source \emph{synopses}, cheap token-light summaries the agent scans before opening any full paper.
+A useful research corpus is \emph{legible}, stored as plain text, markdown, or \LaTeX{} source rather than opaque PDF, so that \code{grep}, \code{sed}, and \code{ack} work on it directly; it is indexed by a \emph{catalog} the agent reads first, a single file mapping each identifier to a one-line description; and it is fronted by per-source \emph{synopses}, cheap token-light summaries the agent scans before opening any full paper.
 The catalog and synopses apply \emph{progressive disclosure}, met above for tools, to a corpus of a thousand papers: the agent spends a few tokens to survey the whole library and spends its window only on the handful it decides to read in full.
 
 The capability this structure buys is \emph{reverse} search.
@@ -292,7 +292,7 @@ If removing it makes no difference, it is not contributing.
 High variance indicates the model is sensitive to phrasing, which in turn indicates the instruction is under-specified.
 
 \item \textbf{Leaderboard comparison.} In the course, the primary measure of context quality is whether a change improves the agent's score on the shared evaluation harness.
-A grounded agent (Challenge~3) beats an ungrounded agent, or it does not; the harness decides.
+A grounded agent beats an ungrounded agent, or it does not; the harness decides.
 \end{enumerate}
 
 \section*{Further Reading}
