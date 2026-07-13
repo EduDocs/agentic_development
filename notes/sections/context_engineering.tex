@@ -15,7 +15,8 @@ Section~\ref{section:LLMContextFunction} develops the view of the model as a fun
 \section{The LLM as a Context-Conditioned Function}
 \label{section:LLMContextFunction}
 
-Let $V^*$ denote the space of all finite token sequences, and let $\mathcal{A}$ denote the space of possible actions (tool calls plus text responses).
+Let $V$ denote the model's \emph{token vocabulary}\index{Token vocabulary}: the finite set of tokens it reads and emits, each with its own embedding vector.
+Let $V^*$ denote the space of all finite token sequences over $V$, and let $\mathcal{A}$ denote the space of possible actions (tool calls plus text responses).
 A language model $M$ can be understood informally as a mapping
 \begin{equation}
 M : V^* \to \Delta(\mathcal{A}) ,
@@ -23,14 +24,13 @@ M : V^* \to \Delta(\mathcal{A}) ,
 \end{equation}
 where $\Delta(\mathcal{A})$ is the set of probability distributions over actions.
 The context — the full token sequence including system prompt, prior turns, and any injected material — determines this distribution completely.
-
 This view has a direct practical consequence.
 
 \begin{principle}
 \label{principle:ContextDeterminesOutput}
 The context determines the model's output \emph{distribution}: two identical contexts induce the same distribution over next actions.
 The realized \emph{sample} depends further on the sampling temperature (introduced below) and can carry additional nondeterminism from production serving, so identical contexts guarantee identical distributions, not identical outputs.
-The practical consequence is unchanged: if the agent behaves unexpectedly, look first to the context — either something unexpected is present, or something necessary is absent.
+The practical consequence is unchanged: if the agent behaves unexpectedly, look first to the context, either something unexpected is present, or something necessary is absent.
 \end{principle}
 
 \subsection{The Context Window}
@@ -39,7 +39,7 @@ The \emph{context window}\index{Context window} is the finite-length sequence th
 Window sizes for frontier models in 2025–2026 range from roughly 100,000 to 1,000,000 tokens.
 This is large but not unlimited: a dense academic paper runs roughly 8{,}000--15{,}000 tokens and a book-length monograph 150{,}000--500{,}000, while a large codebase can exceed any window.
 These figures are best read as a point on a fast-moving trajectory rather than a fixed ceiling: the first 100,000-token window was itself a frontier result in 2023, an order-of-magnitude jump over the few thousand tokens available shortly before (Anthropic, 2023), and the limit has kept climbing since.
-The practical lesson survives each increase --- reason about how to \emph{use} a window rather than assume the next one will be large enough to make the question moot.
+The practical lesson survives each increase: reason about how to \emph{use} a window rather than assume the next one will be large enough to make the question moot.
 
 Even within the window, not all tokens are equal.
 Empirical studies consistently find \emph{recency bias} (later tokens receive more weight) and \emph{primacy bias} (early tokens, particularly system-prompt content, also receive elevated attention), with a \emph{lost-in-the-middle} effect (Liu et al., 2024) where relevant information buried in the center of a long context is underused (Figure~\ref{figure:LostInTheMiddle}).
@@ -56,12 +56,13 @@ Empirical studies consistently find \emph{recency bias} (later tokens receive mo
 % the context window as a segmented bar
 \draw[fill=blue!15]   (0,0)    rectangle (2.2,0.7);  \node at (1.1,0.35)  {\scriptsize system prompt};
 \draw[fill=green!20]  (2.2,0)  rectangle (4.3,0.7);  \node at (3.25,0.35) {\scriptsize instructions};
-\draw[fill=gray!15]   (4.3,0)  rectangle (8.6,0.7);  \node at (6.45,0.35) {\scriptsize documents, tool results, history};
-\draw[fill=orange!20] (8.6,0)  rectangle (11.4,0.7); \node at (10.0,0.35) {\scriptsize recent turns $+$ query};
+\draw[fill=gray!15]   (4.3,0)  rectangle (8.6,0.7);  \node at (6.45,0.35) {\scriptsize documents, tool results};
+\draw[fill=orange!20] (8.6,0)  rectangle (11.4,0.7); \node at (10.0,0.35) {\scriptsize recent turns, query};
 \node[anchor=north, font=\scriptsize] at (5.7,-0.15) {position in the context window $\longrightarrow$};
 \end{tikzpicture}
 \caption{Positions in the context window are not used equally.
-Content near the beginning (primacy) and end (recency) is used reliably; content buried in the middle of a long context is underused --- the lost-in-the-middle effect (Liu et al., 2024).
+Content near the beginning (primacy) and end (recency) is used reliably.
+Content buried in the middle of a long context is underused, the lost-in-the-middle effect (Liu et al., 2024).
 The practical rule follows directly from the curve's shape: place load-bearing information near the edges of the window, or point to it explicitly in the instruction, rather than trusting the model to find it in the middle.}
 \label{figure:LostInTheMiddle}
 \end{center}
@@ -69,11 +70,11 @@ The practical rule follows directly from the curve's shape: place load-bearing i
 
 \begin{remark}
 The lost-in-the-middle effect implies that simply extending the context window does not proportionally extend the effective working memory of the model.
-Early framings of large windows treated raw capacity as a near-substitute for careful selection --- the 2023 case for a 100,000-token window emphasized feeding in whole documents and letting the model synthesize across them (Anthropic, 2023) --- but the effect characterized shortly afterward (Liu et al., 2024) showed that capacity and effective working memory are not the same thing.
-Structuring the context so that the most important information appears near the beginning or end — or citing it explicitly in the instruction — is more reliable than relying on a long window to make everything equally accessible.
-A common framing gives this an intuitive --- not a rigorous --- reading: because transformer attention weighs every token against every other, the metaphor goes, the same attention is ``spread more thinly'' as tokens are added, so recall of any single fact tends to fall as the token count rises, an effect Anthropic (2025) calls \emph{context rot}\index{Context rot} and frames as a finite ``attention budget.''
-Treat this as a heuristic rather than a theorem: attention is computed per head, per layer, and per query, and a model can learn to concentrate it sharply where it matters, so longer context degrades retrieval empirically without any fixed per-token budget being literally exhausted.
-Keep the two costs separate --- the architectural one, that standard attention's compute and memory grow quadratically with length, is exact; the behavioral one, that longer contexts can distract the model and reduce effective retrieval, is empirical and is what the ``budget'' language names.
+Early framings of large windows treated raw capacity as a near-substitute for careful selection, the 2023 case for a 100,000-token window emphasized feeding in whole documents and letting the model synthesize across them (Anthropic, 2023), but the effect characterized shortly afterward (Liu et al., 2024) showed that capacity and effective working memory are not the same thing.
+Structuring the context so that the most important information appears near the beginning or end, or citing it explicitly in the instruction, is more reliable than relying on a long window to make everything equally accessible.
+A common framing gives this an intuitive (not a rigorous) reading: because transformer attention weighs every token against every other, the metaphor goes, the same attention is ``spread more thinly'' as tokens are added, so recall of any single fact tends to fall as the token count rises, an effect Anthropic (2025) calls \emph{context rot}\index{Context rot} and frames as a finite ``attention budget.''
+Treat this as a heuristic: attention is computed per head, per layer, and per query; a model can learn to concentrate it sharply where it matters, so longer context degrades retrieval empirically without any fixed per-token budget being literally exhausted.
+Keep the two costs separate: the architectural one, that standard attention's compute and memory grow quadratically with length, is exact; the behavioral one, that longer contexts can distract the model and reduce effective retrieval, is empirical and is what the ``budget'' language names.
 On this view the lost-in-the-middle curve is the visible signature of a budget stretched too thin, which is why adding raw capacity does not buy proportional working memory.
 \end{remark}
 
@@ -82,10 +83,11 @@ On this view the lost-in-the-middle curve is the visible signature of a budget s
 The model samples an action from the distribution $M(C)$.
 The \emph{temperature}\index{Temperature} parameter divides the logits by the temperature before the softmax; the limiting case of temperature~0 is taken to mean deterministic greedy selection of the highest-logit token (the argmax) rather than a literal division by zero, and higher temperatures flatten the distribution and produce more varied output.
 
-For most agentic tasks, low temperature (0--0.3) is preferred: the agent should follow instructions precisely rather than improvising.
-Higher temperatures are appropriate when the goal is to generate diverse candidates — for example, during the proposal step of an evolutionary search (Chapter~\ref{chapter:EvolutionaryFrameworks}).
+For most agentic tasks, low temperature is preferred: the agent should follow instructions precisely rather than improvising.
+Higher temperatures are appropriate when the goal is to generate diverse candidates, for example, during the proposal step of an evolutionary search (Chapter~\ref{chapter:EvolutionaryFrameworks}).
+Entropy and randomness is partly what make inference time compute possible, and agentic evolutionary frameworks successful.
 
-\section{Prompt Engineering}
+\section{Prompt Engineering (vestigial)}
 \label{section:PromptEngineering}
 
 \emph{Prompt engineering}\index{Prompt engineering} is the practice of writing instructions that reliably elicit the desired model behavior.
@@ -120,13 +122,13 @@ Where possible, break multi-part tasks into explicit stages.
 \subsection{Chain-of-Thought Prompting}
 
 \emph{Chain-of-thought prompting}\index{Chain-of-thought prompting} (Wei et al., 2022) encourages the model to work through a task before committing to a final answer.
-On tasks that require multi-step reasoning, prompting for intermediate steps --- classically, ``think step by step'' --- can substantially improve accuracy, because it conditions the final answer on intermediate conclusions and reduces errors from premature closure.
+On tasks that require multi-step reasoning, prompting for intermediate steps, classically think step-by-step, can substantially improve accuracy, because it conditions the final answer on intermediate conclusions and reduces errors from premature closure.
 The general principle is to \emph{allocate reasoning effort where the task benefits} and to ask for concise, checkable evidence --- a short derivation, the values used, the alternative rejected --- rather than reasoning for its own sake.
 Two cautions keep this current.
 Exposed step-by-step text is neither required nor guaranteed: modern reasoning models perform the reasoning internally and expose only a summary, or nothing at all (Chapter~\ref{chapter:HowWeGotHere}), and even when a trace is shown it is not a faithful audit log of how the answer was actually reached.
 The remedy is the one these notes use throughout: judge the \emph{answer} against an external check (Chapter~\ref{chapter:Evaluation}), not the plausibility of the reasoning presented with it.
 
-In the context of the agent loop (Chapter~\ref{chapter:AgentLoop}), the model's scratchpad — the reasoning text before the first tool call — is an instance of chain-of-thought reasoning.
+In the context of the agent loop (Chapter~\ref{chapter:AgentLoop}), the model's scratchpad (the reasoning text before the first tool call) is an instance of chain-of-thought reasoning.
 
 \section{Context Engineering}
 \label{section:ContextEngineeringDetail}
@@ -154,7 +156,7 @@ This grows as the session proceeds and must be managed to avoid filling the wind
 
 \begin{remark}
 A common failure mode is treating the system prompt as the only lever.
-Researchers who spend hours crafting a perfect system prompt but place nothing relevant in the injected-context layer often find the agent making avoidable mistakes — not because the instructions are unclear, but because the model lacks the specific information it needs to act correctly.
+Researchers who spend hours crafting a perfect system prompt but place nothing relevant in the injected-context layer often find the agent making avoidable mistakes, not because the instructions are unclear but because the model lacks the specific information it needs to act correctly.
 \end{remark}
 
 \subsection{Selective Context Injection}
@@ -165,14 +167,14 @@ The right question is not ``what is relevant to the project?'' but ``what does t
 \begin{principle}
 \label{principle:SelectiveContext}
 Inject the minimum context required for the current step.
-If the agent is fitting a model, inject the data schema and the eval harness interface — not the entire codebase.
-If the agent is proposing candidate functions, inject the domain notes and the current best result — not the fitting code.
+If the agent is fitting a model, inject the data schema and the eval harness interface, not the entire codebase.
+If the agent is proposing candidate functions, inject the domain notes and the current best result, not the fitting code.
 \end{principle}
 
 \begin{remark}
 Selectivity is a floor, not a license to over-engineer.
-Two failure modes bracket it: \emph{over-constraint} --- rules so exhaustive (``always run exactly three searches'') that the agent cannot handle a legitimate edge case --- and \emph{under-specification} --- instructions so vague that behavior is left to chance.
-Before a context design is trusted, it is worth checking against four properties: \emph{completeness} (it covers the scenarios that matter), \emph{clarity} (each instruction is unambiguous), \emph{consistency} (the parts do not contradict one another), and \emph{testability} (the resulting behavior can be verified against the harness of Chapter~\ref{chapter:Evaluation}).
+Two failure modes bracket it: \emph{over-constraint}, rules so exhaustive (``always run exactly three searches'') that the agent cannot handle a legitimate edge case; and \emph{under-specification}, instructions so vague that behavior is left to chance.
+Before a context design is trusted, it is worth checking against four properties: \emph{completeness}, it covers the scenarios that matter: \emph{clarity}, each instruction is unambiguous; \emph{consistency}, the parts do not contradict one another; and \emph{testability}, the resulting behavior can be verified against the harness of Chapter~\ref{chapter:Evaluation}.
 \end{remark}
 
 \subsection{Long-Context Strategies}
@@ -199,7 +201,8 @@ The goal is to make the rig \emph{self-contextualizing}: when the agent opens a 
 
 \subsection{Hooks and Triggers}
 
-A \emph{hook}\index{Hook} is a shell command or script that runs automatically in response to a trigger event — for example, when the agent starts a session, before a tool call, or after a file is modified.
+A \emph{hook}\index{Hook} is a shell command or script that runs automatically in response to a trigger event.
+For example, when the agent starts a session, before a tool call, or after a file is modified.
 Hooks can inject context by:
 \begin{itemize}
 \item Running \code{git status} and \code{git log} to summarize recent changes,
@@ -234,7 +237,7 @@ For a single request the saving is modest.
 For an evolutionary run that fires hundreds of mutation calls against the same domain corpus and system prompt (Chapter~\ref{chapter:EvolutionaryFrameworks}), caching is often the single largest cost lever, and it ties the context-engineering discipline of this chapter directly to the cost-aware search of Section~\ref{section:CostAwareSearch}.
 
 Because the cache reuses an unchanged \emph{prefix}, the order of the window is not incidental: everything before the first change stays cached, and everything after it must be reprocessed.
-The discipline that follows is to arrange context from most stable to most volatile --- system prompt and tool definitions first, then the domain corpus and few-shot examples, and only then the per-call content that changes every mutation (the current candidate, the latest turn).
+The discipline that follows is to arrange context from most stable to most volatile: system prompt and tool definitions first, then the domain corpus and few-shot examples, and only then the per-call content that changes every mutation (the current candidate, the latest turn).
 An evolutionary loop that keeps this shared prefix byte-identical across mutations pays the full context cost once and only the marginal cost thereafter; one that reshuffles the prefix each round defeats the cache and pays in full every time.
 
 \section{Measuring Context Quality}
@@ -251,7 +254,7 @@ If removing it makes no difference, it is not contributing.
 High variance indicates the model is sensitive to phrasing, which in turn indicates the instruction is under-specified.
 
 \item \textbf{Leaderboard comparison.} In the course, the primary measure of context quality is whether a change improves the agent's score on the shared evaluation harness.
-A grounded agent (Challenge~3) beats an ungrounded agent, or it does not — the harness decides.
+A grounded agent (Challenge~3) beats an ungrounded agent, or it does not; the harness decides.
 \end{enumerate}
 
 \section*{Further Reading}
