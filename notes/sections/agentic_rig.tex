@@ -36,6 +36,9 @@ Section~\ref{section:Terminal} introduces the terminal and shell; Section~\ref{s
 
 The \emph{terminal}\index{Terminal} is a text interface to the operating system.
 The \emph{shell}\index{Shell} is the program running inside the terminal that interprets commands.
+That description undersells it.
+Beyond interpreting what a person types, the shell is the layer that \emph{composes} programs: it launches them, wires one program's output into another's input, and mediates their access to the operating system's files and processes.
+This puts the shell at the intersection of human and machine, a single grammar shared by people, by programs driving one another, and now by agents.
 For agentic work, the terminal is indispensable: agents invoke tools by running shell commands, and the agent builder inspects outputs, launches processes, and manages files through the same interface.
 
 The shell is therefore more than a place to type; it is a \emph{gateway} through which the agent reaches tools: interpreters, compilers, converters, domain-specific programs, and the file system itself.
@@ -69,6 +72,11 @@ rm file         # delete a file (irreversible — use with care)
 \end{lstlisting}
 These commands are the same on macOS and Linux.
 \end{example}
+
+Learning these commands is no longer only about typing them.
+As an agent takes over execution, a researcher's contact with the shell shifts from issuing a command to \emph{adjudicating} one: a local agent that proposes to run \code{rm}, \code{git push}, or \code{curl} pauses for approval before it acts.
+Recognizing what a proposed command will do is therefore a safety skill as much as an operational one, and it is what lets a researcher bound a local agent's reach in practice, allowing the innocuous and refusing the consequential.
+The center of gravity of the current landscape is moving accordingly, from writing commands toward deciding which actions an agent may take, the permission model developed in Section~\ref{section:Permissions}.
 
 \begin{remark}
 The shell is case-sensitive and path-sensitive.
