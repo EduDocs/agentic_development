@@ -87,11 +87,17 @@ For most agentic tasks, low temperature is preferred: the agent should follow in
 Higher temperatures are appropriate when the goal is to generate diverse candidates, for example, during the proposal step of an evolutionary search (Chapter~\ref{chapter:EvolutionaryFrameworks}).
 Entropy and randomness is partly what make inference time compute possible, and agentic evolutionary frameworks successful.
 
-\section{Prompt Engineering (vestigial)}
+\section{Prompt Engineering}
 \label{section:PromptEngineering}
 
 \emph{Prompt engineering}\index{Prompt engineering} is the practice of writing instructions that reliably elicit the desired model behavior.
 It is best understood as a form of specification: the prompt specifies what the model should do, just as source code specifies what a program should do, and clarity matters for the same reasons.
+
+Its place in the workflow, though, has shifted.
+Prompt engineering was the first interface to these models, and its early contributions are real: few-shot prompting, chain-of-thought, and explicit format and constraint specification each began here, and its principles still govern every single instruction, including the ones an agent now writes for itself.
+What has changed is not its validity but who does it.
+In agentic development the hand-crafting of individual prompts is largely a \emph{delegated} task: the agent, and the platform beneath it, compose and refine most single-message instructions on the fly, so a researcher's own effort moves up to context and environment (the progression named as Spine~2 in Chapter~\ref{chapter:AgenticParadigm}).
+It is treated here for what it teaches about instruction quality, a competence a researcher still needs in order to \emph{specify} and \emph{judge} what an agent produces, rather than as the place the day's work now lives.
 
 \subsection{Principles of Effective Instructions}
 
@@ -142,6 +148,7 @@ A well-engineered context for an agentic session has a layered structure.
 
 \begin{enumerate}
 \item \textbf{System prompt.} The invariant instructions that define the agent's role, tools, behavioral norms, and project-specific conventions.
+In practice a researcher rarely writes this layer as raw text: it is realized by the project's \emph{instruction files}, the \code{CLAUDE.md} (or its cross-tool equivalent \code{AGENTS.md}) at the repository root that an agentic CLI loads automatically at the start of every session (Section~\ref{section:InstructionFiles}; the automatic loading is developed in Section~\ref{section:AutomatedContext}).
 This content is static across sessions but should be reviewed and updated when the project's needs change.
 
 \item \textbf{Task description.} The specific goal of the current session, provided at the start of the conversation.
@@ -239,6 +246,37 @@ For an evolutionary run that fires hundreds of mutation calls against the same d
 Because the cache reuses an unchanged \emph{prefix}, the order of the window is not incidental: everything before the first change stays cached, and everything after it must be reprocessed.
 The discipline that follows is to arrange context from most stable to most volatile: system prompt and tool definitions first, then the domain corpus and few-shot examples, and only then the per-call content that changes every mutation (the current candidate, the latest turn).
 An evolutionary loop that keeps this shared prefix byte-identical across mutations pays the full context cost once and only the marginal cost thereafter; one that reshuffles the prefix each round defeats the cache and pays in full every time.
+
+\subsection{Agentic Context Engineering}
+\label{subsection:AgenticContextEng}
+
+The mechanisms so far pre-populate a context the researcher still designs.
+The third level of the progression named as Spine~2 (Chapter~\ref{chapter:AgenticParadigm}) goes further: the context is assembled not by the researcher but by a \emph{trusted agent} working inside the project, so the lever moves from choosing what enters the window to shaping the \emph{environment} the agent searches to build the window itself.
+This changes the economics of scale.
+Engineering context by hand, you can bring in only what you have already read and chosen, so the working corpus is small by construction: you are the bottleneck.
+Let a trusted agent assemble it instead, and you can stage far more than any window could hold, ten or a hundred times as many sources, on the project's file system, and let the agent pattern-match across all of it and pull in only the fraction each task needs.
+
+\begin{principle}
+\label{principle:StageNotInject}
+When you engineer the context yourself, provision only what belongs in the window.
+When you empower an agent you trust, provision the \emph{corpus} and let the agent select from it.
+The first is bounded by the window and by your own reading; the second is bounded only by what you can store and structure, which is far larger.
+\end{principle}
+
+What makes a file system conducive to this is ordinary structure, not special infrastructure.
+A useful research corpus is \emph{legible}, stored as plain text or \LaTeX{} source rather than opaque PDF, so that \code{grep}, \code{sed}, and \code{ack} work on it directly; it is indexed by a \emph{catalog} the agent reads first, a single file mapping each identifier to a one-line description; and it is fronted by per-source \emph{synopses}, cheap token-light summaries the agent scans before opening any full paper.
+The catalog and synopses apply \emph{progressive disclosure}, met above for tools, to a corpus of a thousand papers: the agent spends a few tokens to survey the whole library and spends its window only on the handful it decides to read in full.
+
+The capability this structure buys is \emph{reverse} search.
+Forward search is easy and rarely the problem: given an arXiv identifier, the catalog and its synopsis say what the paper is about.
+The valuable direction is the reverse, from a question to the sources that bear on it: which of the thousand papers help answer \emph{this} one?
+A legible, catalogued corpus lets an agent work the way a researcher would, grep for the terms, read the synopses of the hits, follow citations, refine, and read a few in full, a multi-pass search whose every step is exact and inspectable.
+Embedding a corpus into vectors and retrieving by approximate nearest neighbor is the other standard answer, developed in Chapter~\ref{chapter:Retrieval}; the point to carry here is that approximate similarity is not always the right tool.
+A vector store returns what is near in embedding space, which can miss the exactly-relevant source and cannot be examined step by step, so for problems where precision or a legible trail matters, an agent searching a well-structured file system with ordinary tools is a first-class alternative, and often the better one.
+
+The premise of the whole move is \emph{trust}.
+Handing an agent a large corpus and the run of the file system presupposes the verification and permission disciplines of Chapters~\ref{chapter:AgenticRig} and~\ref{chapter:AgenticCoding}: staging a hundred times more material pays off only for an agent whose reach you have bounded and whose selections you can still check.
+Taken to its end, this is how the evolutionary capstone (Chapter~\ref{chapter:EvolutionaryFrameworks}) will ground its search, drawing on a growing corpus of domain knowledge to build the context for each proposal.
 
 \section{Measuring Context Quality}
 \label{section:ContextQuality}
