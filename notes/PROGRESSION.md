@@ -106,8 +106,20 @@ Default reading order is the `\input{sections/<name>}` sequence in `main.tex`. D
 
 ```
 # progression-map
-introduction -> main_result    # the introduction motivates and forward-points to the theorem
-main_result  -> conclusion     # the conclusion recaps the result and names future work
+# Linear backbone (reading order), minus the off-map prologue and appendices.
+agentic_paradigm     -> agentic_rig
+agentic_rig          -> context_engineering
+context_engineering  -> agentic_coding
+agentic_coding       -> agent_loop
+agent_loop           -> evaluation
+evaluation           -> retrieval
+retrieval            -> orchestration
+orchestration        -> evolutionary_frameworks
+# Non-obvious convergence edges — what the evolutionary capstone reaches back to.
+agentic_paradigm     -> evolutionary_frameworks   # the two spines are introduced here and converge at the capstone
+context_engineering  -> evolutionary_frameworks   # Spine 2: context engineering feeds the LLM mutation operator
+evaluation           -> evolutionary_frameworks   # Spine 1: the eval harness becomes the fitness function
+orchestration        -> evolutionary_frameworks   # evolution = the GES loop (Def.~GenEvalSel) + a mutation operator
 ```
 
 ## Stable anchors
