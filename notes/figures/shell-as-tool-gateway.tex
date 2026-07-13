@@ -143,8 +143,8 @@
     lbl/.style={anchor=north west, align=left, inner sep=0pt, text=rigInk},
     tile/.style={draw=toolAcc, line width=0.6pt, fill=toolFill, rounded corners=2.5pt},
     dead/.style={draw=deadInk, line width=0.6pt, fill=deadFill, rounded corners=2.5pt},
-    conduit/.style={->, >=stealth', line width=1.6pt, roleShAcc},
-    reach/.style={->, >=stealth', line width=1.3pt, roleShAcc},
+    conduit/.style={->, >=stealth', line width=1pt, roleShAcc},
+    reach/.style={->, >=stealth', line width=1pt, roleShAcc},
   ]
 
   % ---- figure super-title + takeaway -----------------------------------------
@@ -171,7 +171,7 @@
   \draw[rigMuted, line width=0.7pt, dash pattern=on 3pt off 2pt, rounded corners=5pt]
         (0.5,1.55) rectangle (7.4,8.0);
   \node[anchor=north west, font=\sffamily\scriptsize\bfseries, text=rigMuted] at (0.62,7.9)
-    {YOUR MACHINE};
+    {Your Machine};
 
   % ---- agent (violet box) — top-left, below YOUR MACHINE --------------------
   \node[draw=roleAgAcc, line width=1pt, fill=roleAgFill, rounded corners=4pt,
@@ -191,7 +191,7 @@
   \draw[conduit,->] (agentL.south) -- (shellL.north);
 
   % ---- shell → the four tool boxes (rounded corners, stealth tips) ----------
-  \draw[roleShAcc, line width=1.6pt] (shellL.east) -- (3.5,4.7);   % trunk
+  \draw[roleShAcc, line width=1pt] (shellL.east) -- (3.5,4.7);   % trunk
   \foreach \yy in {7,5.5,4,2.5}{
     \draw[reach, rounded corners=7pt] (3.5,4.7) |- (5.0,\yy);}
 
@@ -250,9 +250,9 @@
   %      reclaim the space freed by moving the agent up, matching LOCAL's margin
   \begin{scope}[xshift=-0.4cm]
   % ---- the sandbox VM (general tools, reachable) -----------------------------
-  \draw[roleShAcc, line width=1pt, rounded corners=4pt, fill=vmFill] (10.9,2.35) rectangle (13.35,7.55);
-  \node[anchor=north west, font=\sffamily\scriptsize\bfseries, text=roleShAcc] at (11.0,7.42)
-    {sandbox VM};
+  \draw[roleShAcc, line width=1pt, rounded corners=4pt, fill=vmFill] (10.9,2.35) rectangle (13.35,7.35);
+  \node[anchor=north west, font=\sffamily\scriptsize\bfseries, text=rigMuted] at (10.9,7.9)
+    {Sandbox VM};
   \node[anchor=north west, font=\sffamily\tiny, text=rigMuted] at (11.0,7.05)
     {preloaded general tools};
   \foreach \i/\t in {0/python, 1/node, 2/pandoc, 3/git, 4/curl, 5/jq}{
@@ -261,14 +261,16 @@
     \node[tile] at (11.62+\col*1.12,6.45-\row*0.58) [minimum width=1.0cm, minimum height=0.42cm]
       {\ttfamily\tiny \t};}
   \node[tile, fill=roleShFill] at (12.17,4.55) [minimum width=2.15cm, minimum height=0.42cm]
-    {\sffamily\tiny + pip / npm / apt (installable)};
+    {\sffamily\tiny pip / npm / apt};
   % VM's own ephemeral file system (green role, but ephemeral)
   \node[draw=roleFsAcc, line width=0.6pt, fill=roleFsFill, rounded corners=2.5pt]
         at (12.17,3.55) [minimum width=2.15cm, minimum height=0.5cm] {};
   \rigFolder{11.35}{3.55}{roleFsAcc}
   \node[font=\sffamily\tiny, text=roleFsAcc, anchor=west] at (11.52,3.55) {ephemeral VM files};
 
-  % ---- THE WALL (sandbox boundary) -------------------------------------------
+  % ---- THE WALL + block marker, nudged right to sit half-way between the VM
+  %      right edge and the greyed column's left edge --------------------------
+  \begin{scope}[xshift=0.05cm]
   \begin{scope}
     \clip (13.55,1.85) rectangle (13.9,7.75);
     \fill[wallCol] (13.55,1.85) rectangle (13.9,7.75);
@@ -280,13 +282,16 @@
   \node[rotate=90, font=\sffamily\tiny\bfseries, text=blockRed] at (13.725,3.05) {SANDBOX WALL};
 
   % blocked reach: VM → wall (stops dead at the boundary)
-  \draw[->, >=stealth', line width=1.6pt, blockRed] (13.40,5.3) -- (13.52,5.3);
+  \draw[ line width=1pt, blockRed] (13.40,5.3) -- (13.52,5.3);
   \draw[blockRed, line width=1.5pt, line cap=round] (13.62,5.52) -- (13.83,5.08);
   \draw[blockRed, line width=1.5pt, line cap=round] (13.62,5.08) -- (13.83,5.52);
+  \end{scope}
 
   % ---- your local machine, BEYOND the wall (unreachable, greyed) -------------
-  \rigLock{14.28}{7.3}{deadInk}
-  \node[anchor=west, font=\sffamily\tiny\bfseries, text=deadInk] at (14.44,7.3) {your machine};
+  \rigLock{14.3}{7.15}{deadInk}
+  \node[anchor=north west, font=\sffamily\scriptsize\bfseries, text=deadInk] at (14.1,7.9)
+    {Your Machine};
+
   \foreach \i/\t in {0/{licensed apps}, 1/{compiled binaries}, 2/{domain tools}}{
     \node[dead] at (14.95,6.5-\i*0.68) [minimum width=1.5cm, minimum height=0.5cm]
       {\sffamily\tiny \t};}
