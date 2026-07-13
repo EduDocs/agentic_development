@@ -8,10 +8,11 @@ The researcher is the author who has contracted out the typing.
 Every file the agent creates, every function it writes, every import it adds belongs to the researcher and will be submitted, graded, and eventually run again on a clean machine.
 
 This distinction matters because agentic tools can produce large volumes of plausible-looking code very quickly.
-The risk is not that the agent writes bad code — it is that the researcher stops reading.
+The risk is not that the agent writes bad code; it is that the researcher stops reading.
 The moment the researcher outsources \emph{comprehension} to the agent, the work ceases to be reproducible, auditable, or defensible.
+Code ownership is key.
 
-Section~\ref{section:AgenticCodingLoop} lays out the read--direct--inspect loop; the sections that follow sharpen each phase in turn --- directing the agent with precise instructions, reading the diff it produces (Section~\ref{section:ReadingDiff}), pinning a reproducible environment (Section~\ref{section:ReproducibleEnvironments}), and keeping a clean version history so the work stays auditable.
+Section~\ref{section:AgenticCodingLoop} lays out the read--direct--inspect loop; the sections that follow sharpen each phase in turn: directing the agent with precise instructions, reading the diff it produces (Section~\ref{section:ReadingDiff}), pinning a reproducible environment (Section~\ref{section:ReproducibleEnvironments}), and keeping a clean version history so the work stays auditable.
 
 \section{The Agentic Coding Loop}
 \label{section:AgenticCodingLoop}
@@ -19,18 +20,19 @@ Section~\ref{section:AgenticCodingLoop} lays out the read--direct--inspect loop;
 Agentic coding proceeds in a cycle that alternates between researcher direction and agent execution.\index{Agentic coding loop}
 
 \begin{enumerate}
-\item \textbf{Specify.} State clearly what the agent should produce — a function, a script, a test — with explicit constraints on interface, style, and correctness criteria.
+\item \textbf{Specify.} State clearly what the agent should produce (a function, a script, a test) with explicit constraints on interface, style, and correctness criteria.
 \item \textbf{Execute.} The agent writes the code, runs it if appropriate, and reports the result.
-\item \textbf{Read.} The researcher reads every change the agent made — every diff, every new file, every modified function.
-\item \textbf{Commit or revise.} If the change is correct and understood, commit it. If not, provide corrective direction and return to step~1.
+\item \textbf{Read.} The researcher reads changes the agent made through diffs, file inspection, and testing.
+\item \textbf{Commit or revise.} When the change is appropriate and understood, commit it. If not, provide corrective direction and iterate through the loop.
 \end{enumerate}
 
-The loop is deliberately incremental.
-Each cycle should produce a small, reviewable change — not a thousand-line scaffolding dump.
-A change the researcher cannot fully read is a change the researcher cannot own.
+This iterative process is deliberately incremental.
+Each cycle should produce a small, reviewable change, not a thousand-line scaffolding dump.
+A change the researcher cannot fully read is a change the researcher does not own.
 
 What makes the execute step more than fast code generation is the \emph{verification oracle}\index{Verification oracle}: the interpreter, test runner, or compiler the agent can invoke on its own output.
-In a chat interface, ``this code runs'' is a prediction; in an agentic rig it is a checked fact, and a failure returns a structured error signal — the line number, the type mismatch, the stack trace — that tells the agent exactly which assumption was violated.
+In a chat interface, ``this code runs'' is a prediction.
+In an agentic rig, it is a checked fact, and a failure returns a structured error signal (the line number, the type mismatch, the stack trace) that tells the agent exactly which assumption was violated.
 This is why the loop converges even when the first attempt is wrong: each run--fail--fix cycle is grounded feedback, denser and more reliable than any specification the researcher could have written up front.
 The same oracle, formalized as a scoring function, becomes the evaluation harness of Chapter~\ref{chapter:Evaluation}.
 
@@ -80,14 +82,14 @@ Compound instructions that ask for several things at once produce compound diffs
 \begin{remark}
 ``Add a CSV loader, write tests for it, and update the \code{CLAUDE.md} to document it'' is three tasks.
 If the tests are wrong, reverting them also reverts the loader.
-Three separate instructions — loader, then tests, then documentation — each produce a single-purpose commit that can be independently reviewed, accepted, or reverted.
+Three separate instructions (e.g., loader, then tests, then documentation) each produce a single-purpose commit that can be independently reviewed, accepted, or reverted.
 \end{remark}
 
 \section{Reading the Diff}
 \label{section:ReadingDiff}
 
 A \emph{diff}\index{Diff} is a compact representation of the changes between two versions of a file: lines added are prefixed with~\code{+}; lines removed with~\code{-}.
-Reading every diff before committing is the single most important habit in agentic coding.
+Reading diffs before committing is a cornerstone habit in agentic coding.
 
 \begin{example}
 A minimal diff showing the addition of a CSV branch to a loader:
@@ -107,16 +109,16 @@ A minimal diff showing the addition of a CSV branch to a loader:
 \end{lstlisting}
 Reading this diff reveals that the CSV branch assumes the target column is named \code{'target'} and that the remaining columns are all features.
 Neither of these constraints appears in the instruction; both affect correctness on real data.
-The diff also introduces a dependency on \code{pandas} (the \code{pd} alias) that must already be present in the environment --- itself a change worth catching in the diff rather than at run time on a clean machine.
+The diff also introduces a dependency on \code{pandas} (the \code{pd} alias) that must already be present in the environment, itself a change worth catching in the diff rather than at run time on a clean machine.
 \end{example}
 
 Reading diffs develops two habits.
-The first is \emph{catching errors}: agents make mistakes — wrong assumptions, missing edge cases, subtle logic errors — that are invisible in the running output but legible in the diff.
+The first is \emph{catching errors}: agents make mistakes --- wrong assumptions, missing edge cases, subtle logic errors --- that are invisible in the running output but legible in the diff.
 The second is \emph{maintaining ownership}: a researcher who reads every diff understands their own codebase; one who does not is dependent on the agent to remember what was done and why.
 
 \begin{remark}
-This habit of reading every change and owning the result is what Anthropic's AI-fluency framework names \emph{diligence} --- the discipline of ensuring that the speed an agent offers never costs the researcher responsibility, transparency, or accountability for what remains their own work.
-Its companion competences in that framework --- \emph{description} (the context engineering of Chapter~\ref{chapter:ContextEngineering}) and \emph{discernment} (the evaluation of Chapter~\ref{chapter:Evaluation}) --- are developed elsewhere in these notes under their own names.
+The  habit of reading changes and owning the result is what Anthropic's AI-fluency framework names \emph{diligence}: the discipline of ensuring that the speed an agent offers never costs the researcher responsibility, transparency, or accountability for what remains their own work.
+Its companion competences in that framework, \emph{description} and \emph{discernment}, are developed in Chapter~\ref{chapter:ContextEngineering} and Chapter~\ref{chapter:Evaluation}.
 \end{remark}
 
 \section{Reproducible Environments}
@@ -142,12 +144,12 @@ scikit-learn==1.6.1
 scipy==1.14.1
 \end{lstlisting}
 The loose specification allows a collaborator to install a different version than the author used, potentially changing numerical results.
-The pinned specification pins the Python package versions --- a necessary step toward reproducibility, though not by itself a guarantee of an identical environment (see the following remark).
+The pinned specification pins the Python package versions, a necessary step toward reproducibility, though not by itself a guarantee of an identical environment.
 \end{example}
 
 \begin{remark}
 Pinning dependencies is necessary but not sufficient.
-An Anthropic engineering postmortem (2025) documents that identical model weights can produce different outputs depending on the serving stack --- routing, hardware, compiler flags --- so recording the model \emph{name} does not by itself pin the model; when a pipeline calls a hosted model, log the served endpoint and version too.
+An Anthropic engineering postmortem (2025) documents that identical model weights can produce different outputs depending on the serving stack (routing, hardware, compiler flags) so recording the model \emph{name} does not by itself pin the model; when a pipeline calls a hosted model, log the served endpoint and version too.
 And when the environment is a resource-bounded container, the resource budget is itself a variable: raising CPU or memory ceilings can change which solution strategies an agent can even reach, so a reproducible run pins resource floors and ceilings alongside dependency versions.
 \end{remark}
 
@@ -166,7 +168,7 @@ Modern projects often use tools like \code{uv} or \code{poetry} to manage virtua
 
 \subsection{One-Command Run}
 
-The final requirement for reproducibility is a single command that installs dependencies, loads data, runs the pipeline, and reports the result — with no manual steps in between.
+The final requirement for reproducibility is a single command that installs dependencies, loads data, runs the pipeline, and reports the result with no manual steps in between.
 
 \begin{example}
 Using \code{just} as a command runner:
