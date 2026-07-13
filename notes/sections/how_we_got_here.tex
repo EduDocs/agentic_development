@@ -2,7 +2,7 @@
 \label{chapter:HowWeGotHere}
 % EVOLVE-BLOCK-START
 
-The agentic systems this course builds rest on large language models, and those models can seem to have arrived all at once.
+The agentic systems this course builds rest on large language models (LLMs), and those models can seem to have arrived all at once.
 They did not.
 The capability that makes an agent possible (a single model that reads instructions, holds a conversation, writes code, and calls tools) is the accumulated payoff of a collection of significant advances, each of which removed a concrete limitation of the one before it.
 This chapter traces that lineage at a high level, highlighting a few milestones.
@@ -16,7 +16,7 @@ This is part of why the current moment feels sudden even though the path is legi
 \section{Meaning as Geometry (2013--2014)}
 \label{section:MeaningAsGeometry}
 
-An important step was to give words a form a machine could compute with.
+An important step in natural language processing (NLP) was to give words a form a machine could compute with.
 A \emph{word embedding}\index{Word embedding} maps each word to a vector so that words with similar meanings land near one another, and the \emph{word2vec}\index{word2vec} models showed that such a space could be learned cheaply from raw text at scale (Mikolov et al., 2013).
 A companion result added an efficient training objective and vectors for phrases, and displayed the now-famous regularity that simple vector arithmetic is meaningful in this space: adding the vectors for \emph{Germany} and \emph{capital} lands near the vector for \emph{Berlin} (Mikolov et al., 2013).
 Meaning had become geometry: a trained space in which distance encodes similarity.
@@ -35,7 +35,7 @@ Removing that bottleneck was the next breakthrough.
 The \emph{Transformer}\index{Transformer} took the more radical step of discarding recurrence entirely and building the model out of attention alone (Vaswani et al., 2017; Figure~\ref{figure:Transformer}).
 It let every position in a sequence attend directly to every other, and made it practical to train much larger models on much more data because attention is parallel where recurrence is serial.
 Every large language model the course uses is a Transformer.
-Its attention mechanism also carries a cost --- a hard architectural one (comparing every token with every other makes compute and memory grow quadratically with length) and a softer behavioral one (longer contexts empirically tend to reduce a model's effective use of any one relevant token).
+Its attention mechanism carries a hard architectural cost: comparing every token with every other makes compute and memory grow quadratically with length; and a softer behavioral one: longer contexts empirically tend to reduce a model's effective use of any one relevant token.
 The latter, often framed as a finite ``attention budget,'' is a useful heuristic rather than a theorem, since attention is computed per head, per layer, and per query and can be learned to concentrate sharply; Chapter~\ref{chapter:ContextEngineering} develops it and its limits.
 
 \begin{figure}[t]
@@ -87,7 +87,7 @@ On the \emph{training} side, reinforcement learning from human feedback (RLHF) i
 The point is that ``make the model reason and act better'' is an active, crowded field rather than a single trick; the course develops the parts it uses and names the rest so the reader can place them.
 
 The progression did not stop at tool use.
-The most recent step folds reasoning back inside the model: \emph{reasoning models}\index{Reasoning model} are trained to carry out extended chains of thought internally before they answer, rather than being prompted to reason step by step, and models are increasingly \emph{multimodal}, taking images and other data alongside text.
+A recent step folds reasoning back inside the model: \emph{reasoning models}\index{Reasoning model} are trained to carry out extended chains of thought internally before they answer, rather than being prompted to reason step by step, and models are increasingly \emph{multimodal}, taking images and other data alongside text.
 The practical consequences, including a latent reasoning trace that cannot be read as an audit log and a thinking budget in place of a prompt scaffold, are treated in Chapter~\ref{chapter:AgentLoop}.
 The progression this chapter traces is therefore still under way, but its shape is unchanged: each step extends what the system can reliably do on its own.
 
@@ -175,16 +175,16 @@ Years mark when each result first appeared as a preprint; the publication venues
 \small
 \begin{tabular}{@{}l l p{6.8cm}@{}}
 \toprule
-Year & Breakthrough & What it unlocked \\
+Year & Breakthrough & \raggedright What it unlocked \tabularnewline
 \midrule
-2013  & Word embeddings                   & meaning as a learned vector geometry \\
-2014  & Sequence-to-sequence              & end-to-end mapping of whole sequences \\
-2017  & The Transformer                   & attention replaces recurrence; scale becomes practical \\
-2018  & Pre-training                      & transferable, contextual representations \\
-2020  & Scale and few-shot                & steering a frozen model by text alone \\
-2020  & Retrieval-augmented generation    & grounding in external, updatable knowledge \\
-2022--23 & Instruction tuning, reasoning, tool use & following instructions and acting: agents \\
-2024--26 & Reasoning \& multimodality     & trained latent reasoning; the chain continues \\
+2013  & Word embeddings                   & \raggedright meaning as a learned vector geometry \tabularnewline
+2014  & Sequence-to-sequence              & \raggedright end-to-end mapping of whole sequences \tabularnewline
+2017  & The Transformer                   & \raggedright attention replaces recurrence; scale becomes practical \tabularnewline
+2018  & Pre-training                      & \raggedright transferable, contextual representations \tabularnewline
+2020  & Scale and few-shot                & \raggedright steering a frozen model by text alone \tabularnewline
+2020  & Retrieval-augmented generation    & \raggedright grounding in external, updatable knowledge \tabularnewline
+2022--23 & Instruction tuning, reasoning, tool use & \raggedright following instructions and acting: agents \tabularnewline
+2024--26 & Reasoning \& multimodality     & \raggedright trained latent reasoning; the chain continues \tabularnewline
 \bottomrule
 \end{tabular}
 \end{table}

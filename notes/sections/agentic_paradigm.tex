@@ -4,7 +4,7 @@
 
 An \emph{agent} can be described as a system that perceives its environment, reasons about what to do, and acts repeatedly, over time.\index{Agent}
 For most of computing history, this description applied mainly to robots and game-playing programs.
-The arrival of large language models with tool-calling capability changes the picture: a language model that can read files, execute code, browse the web, and call APIs is, in a meaningful sense, an agent that can do knowledge work.
+The arrival of LLMs with tool-calling capability changes the picture: a language model that can read files, execute code, browse the web, and call APIs is, in a meaningful sense, an agent that can do knowledge work.
 This chapter establishes the vocabulary and conceptual structure the rest of the notes build on.
 It opens by defining the agent and its perceive--reason--act loop; Section~\ref{section:CapabilityLadder} then lays out the four-rung \emph{capability ladder} (operate, build, orchestrate, evolve) that orders the course progression; Section~\ref{section:TwoSpines} introduces the two \emph{spines}, evaluation-becomes-fitness and (agentic) context engineering, that thread every rung; and the closing section asks why general-purpose tool-using models make this the moment the pieces combine.
 
@@ -66,8 +66,8 @@ Chapter~\ref{chapter:ContextEngineering} develops context engineering as a disci
 \begin{remark}
 A common misconception is that a larger context window reduces the need for context engineering.
 This misconception is as old as large windows themselves; the first hundred-thousand-token windows were pitched as a way to simply feed the model everything, yet in practice models exhibit \emph{position bias} and \emph{context rot} (both developed in Chapter~\ref{chapter:ContextEngineering}).
-Information at the beginning and end of the context tends to receive more attention than information buried in the middle.
-Context with dissonant content interfere with inference tasks, reasonaing, and prediction.
+For instance, information at the beginning and end of the context tends to receive more attention than information buried in the middle.
+Context with dissonant content interferes with inference tasks, reasoning, and prediction.
 Choosing what to put in the window, and where, remains consequential even as windows grow.
 \end{remark}
 
@@ -76,6 +76,9 @@ Not every task needs the full loop.
 The distinction between an \emph{agent}, which lets the model dynamically direct its own process and tool use, and a \emph{workflow}, which routes the model through predetermined code paths, is worth drawing early (Anthropic, 2024; Figure~\ref{figure:WorkflowAgentSpectrum}).
 A workflow fits predictable, well-scoped tasks whose steps are known in advance; an agent fits open-ended problems where the number of steps cannot be fixed ahead of time, at the price of higher cost and more room for compounding error.
 The rungs that follow, and the orchestration patterns of Chapter~\ref{chapter:Orchestration}, move along this spectrum rather than leaping to full autonomy; the durable advice, as of this writing in 2026, is to reach for a workflow when the task allows it and reserve full agency for problems that require it.
+These two designs describe the artifact that \emph{runs}; neither describes how it is \emph{built}.
+Agentic development, the practice these notes teach, is a build-time activity: a researcher directs an agent such as Claude Code, and the software it produces is frequently a deterministic workflow, or ordinary analysis code, with no agent inside it at all.
+Developing \emph{with} an agent is thus distinct from deploying one, and a central aim of these notes is to use the former to build reliable, largely non-agentic research pipelines, reserving in-production agency for the tasks that require it.
 \end{remark}
 
 \begin{figure}[htb!]
@@ -111,10 +114,14 @@ The habit most worth instilling first is deceptively plain, stating the objectiv
 This rung trains goal clarity before any tooling.
 This means understanding the terminal, using version control, accessing a model through an API, and giving the agent instructions that produce predictable, revisable results.
 Many researchers skip this rung and never develop the habit of \emph{assessing modifications} the agent makes, a deficit that can grow more costly with each rung climbed.
+
 There is a genuine tailwind here: as agentic tooling improves, operating the rig gets steadily easier in practice, so the mechanical barrier to entry keeps falling.
 Asking Claude or Codex how to commit your work to git, once a real hurdle, is now trivial.
 What does not get easier is the judgment underneath: understanding \emph{why} version control is of paramount importance, and when a commit is the right one, remains the researcher's to hold.
 The same pattern recurs one rung up: getting an agent to write a piece of code for a task is increasingly dependable, but ensuring the build and architecture are conducive to discovery, rather than merely running, stays a cognitive challenge that the tooling does not carry for you.
+And the escalation has a summit.
+Beyond the rig and beyond the code sits the judgment no rung of tooling reaches: which questions are worth pursuing, what would count as a meaningful contribution, and what the results imply, for a field and beyond it.
+That judgment stays the researcher's to hold; the promise of everything that follows is to clear the mechanical work away from it, not to make it for you.
 
 \paragraph{Build.}
 Building an agentic evolutionary framework  means implementing the loop and the tools from scratch rather than simply configuring a pre-existing system.
@@ -188,7 +195,6 @@ Evolution is context engineering in a loop.
 
 Agentic AI systems have existed in various forms for decades: rule-based expert systems, reinforcement learning agents, robotic planning systems.
 What makes the current moment distinct is the arrival of \emph{general-purpose tool-using language models}: systems that can read natural language instructions for a new task, decide which tools to invoke, interpret unstructured results, and adapt mid-task without domain-specific engineering.
-
 Three capabilities combine to make this shift significant.
 
 \paragraph{Instruction following.}

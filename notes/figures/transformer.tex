@@ -7,17 +7,17 @@
   circleplus/.style={circle,inner sep=0pt,draw=black}
   ]
 
-\node[draw=black,encoder,fill=violet!15] (enc2) at (-0.15,4.7) {Encoder $\otimes n$};
+\node[draw=black,encoder,fill=violet!15] (enc2) at (-0.15,4.7) {encoder $\otimes n$};
 \draw[draw=black,->,line width=0.8pt] (-1.5,3.9) to (-1.5,4.4);
 \draw[draw=black,->,line width=0.8pt] (1.5,3.9) to (1.5,4.4);
 
 \node[rotate=90] (enc1) at (-3.25, 2.65) {Encoder};
 \draw[draw=black,rounded corners] (-3,4.1) rectangle (2.7,1.1);
-\node[draw=black,block,fill=yellow!15] (add2) at (0,3.7) {\tiny Add \& Normalize};
-\node[draw=black,feed,fill=blue!15] (feed2) at (1.5,3.0) {\tiny Feed Forward};
-\node[draw=black,feed,fill=blue!15] (feed1) at (-1.5,3.0) {\tiny Feed Forward};
-\node[draw=black,block,fill=yellow!15] (add1) at (0,2.3) {\tiny Add \& Normalize};
-\node[draw=black,block,fill=orange!15] (selfattention) at (0,1.6) {\tiny Self-Attention};
+\node[draw=black,block,fill=yellow!15] (add2) at (0,3.7) {\tiny add \& normalize};
+\node[draw=black,feed,fill=blue!15] (feed2) at (1.5,3.0) {\tiny feed forward};
+\node[draw=black,feed,fill=blue!15] (feed1) at (-1.5,3.0) {\tiny feed forward};
+\node[draw=black,block,fill=yellow!15] (add1) at (0,2.3) {\tiny add \& normalize};
+\node[draw=black,block,fill=orange!15] (selfattention) at (0,1.6) {\tiny self-attention};
 \draw[draw=black,->,line width=0.8pt] (-1.5,3.2) to (-1.5,3.5);
 \draw[draw=black,->,line width=0.8pt] (1.5,3.2) to (1.5,3.5);
 \draw[draw=black,->,line width=0.8pt] (-1.5,2.5) to (-1.5,2.8);
@@ -33,18 +33,18 @@
 
 \draw[draw=black,dashdotted, rounded corners] (-3.55,5.2) rectangle (2.9,0.4);
 
-\node[draw=black,encoder,fill=green!15] (soft) at (6.85,5.7) {Linear \& Softmax};
+\node[draw=black,encoder,fill=green!15] (soft) at (6.85,5.7) {linear \& softmax};
 \draw[->] (soft) to node[above]{Output} (11.5,5.7);
-\node[draw=black,encoder,fill=violet!15] (dec2) at (6.85,4.7) {Decoder $\otimes n$};
+\node[draw=black,encoder,fill=violet!15] (dec2) at (6.85,4.7) {decoder $\otimes n$};
 \node[rotate=-90] (dec1) at (9.95, 1.9) {Decoder};
 \draw[rounded corners] (4,4.1) rectangle (9.7,-0.3);
-\node[draw=black,block,fill=yellow!15] (add3) at (7,3.7) {\tiny Add \& Normalize};
-\node[draw=black,feed,fill=blue!15] (feed2) at (8.5,3.0) {\tiny Feed Forward};
-\node[draw=black,feed,fill=blue!15] (feed1) at (5.5,3.0) {\tiny Feed Forward};
-\node[draw=black,block,fill=yellow!15] (add2) at (7,2.3) {\tiny Add \& Normalize};
-\node[draw=black,block,fill=orange!15] (encdec1) at (7,1.6) {\tiny Encoder-Decoder Attention};
-\node[draw=black,block,fill=yellow!15] (add1) at (7,0.9) {\tiny Add \& Normalize};
-\node[draw=black,block,fill=orange!15] (selfattention) at (7,0.2) {\tiny Masked Self-Attention};
+\node[draw=black,block,fill=yellow!15] (add3) at (7,3.7) {\tiny add \& normalize};
+\node[draw=black,feed,fill=blue!15] (feed2) at (8.5,3.0) {\tiny feed forward};
+\node[draw=black,feed,fill=blue!15] (feed1) at (5.5,3.0) {\tiny feed forward};
+\node[draw=black,block,fill=yellow!15] (add2) at (7,2.3) {\tiny add \& normalize};
+\node[draw=black,block,fill=orange!15] (encdec1) at (7,1.6) {\tiny encoder-decoder attention};
+\node[draw=black,block,fill=yellow!15] (add1) at (7,0.9) {\tiny add \& normalize};
+\node[draw=black,block,fill=orange!15] (selfattention) at (7,0.2) {\tiny masked self-attention};
 \draw[->,line width=0.8pt] (5.5,5.0) to (5.5,5.4);
 \draw[->,line width=0.8pt] (8.5,5.0) to (8.5,5.4);
 \draw[->,line width=0.8pt] (5.5,3.9) to (5.5,4.4);
@@ -66,21 +66,19 @@
 \node[circleplus] (cirle4) at (8.5, -0.65) {$+$};
 \draw[->,line width=0.8pt] (cirle3) to (5.5,0.0);
 \draw[->,line width=0.8pt] (cirle4) to (8.5,0.0);
-\node (posenc) at (7,-0.65) {\scriptsize Positional};
-\node (posenc) at (7,-1) {\scriptsize Encoding};
+\node (posenc) at (7,-0.6) {\footnotesize Positional};
+\node (posenc) at (7,-1) {\footnotesize Encoding};
 \draw[->] (3.5,-0.65) to node[below]{Input} (4.75,-0.65);
 
 \draw[draw=black,->,line width=0.8pt,rounded corners] (-0.15,5.0) to (-0.15,5.4) to (3.5,5.4) to (3.5,1.6) to (4.5,1.6);
 \draw[draw=black,->,line width=0.8pt,rounded corners] (-0.15,5.0) to (-0.15,5.4) to (3.5,5.4) to (3.5,4.7) to (4.0,4.7);
 
-\draw [<->] (10.25,5.5) -- (10.25,4) -- (12,4);
-\foreach \x in {1,...,5} {
-  \draw (10+0.375*\x,3.825) -- (10+0.375*\x,4.125);
-  }
-\node (tyy1) at (11.125,3.5) {\scriptsize Distribution};
-\draw[fill=gray!15,line width=0.5pt] (10.475,4) rectangle (10.65,4.3);
-\draw[fill=gray!15,line width=0.5pt] (10.85,4) rectangle (11.025,5);
-\draw[fill=gray!15,line width=0.5pt] (11.225,4) rectangle (11.4,4.7);
-\draw[fill=gray!15,line width=0.5pt] (11.6,4) rectangle (11.775,4.4);
+\draw [<->] (10.125,5.5) -- (10.125,4) -- (11.875,4);
+\node (tyy1) at (11.125,3.5) {\footnotesize Distribution};
+\draw[fill=gray!15,line width=0.5pt] (10.25,4) rectangle (10.5,4.2);
+\draw[fill=gray!15,line width=0.5pt] (10.5,4) rectangle (10.75,4.3);
+\draw[fill=gray!15,line width=0.5pt] (10.75,4) rectangle (11,5);
+\draw[fill=gray!15,line width=0.5pt] (11,4) rectangle (11.25,4.7);
+\draw[fill=gray!15,line width=0.5pt] (11.25,4) rectangle (11.5,4.4);
 
 \end{tikzpicture}
