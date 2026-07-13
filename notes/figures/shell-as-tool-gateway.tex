@@ -23,7 +23,7 @@
   \usepackage[varqu]{inconsolata}
   \usepackage{xcolor}
   \usepackage{tikz}
-  \usetikzlibrary{positioning,fit,backgrounds,calc,shapes.geometric,shapes.misc,%
+  \usetikzlibrary{arrows,positioning,fit,backgrounds,calc,shapes.geometric,shapes.misc,%
                   arrows.meta,decorations.pathreplacing}
   \begin{document}
   \def\rigEND{\end{document}}
@@ -143,8 +143,8 @@
     lbl/.style={anchor=north west, align=left, inner sep=0pt, text=rigInk},
     tile/.style={draw=toolAcc, line width=0.6pt, fill=toolFill, rounded corners=2.5pt},
     dead/.style={draw=deadInk, line width=0.6pt, fill=deadFill, rounded corners=2.5pt},
-    conduit/.style={-{Stealth[length=3.4mm,width=3mm]}, line width=2.2pt, roleShAcc},
-    reach/.style={-{Stealth[length=3mm,width=2.6mm]}, line width=1.6pt, roleShAcc},
+    conduit/.style={->, >=stealth', line width=1.6pt, roleShAcc},
+    reach/.style={->, >=stealth', line width=1.3pt, roleShAcc},
   ]
 
   % ---- figure super-title + takeaway -----------------------------------------
@@ -173,43 +173,40 @@
   \node[anchor=north west, font=\sffamily\scriptsize\bfseries, text=rigMuted] at (0.62,7.9)
     {YOUR MACHINE};
 
-  % ---- agent (violet) — top-left corner of the panel -------------------------
-  \fill[roleAgFill, rounded corners=4pt] (0.85,6.75) rectangle (2.05,7.4);
-  \draw[roleAgAcc, line width=1pt, rounded corners=4pt] (0.85,6.75) rectangle (2.05,7.4);
-  \rigChat{1.45}{7.32}{roleAgAcc}
-  \node[font=\sffamily\scriptsize\bfseries, text=roleAgAcc] at (1.45,6.78) {agent};
+  % ---- agent (violet box) — top-left, below YOUR MACHINE --------------------
+  \node[draw=roleAgAcc, line width=1pt, fill=roleAgFill, rounded corners=4pt,
+        minimum width=1.4cm, minimum height=1.2cm] (agentL) at (1.45,6.75) {};
+  \rigChat{1.45}{7.05}{roleAgAcc}
+  \node[font=\sffamily\scriptsize\bfseries, text=roleAgAcc] at (1.45,6.45) {agent};
 
-  % ---- shell GATEWAY (slate doorway) — directly below the agent, centred ------
-  \fill[roleShAcc] (1.05,4.35) rectangle (1.25,6.25);      % left post
-  \fill[roleShAcc] (1.65,4.35) rectangle (1.85,6.25);      % right post
-  \fill[roleShAcc] (1.05,6.05) rectangle (1.85,6.25);      % lintel
-  \fill[roleShAcc] (1.05,4.35) rectangle (1.85,4.55);      % base
-  % >_ on the lintel
-  \draw[white, line width=1pt, line cap=round, line join=round]
-        (1.32,6.20) -- (1.40,6.15) -- (1.32,6.10);
-  \draw[white, line width=1pt, line cap=round] (1.44,6.10) -- (1.56,6.10);
-  \node[font=\sffamily\scriptsize\bfseries, text=roleShAcc] at (1.45,4.12) {shell};
-  \node[font=\sffamily\tiny, text=rigMuted] at (1.45,3.85) {the gateway};
+  % ---- shell (black box, >_ in white, centred below the agent) --------------
+  \node[draw=roleShAcc, line width=1pt, fill=roleShAcc, rounded corners=3pt,
+        minimum width=1.2cm, minimum height=1.0cm] (shellL) at (1.45,4.7) {};
+  \draw[white, line width=1.2pt, line cap=round, line join=round]
+        (1.2,4.86) -- (1.35,4.73) -- (1.2,4.60);
+  \draw[white, line width=1.2pt, line cap=round] (1.45,4.60) -- (1.65,4.60);
+  \node[font=\sffamily\scriptsize\bfseries, text=roleShAcc] at (1.45,3.95) {shell};
 
-  % conduit: agent → shell (down), then shell → the tool column on the right
-  \draw[conduit] (1.45,6.73) -- (1.45,6.27);
-  \draw[roleShAcc, line width=2.2pt] (1.87,5.1) -- (5.05,5.1);     % trunk to the column
-  \draw[roleShAcc, line width=1.8pt] (5.05,7.05) -- (5.05,3.15);   % distribution bus
-  \foreach \yy in {7.05,5.75,4.45,3.15}{
-    \draw[reach] (5.05,\yy) -- (5.22,\yy);}
+  % ---- agent → shell --------------------------------------------------------
+  \draw[conduit,->] (agentL.south) -- (shellL.north);
+
+  % ---- shell → the four tool boxes (rounded corners, stealth tips) ----------
+  \draw[roleShAcc, line width=1.6pt] (shellL.east) -- (3.5,4.7);   % trunk
+  \foreach \yy in {7,5.5,4,2.5}{
+    \draw[reach, rounded corners=7pt] (3.5,4.7) |- (5.0,\yy);}
 
   % ---- your machine's tools — one vertical column on the right ---------------
-  \node[tile] at (6.2,7.05) [minimum width=2.0cm, minimum height=0.9cm] {};
-  \node[font=\sffamily\scriptsize, text=rigInk, align=center] at (6.2,7.05) {licensed\\apps};
-  \node[tile] at (6.2,5.75) [minimum width=2.0cm, minimum height=0.9cm] {};
-  \node[font=\sffamily\scriptsize, text=rigInk, align=center] at (6.2,5.75) {domain\\tools \& CLIs};
-  \node[tile] at (6.2,4.45) [minimum width=2.0cm, minimum height=0.9cm] {};
-  \node[font=\sffamily\scriptsize, text=rigInk, align=center] at (6.2,4.45) {compiled\\binaries};
+  \node[tile] at (6,7) [minimum width=2.0cm, minimum height=0.9cm] {};
+  \node[font=\sffamily\scriptsize, text=rigInk, align=center] at (6,7) {licensed\\apps};
+  \node[tile] at (6,5.5) [minimum width=2.0cm, minimum height=0.9cm] {};
+  \node[font=\sffamily\scriptsize, text=rigInk, align=center] at (6,5.5) {domain\\tools \& CLIs};
+  \node[tile] at (6,4) [minimum width=2.0cm, minimum height=0.9cm] {};
+  \node[font=\sffamily\scriptsize, text=rigInk, align=center] at (6,4) {compiled\\binaries};
   % local file system tile = file-system role (green)
   \node[draw=roleFsAcc, line width=0.6pt, fill=roleFsFill, rounded corners=2.5pt]
-        at (6.2,3.15) [minimum width=2.0cm, minimum height=0.9cm] {};
-  \rigFolder{6.2}{3.42}{roleFsAcc}
-  \node[font=\sffamily\scriptsize, text=roleFsAcc, align=center] at (6.2,2.98) {local\\file system};
+        at (6,2.5) [minimum width=2.0cm, minimum height=0.9cm] {};
+  \rigFolder{6}{2.72}{roleFsAcc}
+  \node[font=\sffamily\scriptsize, text=roleFsAcc, align=center] at (6,2.38) {file system};
 
   % caption
   \node[lbl, text width=7.0cm, font=\sffamily\scriptsize] at (0.4,1.3)
@@ -231,26 +228,27 @@
   \node[anchor=west, font=\sffamily\footnotesize, text=rigMuted] at (10.2,8.66)
     {VM sandbox \textemdash{} managed shell};
 
-  % ---- agent (violet) --------------------------------------------------------
-  \fill[roleAgFill, rounded corners=4pt] (8.45,4.55) rectangle (9.5,5.95);
-  \draw[roleAgAcc, line width=1pt, rounded corners=4pt] (8.45,4.55) rectangle (9.5,5.95);
-  \rigChat{8.97}{5.5}{roleAgAcc}
-  \node[font=\sffamily\scriptsize\bfseries, text=roleAgAcc] at (8.97,5.05) {agent};
+  % ---- agent (violet box) — top-left of the COWORK panel --------------------
+  \node[draw=roleAgAcc, line width=1pt, fill=roleAgFill, rounded corners=4pt,
+        minimum width=1.4cm, minimum height=1.2cm] (agentR) at (9.25,6.75) {};
+  \rigChat{9.25}{7.05}{roleAgAcc}
+  \node[font=\sffamily\scriptsize\bfseries, text=roleAgAcc] at (9.25,6.45) {agent};
 
-  % ---- shell GATEWAY (same slate doorway) ------------------------------------
-  \fill[roleShAcc] (9.75,4.25) rectangle (9.93,6.35);
-  \fill[roleShAcc] (10.33,4.25) rectangle (10.51,6.35);
-  \fill[roleShAcc] (9.75,6.15) rectangle (10.51,6.35);
-  \fill[roleShAcc] (9.75,4.25) rectangle (10.51,4.45);
-  \draw[white, line width=1pt, line cap=round, line join=round]
-        (10.00,6.30) -- (10.08,6.25) -- (10.00,6.20);
-  \draw[white, line width=1pt, line cap=round] (10.12,6.20) -- (10.24,6.20);
-  \node[font=\sffamily\scriptsize\bfseries, text=roleShAcc] at (10.13,4.02) {shell};
-  \node[font=\sffamily\tiny, text=rigMuted] at (10.13,3.75) {the gateway};
+  % ---- shell (black box, >_ in white, centred below the agent) --------------
+  \node[draw=roleShAcc, line width=1pt, fill=roleShAcc, rounded corners=3pt,
+        minimum width=1.2cm, minimum height=1.0cm] (shellR) at (9.25,4.7) {};
+  \draw[white, line width=1.2pt, line cap=round, line join=round]
+        (9,4.86) -- (9.15,4.73) -- (9,4.60);
+  \draw[white, line width=1.2pt, line cap=round] (9.25,4.60) -- (9.45,4.60);
+  \node[font=\sffamily\scriptsize\bfseries, text=roleShAcc] at (9.25,3.95) {shell};
 
-  \draw[conduit] (9.52,5.3) -- (9.72,5.3);
-  \draw[conduit] (10.54,5.3) -- (10.85,5.3);
+  % ---- agent → shell, then a single arrow → the sandbox VM ------------------
+  \draw[conduit,->] (agentR.south) -- (shellR.north);
+  \draw[conduit] (shellR.east) -- (10.5,4.7);
 
+  % ---- the reachable cluster (VM, wall, walled-off machine), shifted left to
+  %      reclaim the space freed by moving the agent up, matching LOCAL's margin
+  \begin{scope}[xshift=-0.4cm]
   % ---- the sandbox VM (general tools, reachable) -----------------------------
   \draw[roleShAcc, line width=1pt, rounded corners=4pt, fill=vmFill] (10.9,2.35) rectangle (13.35,7.55);
   \node[anchor=north west, font=\sffamily\scriptsize\bfseries, text=roleShAcc] at (11.0,7.42)
@@ -279,13 +277,12 @@
     \foreach \yy in {2.5,3.3,...,7.6}{\draw[wallMortar, line width=0.6pt] (13.63,\yy) -- (13.63,\yy+0.4);
                                       \draw[wallMortar, line width=0.6pt] (13.82,\yy) -- (13.82,\yy+0.4);}
   \end{scope}
-  \node[rotate=90, font=\sffamily\tiny\bfseries, text=white] at (13.725,3.05) {SANDBOX WALL};
+  \node[rotate=90, font=\sffamily\tiny\bfseries, text=blockRed] at (13.725,3.05) {SANDBOX WALL};
 
   % blocked reach: VM → wall (stops dead at the boundary)
-  \draw[-{Stealth[length=2.6mm,width=2.4mm]}, line width=1.6pt, blockRed] (13.40,5.3) -- (13.52,5.3);
+  \draw[->, >=stealth', line width=1.6pt, blockRed] (13.40,5.3) -- (13.52,5.3);
   \draw[blockRed, line width=1.5pt, line cap=round] (13.62,5.52) -- (13.83,5.08);
   \draw[blockRed, line width=1.5pt, line cap=round] (13.62,5.08) -- (13.83,5.52);
-  \node[font=\sffamily\tiny\bfseries, text=blockRed] at (13.72,5.75) {blocked};
 
   % ---- your local machine, BEYOND the wall (unreachable, greyed) -------------
   \rigLock{14.28}{7.3}{deadInk}
@@ -296,9 +293,10 @@
   \node[dead] at (14.95,4.46) [minimum width=1.5cm, minimum height=0.5cm]
     {\sffamily\tiny your files};
   \node[font=\sffamily\tiny\itshape, text=deadInk] at (14.95,3.85) {out of reach};
+  \end{scope}
 
   % caption
-  \node[lbl, text width=7.1cm, font=\sffamily\scriptsize] at (8.5,1.75)
+  \node[lbl, text width=7.1cm, font=\sffamily\scriptsize] at (8.5,1.3)
     {The VM ships many \textbf{general} tools (and installs more on demand), but a
      \textbf{wall} seals it off from your local, licensed, compiled, and
      domain-specific software \textemdash{} and your files.};

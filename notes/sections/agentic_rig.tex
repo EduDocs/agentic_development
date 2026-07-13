@@ -8,7 +8,7 @@ Before writing a single tool definition or system prompt, a researcher therefore
 The rig is not glamorous — it is the terminal, the version control system, the API key, the editor — but it is the surface on which everything else rests.
 A shaky rig means untrustworthy results: work that cannot be reproduced, history that cannot be inspected, changes that cannot be understood.
 
-On screen, the rig presents itself as four recurring \emph{roles}, whatever the host application: the \emph{file system} being browsed, the \emph{file being edited}, the \emph{agent} being directed, and the \emph{shell} where commands run.
+On screen, the rig presents itself as four recurring \emph{roles}, whatever the host application: the \emph{file system} being browsed, the \emph{file being edited}, the \emph{agent} being directed, and the \emph{shell} as the canonical environment where commands run.
 Figure~\ref{figure:VSCodeLayout} maps the four roles onto the reference configuration for this course --- a single VS~Code window with Claude Code in a side panel --- so that a newcomer can name each region and recover this layout if the editor drifts from its defaults.
 Figure~\ref{figure:ClaudeCodeAppLayout} shows the same four roles relocated across separate macOS applications when the Claude Code desktop app is used instead of an IDE: the roles are the invariant, and the window arrangement is a matter of preference.
 
@@ -38,7 +38,7 @@ The \emph{terminal}\index{Terminal} is a text interface to the operating system.
 The \emph{shell}\index{Shell} is the program running inside the terminal that interprets commands.
 For agentic work, the terminal is indispensable: agents invoke tools by running shell commands, and the agent builder inspects outputs, launches processes, and manages files through the same interface.
 
-The shell is therefore more than a place to type --- it is the \emph{gateway} through which the agent reaches tools: interpreters, compilers, converters, domain-specific programs, and the file system itself.
+The shell is therefore more than a place to type --- it is a \emph{gateway} through which the agent reaches tools: interpreters, compilers, converters, domain-specific programs, and the file system itself.
 Figure~\ref{figure:ShellGateway} contrasts two paradigms that share this gateway but differ sharply in what is reachable through it.
 An agent running locally (Claude Code with a native shell) commands the machine's real toolchain --- installed, licensed, compiled, domain-specific --- and the researcher's actual files.
 An agent in a managed sandbox (a virtual-machine shell, as in Cowork) reaches a preloaded set of general tools and can install more, but a wall seals it off from the local machine.
@@ -91,7 +91,7 @@ kill 12345               # send termination signal to process 12345
 \end{example}
 
 Agents routinely launch subprocesses, capture their output, and pass it to subsequent steps.
-The researcher must be comfortable reading process output, distinguishing standard output from standard error, and recognizing common exit codes.
+The researcher will benefit from being comfortable reading process output, distinguishing standard output from standard error, and recognizing common exit codes.
 
 \section{Version Control with Git}
 \label{section:Git}

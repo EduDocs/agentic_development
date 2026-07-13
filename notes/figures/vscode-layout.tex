@@ -223,19 +223,19 @@
   \node[lbl, text width=3.7cm] at (12.36,9.12)
     {{\small\bfseries\color{roleAgAcc} Agent}\ \ {\scriptsize\color{rigMuted} \textbf{Claude Code}}};
   \node[lbl, text width=3.85cm] at (12.0,8.55)
-    {{\scriptsize\color{rigMuted} chat with agent \textemdash{} it plans, reads, and edits files}};
+    {{\scriptsize\linespread{0.82}\selectfont\color{rigMuted} agent plans, reads, and edits files}};
   % agent message bubble (left)
   \fill[rigCanvas, rounded corners=3pt] (12.05,5.95) rectangle (14.7,6.95);
   \draw[roleAgAcc!45, line width=0.4pt, rounded corners=3pt] (12.05,5.95) rectangle (14.7,6.95);
-  \fill[roleAgFill, rounded corners=1pt] (12.25,6.58) rectangle (14.45,6.74);
-  \fill[roleAgFill, rounded corners=1pt] (12.25,6.32) rectangle (13.95,6.48);
-  \node[font=\sffamily\tiny, text=roleAgAcc, anchor=west] at (12.25,6.82) {agent};
+  \fill[roleAgFill, rounded corners=1pt] (12.25,6.42) rectangle (14.45,6.58);
+  \fill[roleAgFill, rounded corners=1pt] (12.25,6.16) rectangle (13.95,6.32);
+  \node[font=\sffamily\tiny, text=roleAgAcc, anchor=west] at (12.25,6.81) {agent};
   % user message bubble (right, violet tint)
   \fill[roleAgAcc!16, rounded corners=3pt] (13.15,4.65) rectangle (15.8,5.55);
   \draw[roleAgAcc!38, line width=0.4pt, rounded corners=3pt] (13.15,4.65) rectangle (15.8,5.55);
-  \fill[roleAgAcc!38, rounded corners=1pt] (13.35,5.16) rectangle (15.6,5.32);
-  \fill[roleAgAcc!38, rounded corners=1pt] (13.35,4.90) rectangle (14.9,5.06);
-  \node[font=\sffamily\tiny, text=roleAgAcc, anchor=east] at (15.6,5.43) {you};
+  \fill[roleAgAcc!38, rounded corners=1pt] (13.35,5.02) rectangle (15.6,5.18);
+  \fill[roleAgAcc!38, rounded corners=1pt] (13.35,4.76) rectangle (14.9,4.92);
+  \node[font=\sffamily\tiny, text=roleAgAcc, anchor=east] at (15.6,5.41) {you};
   % input box
   \draw[rigFrame, line width=0.5pt, rounded corners=3pt] (12.05,2.85) rectangle (15.8,3.55);
   \node[font=\sffamily\scriptsize, text=rigMuted, anchor=west] at (12.2,3.2) {Ask Claude};
