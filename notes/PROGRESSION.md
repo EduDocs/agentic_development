@@ -110,6 +110,28 @@ introduction -> main_result    # the introduction motivates and forward-points t
 main_result  -> conclusion     # the conclusion recaps the result and names future work
 ```
 
+## Stable anchors
+
+Some chapters have been carefully reviewed and are trusted as **ground truth**; loose,
+still-evolving chapters must not drag them out of alignment. The `# stable-anchors` block below
+names those chapters by section stem. `/progression` treats an anchored sidecar as authoritative:
+when a cross-section defect spans an anchored and a non-anchored section, the fix is proposed on
+the **non-anchored** side, and an anchored sidecar is only ever *flagged* in the report, never
+offered for edit. The trusted chapters become a fixed point that loose chapters harmonize toward,
+not the reverse.
+
+Edit this list as chapters harden (or soften). An **empty** block disables the protection and
+restores uniform treatment. Anchoring binds the `.md` spine `/progression` audits; it does not by
+itself freeze the `.tex` prose (that is always safe from `/progression`, which never touches the
+`.tex`), but it does stop a loose sidecar from seeding a later `/md2tex` that would.
+
+```
+# stable-anchors
+how_we_got_here
+agentic_paradigm
+evaluation
+```
+
 ### Off-map files
 - **`abstract`** — front-matter summary of the whole note, not a node in the dependency chain.
 - **`how_we_got_here`** — the opening chapter: a high-level, cited history of the field (word2vec → Transformer → pretraining → scale → RAG → agents). A prologue that *forward-references* the ladder chapters and introduces no concept they depend on, so it sits off the dependency chain even though it opens the book.

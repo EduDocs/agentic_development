@@ -100,6 +100,11 @@ Pin every finding to a `sections/<name>.md` (and the related upstream/downstream
 - Surgical and additive; one change at a time; show the diff; confirm before writing.
 - A defect is often ambiguous about *which* section is wrong (move the setup earlier, or remove
   the downstream use?) — surface the options, don't guess.
+- **Honor stable anchors.** Sections in `PROGRESSION.md`'s `# stable-anchors` block are ground
+  truth. When a defect spans an anchored and a non-anchored section, the fix lands on the
+  non-anchored side; an anchored sidecar is flagged but never offered for edit. A defect confined
+  to anchored sections is reported for the user to adjudicate, not auto-fixed. An empty (or
+  absent) block means uniform treatment.
 - Respect each sidecar's exclusive zones: never delete scratch, open questions, or rationale to
   "clean up." Coherence fixes add or adjust spine content; they don't prune the thinking layer.
 - Stay on the `.md` layer. If a fix implies prose work, note it as a follow-up `md2tex`, don't
