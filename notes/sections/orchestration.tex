@@ -282,7 +282,7 @@ The orchestration assembled in Challenge~4 follows a pattern that recurs through
 The \emph{generate–evaluate–select} (GES) loop is the procedure:
 \begin{enumerate}
 \item \textbf{Generate.} Produce a set of candidate artifacts $C = \{a_1, \ldots, a_m\}$.
-\item \textbf{Evaluate.} Score each candidate: $s_i = \Score(a_i, \mathcal{D}_{\mathrm{test}})$.
+\item \textbf{Evaluate.} Score each candidate on the reusable validation (fitness) split: $s_i = \Score(a_i, \mathcal{D}_{\mathrm{val}})$, never the sealed test split (Chapter~\ref{chapter:Evaluation}, Principle~\ref{principle:TestSplitInviolable}).
 \item \textbf{Select.} Retain the top-$k$ candidates: $C^* = \mathrm{top\text{-}}k(C, \{s_i\})$.
 \item Repeat with $C^*$ informing the next round of generation.
 \end{enumerate}
