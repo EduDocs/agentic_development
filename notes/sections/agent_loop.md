@@ -6,7 +6,7 @@
 
 ## Purpose
 Turn the abstract loop of Ch.~AgenticParadigm into a thing the student builds: tool
-definitions, the ReAct pattern, structured outputs, and failure modes.
+definitions, the ReAct pattern, structured outputs, failure modes, and the build-target choice (workflow vs agent).
 
 <!-- EVOLVE-BLOCK-START -->
 ## Key points / spine
@@ -16,6 +16,7 @@ definitions, the ReAct pattern, structured outputs, and failure modes.
 - **Structured outputs** turn an endpoint into a composable component: prefer the tool-use/JSON-schema mechanism (validation before commit) over parse-and-retry.
 - **Failure modes** to design against: hallucinated tool arguments, loops-without-progress (need a max step count), context overrun (truncate tool results), cascading errors (validate at each tool boundary).
 - **Parallel tool calling**: one turn can emit several tool calls; the loop runs them concurrently, batches the results, and re-invokes once — the idiomatic way to run the Ch.~Orchestration fan-out (each result still validated at its own boundary). Reasoning can also happen *during* the loop, inducible via a no-op 'think' tool.
+- **Build target is a spectrum, not a binary** (§6.5): the chapter builds the *agent* end (model-guided execution), but agentic development builds a *workflow* (steps fixed in code) just as readily — same skill, different target (Ch.~AgenticParadigm's workflow↔agent distinction). Value of the fixed-code end: repetitive tasks *coded away* (an agent authors a deterministic program you then run with no/light model in the loop), and **robustness to model evolution** (a fixed program doesn't drift when the model is updated/retired/repriced). Tradeoffs: workflow = deterministic/cheap/auditable/stable but rigid; agent = flexible/handles-the-unforeseen but nondeterministic/costly/drifting (the §FailureModes coin). Most systems are hybrids (an agent orchestrating deterministic tools); lifecycle = explore with an agent, then compile settled steps down into code. Principle~FixWhatIsStable: fix in code what is stable, reserve agency for what must adapt.
 
 ## Directions
 - The `ModelResult` structured-output example names `complexity: int` — keep it consistent with the *single* complexity definition (node count) **settled downstream in Ch.~Evaluation**; this is a deliberate forward reference, so flag that the concept is defined later rather than assumed here, and make sure the two chapters agree on what "complexity" counts.
@@ -25,6 +26,7 @@ definitions, the ReAct pattern, structured outputs, and failure modes.
 - 2026-07-10 (realized in prose): added the **chapter roadmap** after the opening (tool definitions → ReAct → structured outputs → failure modes).
 - 2026-07-10 (realized in prose, currency): the thin extended-thinking remark is replaced by a **§Reasoning Models and Implicit ReAct** subsection (grounded in Anthropic's *Visible Extended Thinking*, 2025). It names the shift from an explicit ReAct scratchpad to *latent internal reasoning* before the tool call, notes ReAct-as-prompting is now often unnecessary and the lever becomes a *thinking budget*, adds the **faithfulness caveat** (the visible trace is not necessarily a faithful account of the model's computation, so the reliable audit trail is the observable tool-call sequence), and ties back to Ch.~ContextEngineering chain-of-thought. Closes the currency panel's single most-stale-framing flag.
 - 2026-07-11 (realized in prose, engineering-blog pass): closed the currency gap with a **parallel tool calling** Remark (a turn can emit several tool calls; execute concurrently, batch results, one re-invoke — the idiomatic Ch.~Orchestration fan-out); added a **before/during reasoning + no-op 'think' tool** clarification; Further Reading on writing-tools, the think tool, and advanced tool use.
+- 2026-07-13 (realized in prose): added **§6.5 Workflows, Agents, and What to Build** (Principle~FixWhatIsStable) — develops Ch.~AgenticParadigm's build-time-vs-run-time / workflow↔agent thread at the point where the reader has just built the loop. Argues the value of *agentically building workflows* (deterministic programs for repetitive tasks; robust to model evolution), the tradeoffs of each end (the §FailureModes coin), the hybrid middle, and the explore-then-compile-down lifecycle; balanced, on-beacon (coding away the repetitive frees attention for judgment). Roadmap updated to name the new section. Also rerouted the ReAct figure's loop-back arrow for legibility (visual only, not a spine change).
 <!-- EVOLVE-BLOCK-END -->
 
 ## Open questions
