@@ -8,10 +8,10 @@ Building a research agent means writing tool definitions, choosing how to struct
 This chapter develops each of these in turn.
 Section~\ref{section:ToolDefinitions} covers tool definitions and their schemas; Section~\ref{section:ReAct} develops the ReAct control pattern that interleaves reasoning and action; Section~\ref{section:StructuredOutputs} shows how to constrain what the agent returns; Section~\ref{section:FailureModes} catalogs the ways the loop breaks and how to guard against each; and Section~\ref{section:WorkflowsAndAgents} steps back to when a fixed workflow, rather than an agent, is the better thing to build.
 
-\section{Tool Definitions}
+\section{Agentic Tool Definitions}
 \label{section:ToolDefinitions}
 
-A \emph{tool}\index{Tool!definition} is defined by three things: a name, a natural-language description, and a parameter schema.
+In the context of building agents, a \emph{tool}\index{Tool!definition} is defined by three things: a name, a natural-language description, and a parameter schema.
 The model reads all three when deciding which tool to call and how to call it.
 Tool definitions are therefore as much a form of documentation as they are a programmatic contract.
 
@@ -64,6 +64,12 @@ Post-process tool output to the informative essentials before returning it.
 When a tool fails, its error message becomes the model's next observation.
 An error that says \code{"ValueError: shapes (30,) and (40,) not aligned"} enables the model to self-correct; one that says \code{"error"} does not.
 \end{enumerate}
+
+\begin{remark}
+Tool inputs and results need not be text.
+With a vision-capable model, a tool can return an image or a PDF page, and the model reads it directly: a microscopy frame, a gel scan, a plotted residual, or a figure from a retrieved paper becomes an observation like any other.
+By this writing in 2026, passing an image alongside text is a routine agent action, and the design principles above carry over unchanged, describe the tool clearly, return only what the model needs, and report informative errors, whatever the modality.
+\end{remark}
 
 \subsection{The Tool Call in Practice}
 
@@ -290,7 +296,7 @@ The strongest designs are often hybrids, an agent composing deterministic compon
 \begin{remark}
 A second axis now cuts across the workflow--agent spectrum: how much computation to spend at inference.
 \emph{Inference-time compute scaling}\index{Inference-time compute} is the observation that the same model, given a larger \emph{thinking budget} (Section~\ref{section:ReAct}), can solve harder problems, so capability can be bought at run time rather than only by training a larger model.
-This decouples capability from model size and adds a knob to the build decision: a fast, low-budget call for routine steps, and a slow, high-budget reasoning pass reserved for the genuinely hard ones.
+This decouples capability from model size and adds a knob to the build decision: in an evolutionary search, for instance, a fast, low-budget call proposes routine candidate variants each round, while a slow, high-budget reasoning pass is reserved for the rounds where no candidate has improved in many generations and the search needs a genuinely different idea.
 It also cuts both ways for the choice above: it sharpens the case for an agent on open-ended work, where spending more thinking pays, and it raises the running cost a workflow sidesteps, since a fixed program that calls no model spends no inference budget at all.
 Treating the thinking budget as an explicit parameter, rather than a fixed property of the model, is part of building the cost-aware systems of Chapter~\ref{chapter:EvolutionaryFrameworks}.
 \end{remark}

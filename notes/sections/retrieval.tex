@@ -183,6 +183,13 @@ Generating a context sentence for every chunk sounds expensive, but \emph{prompt
 The source reports a one-time cost on the order of a dollar per million document tokens (Anthropic, 2024) --- small enough that contextualization is a routine preprocessing step rather than a luxury.
 \end{remark}
 
+\begin{remark}
+Flat similarity search is not the only shape a retrieval index can take.
+When the relationships \emph{between} entities carry more of the answer than the similarity of any single passage --- which protein interacts with which, which result cites which --- a \emph{structural} approach can help: build a graph over entities and their relations extracted from the corpus and retrieve connected subgraphs rather than isolated chunks, the family of techniques often called \emph{GraphRAG}.
+The tradeoff is a heavier, more brittle indexing step (entity and relation extraction can err) against better recall on multi-hop questions that a flat index answers poorly.
+As with grounding itself, the honest test is the ablation of Section~\ref{section:GroundingConstraint}: adopt the more complex index only where it measurably beats flat vector search on the questions that matter.
+\end{remark}
+
 \section{Retrieval-Augmented Research}
 \label{section:RAG}
 
@@ -305,6 +312,7 @@ A dataset where grounding helps and a dataset where it hurts, analyzed together,
 \item Gao, Y., et al., ``Retrieval-Augmented Generation for Large Language Models: A Survey,'' arXiv:2312.10997, 2023 — a comprehensive survey of RAG architectures and applications.
 \item Johnson, J., Douze, M., and Jégou, H., ``Billion-Scale Similarity Search with GPUs,'' \emph{IEEE Transactions on Big Data}, 2021 (arXiv:1702.08734) — the paper behind FAISS, the most widely used ANN library.
 \item Anthropic, ``Introducing Contextual Retrieval,'' 2024 — prepending chunk-specific context before embedding and keyword indexing, with reranking; the source for Section~\ref{section:ContextualRetrieval}.
+\item Edge, D., et al., ``From Local to Global: A Graph RAG Approach to Query-Focused Summarization,'' \emph{Microsoft Research}, 2024 — the structural-retrieval alternative: build a graph over extracted entities and relations and retrieve connected subgraphs, useful when relationships carry the answer.
 \end{enumerate}
 \end{small}
 % EVOLVE-BLOCK-END
