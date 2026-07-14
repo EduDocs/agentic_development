@@ -127,6 +127,17 @@ The mutator's context should include:
 \item The population's diversity — if all survivors are variations of the same form, the mutator should be told to explore a different region.
 \end{enumerate}
 This is the convergence of the two spines: \emph{evaluation becomes fitness} (Spine~1) and \emph{context engineering drives the mutator} (Spine~2).
+Figure~\ref{figure:TwoSpinesConverge} shows the two threads entering the loop at the two nodes they govern: the evaluation harness \emph{becomes} the fitness that scores each candidate, and context engineering \emph{drives} the mutator that proposes the next one.
+
+\begin{figure}[htb!]
+\begin{center}
+\input{figures/two-spines-converge}
+\caption{The two spines converge on the evolutionary loop.
+\emph{Spine~1} (evaluation, Chapter~\ref{chapter:Evaluation}) \emph{becomes} the fitness node that scores each candidate; \emph{Spine~2} (context engineering, Chapters~\ref{chapter:ContextEngineering} and~\ref{chapter:Retrieval}) \emph{drives} the mutation node that proposes the next one.
+Neither is new machinery: both are foundations threaded since the opening chapters, now meeting on one artifact.}
+\label{figure:TwoSpinesConverge}
+\end{center}
+\end{figure}
 
 \begin{example}
 To see the two spines converge on one artifact, follow a single expression through one generation.
