@@ -36,6 +36,16 @@ In an agentic rig, it is a checked fact, and a failure returns a structured erro
 This is why the loop converges even when the first attempt is wrong: each run--fail--fix cycle is grounded feedback, denser and more reliable than any specification the researcher could have written up front.
 The same oracle, formalized as a scoring function, becomes the evaluation harness of Chapter~\ref{chapter:Evaluation}.
 
+\begin{remark}
+The oracle is not only the compiler, and it is not always binary.
+The same loop serves a biochemist segmenting cells in microscopy images or an immunologist normalizing a flow-cytometry assay; only the check changes register.
+That the script \emph{runs} is still the first oracle, necessary and cheap, but it cannot tell you whether the analysis is \emph{right}.
+For that, the data-science counterpart of the test suite is a \emph{known test set}: a few images with hand-annotated counts, or a control sample of known concentration, on which the output is scored against ground truth (a segmentation overlap, a recovered parameter, a classification error).
+This oracle is graded rather than pass/fail, yet it is still an oracle: it returns a number the loop can act on.
+Softer still is whether the \emph{workflow suits the problem} at all: whether simple thresholding fits unevenly stained images, or whether a linear model belongs on a plainly sigmoidal dose--response.
+That is a matter of judgment, not a test: it sits at the \emph{critic} end of the evaluability spectrum (Chapter~\ref{chapter:AgenticParadigm}, developed in Chapter~\ref{chapter:Evaluation}), and it is exactly the discernment the researcher must keep.
+\end{remark}
+
 \begin{principle}
 \label{principle:IncrementalDevelopment}
 Prefer small, reviewable changes over large, opaque ones.
