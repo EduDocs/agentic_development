@@ -158,8 +158,8 @@ This is the design pattern used in the course harness.
 
 \subsection{Predictive Error}
 
-The most natural score for a model discovery task is \emph{predictive error}: how well does the discovered model predict the test targets?
-For a model $\hat{m}$ and test data $\{(x_i, y_i)\}_{i=1}^{n}$, the \emph{mean squared error} (MSE) is
+The most natural score for a model discovery task is \emph{predictive error}: how well does the discovered model predict targets it was not fit on?
+For a model $\hat{m}$ and the evaluation (validation) split $\{(x_i, y_i)\}_{i=1}^{n}$, the \emph{mean squared error} (MSE) is
 \begin{equation}
 \mathrm{MSE}(\hat{m}) = \frac{1}{n} \sum_{i=1}^{n} \bigl( \hat{m}(x_i) - y_i \bigr)^2 .
 \label{equation:MSE}
@@ -169,7 +169,7 @@ When MSE is on the leaderboard, the researcher reports the lower value as the be
 
 \subsection{Parsimony}
 
-A model that perfectly predicts the test data by memorizing it is not a discovery.
+A model that perfectly fits the data it was given by memorizing it is not a discovery.
 \emph{Parsimony}\index{Parsimony} — the preference for simpler models among those of comparable predictive quality — guards against this failure mode.
 
 The parsimony of a symbolic expression is measured by its \emph{complexity}: the number of nodes in its expression tree, counting every operator, variable, and constant as one node.
