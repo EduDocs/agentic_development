@@ -8,12 +8,27 @@ Building a research agent means writing tool definitions, choosing how to struct
 This chapter develops each of these in turn.
 Section~\ref{section:ToolDefinitions} covers tool definitions and their schemas; Section~\ref{section:ReAct} develops the ReAct control pattern that interleaves reasoning and action; Section~\ref{section:StructuredOutputs} shows how to constrain what the agent returns; Section~\ref{section:FailureModes} catalogs the ways the loop breaks and how to guard against each; and Section~\ref{section:WorkflowsAndAgents} steps back to when a fixed workflow, rather than an agent, is the better thing to build.
 
+A word on emphasis before the mechanics.
+The tools and loop built here put the model in charge of its own execution: it chooses each action at run time.
+That is one end of the workflow--agent spectrum of Chapter~\ref{chapter:AgenticParadigm}; the other is a program whose steps are fixed in code, and for many research tasks that fixed end is the better build.
+The chapter dwells on the agent end not because it is always right, but because it is the newer and less familiar capability: model-guided execution is what recent models make possible, and it is what a researcher arriving from ordinary scripting has not built before.
+We learn it here in full, then choose deliberately where on the spectrum each real system belongs, the question Section~\ref{section:WorkflowsAndAgents} returns to.
+
 \section{Agentic Tool Definitions}
 \label{section:ToolDefinitions}
 
 In the context of building agents, a \emph{tool}\index{Tool!definition} is defined by three things: a name, a natural-language description, and a parameter schema.
 The model reads all three when deciding which tool to call and how to call it.
 Tool definitions are therefore as much a form of documentation as they are a programmatic contract.
+
+This is a genuine departure from how software has classically been built.
+A traditional function is called by code that already knows its exact signature; the contract is rigid and the caller's behavior is fixed.
+An agentic tool is invoked instead by a model that reads its natural-language description and decides, by interpretation, whether and how to call it.
+The description is closer to a specification in plain language than to a type signature: it carries intent the model must construe, and it leaves a latitude that deterministic logic never permitted.
+That latitude is the source of the approach's power, since one clear description lets the model handle inputs and situations the author never enumerated.
+It also carries a cost.
+Interpretation can go wrong where a fixed call site could not, and, more consequentially, an agent that chooses its own tool use tends to \emph{enlarge its own footprint}: the more freedom it has to decide, the more it presumes broad access to files, commands, and the network.
+This is why a tool set is a security surface as much as a capability, the reason the least-privilege discipline of Chapter~\ref{chapter:AgenticRig} exists, and it is the tension Section~\ref{section:WorkflowsAndAgents} resolves into a design choice: a workflow bounds the footprint by fixing the steps; an agent widens it by leaving them open.
 
 \subsection{The Tool Schema}
 
@@ -41,7 +56,7 @@ In the Anthropic API, a tool is specified as a JSON object with the following st
 
 The description field is the most consequential.
 It tells the model \emph{when to call the tool} (what preconditions must hold), \emph{what the tool expects} (the semantics of each parameter), and \emph{what the tool returns} (what the model should do with the result).
-A vague description produces inconsistent tool-call behavior; a precise description produces reliable behavior.
+A vague description produces inconsistent tool-call behavior; a precise description produces reliable output.
 
 \subsection{Tool Design Principles}
 
@@ -64,6 +79,13 @@ Post-process tool output to the informative essentials before returning it.
 When a tool fails, its error message becomes the model's next observation.
 An error that says \code{"ValueError: shapes (30,) and (40,) not aligned"} enables the model to self-correct; one that says \code{"error"} does not.
 \end{enumerate}
+
+These four are not new inventions; they are classical software-engineering discipline, single responsibility, error handling, minimal interfaces, reappearing at the tool boundary.
+That is worth pausing on, because it is a specific case of a pattern that runs through the whole course.
+Agentic coding contracts out the \emph{typing}, the agent writes the implementation behind each tool, but it does not contract out the \emph{understanding}.
+To specify a tool well, and to tell a sound one from a subtly broken one, the researcher still reasons about data structures, execution order, and how errors arise and propagate: the substance of software engineering, not its syntax.
+The time spent writing code shrinks; the need to understand computing does not.
+Chapter~\ref{chapter:AgenticCoding} made this point for code the researcher owns; it returns here for the tools an agent is given.
 
 \begin{remark}
 Tool inputs and results need not be text.
