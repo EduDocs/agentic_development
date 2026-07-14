@@ -74,11 +74,11 @@ Its goal is precision — filtering out candidates that are obviously wrong.
 
 \begin{figure}[htb!]
 \begin{center}
+\input{figures/concept-style}
 \begin{tikzpicture}[
     node distance=1.5cm and 1.8cm,
-    box/.style={draw, rounded corners=4pt, minimum width=2.4cm,
-                minimum height=0.8cm, align=center, font=\small},
-    arr/.style={->, >=stealth', thick}
+    box/.style={conceptbox},
+    arr/.style={conceptflow}
 ]
 \node[box, fill=blue!15]   (prop) {Proposer};
 \node[box, fill=orange!20, right=of prop] (crit) {Critic};
@@ -142,10 +142,11 @@ When parallel agents must \emph{write} --- not just analyze --- they also need i
 
 \begin{figure}[htb!]
 \begin{center}
+\input{figures/concept-style}
 \begin{tikzpicture}[
-    box/.style={draw, rounded corners=4pt, minimum width=2.3cm, minimum height=1.0cm, align=center, font=\small},
-    sub/.style={draw, rounded corners=4pt, minimum width=2.7cm, minimum height=0.9cm, align=center, font=\scriptsize},
-    arr/.style={->, >=stealth', thick}
+    box/.style={conceptbox, minimum width=2.3cm, minimum height=1.0cm},
+    sub/.style={conceptbox, minimum width=2.7cm, minimum height=0.9cm, font=\scriptsize},
+    arr/.style={conceptflow}
 ]
 \node[box, fill=orange!20] (orch) at (0,0) {Orchestrator};
 \node[sub, fill=blue!12] (s1) at (4.7,1.7)  {sub-agent\\\emph{own context}};

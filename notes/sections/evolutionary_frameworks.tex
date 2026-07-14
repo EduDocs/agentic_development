@@ -51,22 +51,19 @@ Figure~\ref{figure:EvolutionaryLoop} draws the loop, with \emph{Mutate} shown as
 
 \begin{figure}[htb!]
 \begin{center}
-\begin{tikzpicture}[
-    box/.style={draw, rounded corners=4pt, minimum width=2.8cm,
-                minimum height=0.85cm, align=center, font=\small},
-    arr/.style={->, >=stealth', thick}
-]
-\node[box, fill=yellow!20]              (pop) at (0, 2.4)   {Initial population $\Population_0$};
-\node[box, fill=blue!8]                 (gen) at (0, 0.8)   {Generate};
-\node[box, fill=blue!15]                (mut) at (0,-0.8)   {Mutate};
-\node[box, fill=green!20]               (fit) at (4.4, 0)   {Evaluate\\(Fitness)};
-\node[box, fill=orange!20]              (sel) at (4.4,-2.2) {Select};
+\input{figures/concept-style}
+\begin{tikzpicture}
+\node[conceptbox, fill=yellow!20, minimum width=3.4cm] (pop) at (0, 2.4)   {Initial population $\Population_0$};
+\node[conceptbox, fill=blue!8]          (gen) at (0, 0.8)   {Generate};
+\node[conceptbox, fill=blue!15]         (mut) at (0,-0.8)   {Mutate};
+\node[conceptbox, fill=green!20]        (fit) at (4.4, 0)   {Evaluate\\(Fitness)};
+\node[conceptbox, fill=orange!20]       (sel) at (4.4,-2.2) {Select};
 
-\draw[arr] (pop) -- node[right,font=\scriptsize]{seed} (gen);
-\draw[arr] (gen.east) -- node[above,font=\scriptsize,pos=0.55]{initial}    (fit);
-\draw[arr] (mut.east) -- node[below,font=\scriptsize,pos=0.55]{candidates} (fit);
-\draw[arr] (fit) -- node[right,font=\scriptsize]{scored} (sel);
-\draw[arr] (sel.south) -- ++(0,-0.8) -| node[pos=0.25,below,font=\scriptsize]{survivors $\Population_{t+1}$} (mut.south);
+\draw[conceptflow] (pop) -- node[conceptlabel,right]{seed} (gen);
+\draw[conceptflow] (gen.east) -- node[conceptlabel,above,pos=0.55]{initial}    (fit);
+\draw[conceptflow] (mut.east) -- node[conceptlabel,below,pos=0.55]{candidates} (fit);
+\draw[conceptflow] (fit) -- node[conceptlabel,right]{scored} (sel);
+\draw[conceptflow] (sel.south) -- ++(0,-0.8) -| node[conceptlabel,pos=0.25,below]{survivors $\Population_{t+1}$} (mut.south);
 \end{tikzpicture}
 \caption{The agentic evolutionary loop.
 An initial population seeds the \emph{Generate} step once; thereafter the steady-state cycle is evaluate~$\to$~select~$\to$~\emph{mutate}, and \emph{Mutate} --- not \emph{Generate} --- consumes the survivors, so each round's candidates are derived from the previous round's elite.

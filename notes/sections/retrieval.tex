@@ -200,13 +200,13 @@ A \emph{retrieval-augmented} agent extends the basic loop with a retrieval step 
 
 \begin{figure}[htb!]
 \begin{center}
+\input{figures/concept-style}
 \begin{tikzpicture}[
     node distance=0.7cm,
-    box/.style={draw, rounded corners=4pt, minimum width=2.2cm,
-                minimum height=1.0cm, align=center, font=\small},
-    store/.style={draw, dashed, rounded corners=3pt, fill=gray!8,
-                  minimum width=3.0cm, minimum height=1.0cm, align=center, font=\small},
-    arr/.style={->, >=stealth', thick}
+    box/.style={conceptbox, minimum width=2.2cm, minimum height=1.0cm},
+    store/.style={conceptbox, dashed, fill=gray!8,
+                  minimum width=3.0cm, minimum height=1.0cm},
+    arr/.style={conceptflow}
 ]
 \node[box, fill=blue!15]                   (q)     {query $q$};
 \node[box, fill=blue!8,    right=of q]      (qe)    {embed\\$\phi(q)$};
