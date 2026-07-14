@@ -3,10 +3,10 @@
 % EVOLVE-BLOCK-START
 
 The loop described in Chapter~1 becomes concrete when the researcher must actually implement it.
-Building the loop yourself --- rather than configuring a pre-built one --- means understanding exactly what the agent can and cannot do, and knowing where to intervene when it fails.
+Building the loop yourself, rather than configuring a pre-built one, means understanding exactly what the agent can and cannot do, and knowing where to intervene when it fails.
 Building a research agent means writing tool definitions, choosing how to structure the control loop, specifying what the agent should return, and anticipating the ways the loop can fail.
 This chapter develops each of these in turn.
-Section~\ref{section:ToolDefinitions} covers tool definitions and their schemas; Section~\ref{section:ReAct} develops the ReAct control pattern that interleaves reasoning and action; Section~\ref{section:StructuredOutputs} shows how to constrain what the agent returns; and Section~\ref{section:FailureModes} catalogs the ways the loop breaks and how to guard against each.
+Section~\ref{section:ToolDefinitions} covers tool definitions and their schemas; Section~\ref{section:ReAct} develops the ReAct control pattern that interleaves reasoning and action; Section~\ref{section:StructuredOutputs} shows how to constrain what the agent returns; Section~\ref{section:FailureModes} catalogs the ways the loop breaks and how to guard against each; and Section~\ref{section:WorkflowsAndAgents} steps back to when a fixed workflow, rather than an agent, is the better thing to build.
 
 \section{Tool Definitions}
 \label{section:ToolDefinitions}
@@ -54,7 +54,7 @@ A tool that both fits a model \emph{and} plots the residuals is harder for the m
 Smaller, focused tools compose more reliably.
 
 \item \textbf{Tools are safe to call in isolation.}
-A tool that has side effects (writes a file, posts to an API, spends money) should say so explicitly in its description, and the researcher should consider whether the agent should be able to call it without approval.
+A tool that has side effects (writes a file, posts to an API, spends tokens) should say so explicitly in its description, and the researcher should consider whether the agent should be able to call it without approval.
 
 \item \textbf{Return only what the model needs.}
 A tool that returns a hundred lines of raw data when the model only needs a score fills the context window unnecessarily.
@@ -95,9 +95,9 @@ A typical two-step tool use sequence:
 
 \begin{remark}
 A single turn need not carry a single tool call.
-When a task fans out into independent sub-tasks --- fitting five candidate expressions, or querying three data sources --- a frontier model can emit several tool calls in one response, and the loop executes them concurrently, appends all the results as a batch, and re-invokes the model once (Anthropic, 2025).
+When a task fans out into independent sub-tasks, such as fitting five candidate expressions or querying three data sources, a frontier model can emit several tool calls in one response, and the loop executes them concurrently, appends all the results as a batch, and re-invokes the model once (Anthropic, 2025).
 This \emph{parallel tool calling}\index{Parallel tool calling} is the idiomatic way to run the fan-out patterns of Chapter~\ref{chapter:Orchestration}: the round trips collapse from one per call to one per batch, and the model reasons over the whole set of results together.
-The loop's obligations are unchanged --- each result is still validated at its own tool boundary --- but its accounting becomes per batch rather than per call.
+The loop's obligations are unchanged, each result is still validated at its own tool boundary, but its accounting becomes per batch rather than per call.
 \end{remark}
 
 \section{The ReAct Pattern}
@@ -127,8 +127,8 @@ In a ReAct agent, the model alternates between \emph{thought} steps (natural-lan
 \draw[arr] (a1) -- (ob);
 \draw[arr] (ob) -- (t2);
 \draw[arr] (t2) -- (fin);
-\draw[arr] (t2.west) -- ++(-0.5,0) |- (a1.west)
-    node[pos=0.6, left, font=\scriptsize] {more calls};
+\draw[arr] (t2.west) -| (t1.south)
+    node[pos=0.35, below, font=\scriptsize] {more calls};
 \end{tikzpicture}
 \caption{The ReAct pattern.
 The model alternates between \emph{thought} (explicit reasoning) and \emph{action} (a tool call or final answer).
@@ -145,11 +145,12 @@ Second, it produces an \emph{audit trail}: by reading the thought steps, the res
 \subsection{Reasoning Models and Implicit ReAct}
 
 The ReAct pattern makes the thought step \emph{explicit}: the model is prompted to write its reasoning into the transcript before each action.
-Frontier \emph{reasoning models}\index{Reasoning model} --- Claude's extended thinking and the o3-class models, to name two families current as of Fall~2026 --- move this step inward, reasoning internally before emitting a tool call, so the thought becomes latent rather than a visible transcript entry.
-This is the same chain-of-thought mechanism introduced in Chapter~\ref{chapter:ContextEngineering}, now performed by the model on its own rather than elicited by a ``think step by step'' instruction.
+Some frontier \emph{reasoning models}\index{Reasoning model} with extended thinking move this step inward, reasoning internally before emitting a tool call, so the thought becomes latent rather than a visible transcript entry.
+This is the same chain-of-thought mechanism introduced in Chapter~\ref{chapter:ContextEngineering}, now performed by the model on its own rather than elicited by a ``think step-by-step'' instruction.
 These two placements are complementary rather than exclusive: reasoning can happen \emph{before} the first action, as planning over the initial prompt, or \emph{during} the loop, as a deliberate step that reasons over a freshly returned tool result before the next call.
-The latter can be induced even without a reasoning model by exposing a no-op ``think'' tool --- a tool with no external effect whose only job is to give the model a scratchpad turn mid-loop --- which reportedly helps most in policy-heavy or long sequential-decision settings and little on simple parallel calls (Anthropic, 2025).
-A practical consequence is that hand-writing a \code{Thought:}/\code{Action:} scaffold buys little when the model already deliberates before acting; the builder's lever shifts from a prompt template to a \emph{thinking budget}\index{Thinking budget} --- a cap on how many reasoning tokens the model may spend before it must answer.
+The latter can be induced even without a reasoning model by exposing a no-op ``think'' tool, a tool with no external effect whose only job is to give the model a scratchpad turn mid-loop, which reportedly helps most in policy-heavy or long sequential-decision settings and little on simple parallel calls (Anthropic, 2025).
+
+A practical consequence is that hand-writing a \code{Thought:}/\code{Action:} scaffold buys little when the model already deliberates before acting; the builder's lever shifts from a prompt template to a \emph{thinking budget}\index{Thinking budget}, a cap on how many reasoning tokens the model may spend before it must answer.
 The cost falls on the audit trail.
 When reasoning was an explicit transcript entry, the researcher could read \emph{why} each tool was called; when it is latent that record is gone, and even where the internal reasoning is surfaced it is not necessarily a faithful trace of the model's computation, so it cannot be trusted as a complete account of why the agent acted.
 The dependable audit trail is therefore the observable one: the sequence of tool calls and their results, which the loop logs regardless of what the model reasoned internally.
@@ -205,7 +206,7 @@ Agents fail.
 Understanding the common failure modes enables the researcher to design more robust loops and to recognize failures before they propagate.
 
 \begin{remark}
-When a run misbehaves, the diagnostic unit is the \emph{action/observation trace} --- the logged sequence of \code{(tool call, arguments, observation)} triples --- not the final output.
+When a run misbehaves, the diagnostic unit is the \emph{action/observation trace}, the logged sequence of \code{(tool call, arguments, observation)} triples, not the final output.
 Walking that trace localizes the fault to one of four places: the wrong tool was chosen, its arguments were malformed, the tool's description was too thin for the model to use it correctly, or a correct observation was misread.
 Designing informative errors helps the model recover \emph{during} the loop; reading the trace is how the builder recovers \emph{after} it.
 \end{remark}
@@ -224,7 +225,7 @@ The agent loop can enter a cycle: the model calls a tool, receives an error, att
 A loop that does not progress must be detected and terminated.
 The most common causes are:
 \begin{itemize}
-\item a systematic mismatch between the tool's behavior and the model's mental model of it,
+\item a mismatch between the tool's behavior and the model's mental model of it,
 \item an error message that the model consistently misinterprets, or
 \item a constraint in the task that the model cannot satisfy with the available tools.
 \end{itemize}
@@ -234,19 +235,56 @@ The loop should have a maximum step count; if it is exceeded without producing a
 
 If the context window fills before the agent produces a final answer, the model cannot proceed.
 The loop must either truncate the history (losing information) or terminate.
-Long tool results — stack traces, raw data dumps, verbose API responses — are the most common cause.
+Long tool results such  stack traces, raw data dumps, verbose API responses, are the most common cause.
 Truncating tool results to their informative essentials is the primary mitigation.
 
 \subsection{Cascading Errors}
 
 A mistake in an early step propagates silently through subsequent steps.
-The model fits a model to the wrong data, reports a score on that data, and selects the model as the best — but the score is meaningless because the data was wrong from the start.
+The model fits a model to the wrong data, reports a score on that data, and selects the model as the best, but the score is meaningless because the data was wrong from the start.
 Defense against cascading errors requires:
 \begin{itemize}
 \item validation at each tool boundary (verify that the data loaded correctly before fitting),
 \item explicit checks in the loop for known failure conditions (is the validation set non-empty?), and
 \item inspection of intermediate outputs, not just final results.
 \end{itemize}
+
+\section{Workflows, Agents, and What to Build}
+\label{section:WorkflowsAndAgents}
+
+The loop this chapter builds sits at one end of a spectrum.
+Chapter~\ref{chapter:AgenticParadigm} drew the distinction between an \emph{agent}, which lets the model direct its own process step by step, and a \emph{workflow}, which routes execution through paths fixed in code (Figure~\ref{figure:WorkflowAgentSpectrum}).
+Everything so far, tool definitions, the ReAct loop, structured outputs, has developed the agent end, where the model chooses each action at run time.
+The other end is a plain program: the steps are settled in advance, and no model decides anything while it runs.
+The point worth drawing out here is that agentic development builds \emph{both}.
+The skill is the same; only the build target moves along the spectrum, from model-guided execution to steps fixed in code.
+
+There is real value in aiming, deliberately, at the fixed-code end.
+A researcher can use an agent to \emph{write} a deterministic program for a task that is well understood and repetitive, then run that program with no model in the loop at all, or with only a light agentic flow that invokes it.
+The agent is the author (Chapter~\ref{chapter:AgenticCoding}); the artifact it leaves behind is an ordinary script.
+A repetitive step that can be coded away, a nightly reformat of instrument output, or a fixed cleaning-and-normalization pass over each new batch of assays, is often best turned into exactly such a program: agentically built once, then run unattended for as long as the task holds.
+
+The fixed-code end buys a specific set of properties.
+A workflow is \emph{deterministic} (the same input yields the same output), cheap (it spends no tokens per run), fast, and auditable, since the code is its own specification.
+It is also \emph{robust to model evolution}: a fixed program does not change when the underlying model is updated, retired, or repriced, whereas an agent's behavior can shift with every model release.
+For a pipeline a lab expects to rerun for years, that stability is not a minor convenience; it is part of what keeps results comparable across time.
+
+The agent end buys the opposite properties.
+It handles inputs the author did not foresee, adapts its path when the task is open-ended, and needs far less specification up front.
+Those gains are paid for in the coin of Section~\ref{section:FailureModes}: nondeterminism, per-run cost and latency, behavior that drifts as models change, and a thinner audit trail.
+Neither end is better in the abstract; which to build is a property of the task, not a matter of taste.
+
+Most real systems live between the extremes.
+A light agentic flow calls deterministic sub-programs, each fixed tool a small workflow the model merely orchestrates; the tool-design principles of Section~\ref{section:ToolDefinitions} read, in this light, as advice for building the workflow components an agent composes.
+There is also a natural lifecycle along the spectrum: explore an unfamiliar task with an agent, and once its procedure stabilizes, compile the settled steps down into code, letting the agent discover the recipe and then fixing it in a program.
+Chapter~\ref{chapter:Orchestration} takes up composing such components into reliable systems.
+
+\begin{principle}
+\label{principle:FixWhatIsStable}
+Fix in code what is stable; reserve agency for what must adapt.
+Reach for the workflow end when a task is well understood, repetitive, and expected to recur; reserve full model-guided execution for the genuinely open-ended, and for the parts of a system that must handle what you did not anticipate.
+The strongest designs are often hybrids, an agent composing deterministic components, with proven agentic procedures graduating into workflows over time.
+\end{principle}
 
 \section*{Further Reading}
 
