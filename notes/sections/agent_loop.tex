@@ -180,6 +180,7 @@ class ModelResult(BaseModel):
     justification: str       # one-paragraph rationale
 \end{lstlisting}
 The agent is instructed to produce output conforming to this schema, and the schema is enforced by the calling code.
+The \code{complexity} field is the node count of the expression tree, the parsimony measure defined in Chapter~\ref{chapter:Evaluation}, so this component already anticipates the score the evaluation harness will compute.
 \end{example}
 
 \subsection{Enforcing Structure}
@@ -190,7 +191,7 @@ Two mechanisms enforce structured output.
 \item \textbf{JSON mode / tool-use pattern.}
 The model is given a tool called \code{submit\_result} whose input schema is the desired output schema.
 The model must call this tool (with correctly typed arguments) to produce its final answer.
-The tool-calling layer strongly guides the model toward schema-valid arguments, but on typical APIs this is not a hard server-side guarantee, so the calling code should still validate the received arguments and re-prompt on any mismatch.
+The tool-calling layer strongly guides the model toward schema-valid arguments, and some current APIs enforce the schema server-side; where that guarantee is absent, the calling code should still validate the received arguments and re-prompt on any mismatch.
 
 \item \textbf{Response parsing with retries.}
 The model is instructed to produce JSON matching a schema, and the calling code parses and validates the output.
@@ -235,7 +236,7 @@ The loop should have a maximum step count; if it is exceeded without producing a
 
 If the context window fills before the agent produces a final answer, the model cannot proceed.
 The loop must either truncate the history (losing information) or terminate.
-Long tool results such  stack traces, raw data dumps, verbose API responses, are the most common cause.
+Long tool results, such as stack traces, raw data dumps, or verbose API responses, are the most common cause.
 Truncating tool results to their informative essentials is the primary mitigation.
 
 \subsection{Cascading Errors}
@@ -285,6 +286,14 @@ Fix in code what is stable; reserve agency for what must adapt.
 Reach for the workflow end when a task is well understood, repetitive, and expected to recur; reserve full model-guided execution for the genuinely open-ended, and for the parts of a system that must handle what you did not anticipate.
 The strongest designs are often hybrids, an agent composing deterministic components, with proven agentic procedures graduating into workflows over time.
 \end{principle}
+
+\begin{remark}
+A second axis now cuts across the workflow--agent spectrum: how much computation to spend at inference.
+\emph{Inference-time compute scaling}\index{Inference-time compute} is the observation that the same model, given a larger \emph{thinking budget} (Section~\ref{section:ReAct}), can solve harder problems, so capability can be bought at run time rather than only by training a larger model.
+This decouples capability from model size and adds a knob to the build decision: a fast, low-budget call for routine steps, and a slow, high-budget reasoning pass reserved for the genuinely hard ones.
+It also cuts both ways for the choice above: it sharpens the case for an agent on open-ended work, where spending more thinking pays, and it raises the running cost a workflow sidesteps, since a fixed program that calls no model spends no inference budget at all.
+Treating the thinking budget as an explicit parameter, rather than a fixed property of the model, is part of building the cost-aware systems of Chapter~\ref{chapter:EvolutionaryFrameworks}.
+\end{remark}
 
 \section*{Further Reading}
 
