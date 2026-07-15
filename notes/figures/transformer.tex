@@ -2,34 +2,39 @@
   [
   font=\small, >=stealth', line width=1pt,
   block/.style={rectangle, minimum height=4mm, minimum width=50mm, rounded corners},
-  feed/.style={rectangle, minimum height=4mm, minimum width=20mm, rounded corners},
   encoder/.style={rectangle, minimum height=6mm, minimum width=57mm, rounded corners},
   circleplus/.style={circle,inner sep=0pt,draw=black}
   ]
 
 \node[draw=black,encoder,fill=violet!15] (enc2) at (-0.15,4.7) {encoder $\otimes n$};
 \draw[draw=black,->,line width=0.8pt] (-1.5,3.9) to (-1.5,4.4);
+\draw[draw=black,->,line width=0.8pt] (0,3.9) to (0,4.4);
 \draw[draw=black,->,line width=0.8pt] (1.5,3.9) to (1.5,4.4);
 
 \node[rotate=90] (enc1) at (-3.25, 2.65) {Encoder};
 \draw[draw=black,rounded corners] (-3,4.1) rectangle (2.7,1.1);
 \node[draw=black,block,fill=yellow!15] (add2) at (0,3.7) {\tiny add \& normalize};
-\node[draw=black,feed,fill=blue!15] (feed2) at (1.5,3.0) {\tiny feed forward};
-\node[draw=black,feed,fill=blue!15] (feed1) at (-1.5,3.0) {\tiny feed forward};
+\node[draw=black,block,fill=blue!15] (feed1) at (0,3.0) {\tiny feed forward};
 \node[draw=black,block,fill=yellow!15] (add1) at (0,2.3) {\tiny add \& normalize};
 \node[draw=black,block,fill=orange!15] (selfattention) at (0,1.6) {\tiny self-attention};
 \draw[draw=black,->,line width=0.8pt] (-1.5,3.2) to (-1.5,3.5);
+\draw[draw=black,->,line width=0.8pt] (0,3.2) to (0,3.5);
 \draw[draw=black,->,line width=0.8pt] (1.5,3.2) to (1.5,3.5);
 \draw[draw=black,->,line width=0.8pt] (-1.5,2.5) to (-1.5,2.8);
+\draw[draw=black,->,line width=0.8pt] (0,2.5) to (0,2.8);
 \draw[draw=black,->,line width=0.8pt] (1.5,2.5) to (1.5,2.8);
 \draw[draw=black,->,line width=0.8pt] (-1.5,1.8) to (-1.5,2.1);
+\draw[draw=black,->,line width=0.8pt] (0,1.8) to (0,2.1);
 \draw[draw=black,->,line width=0.8pt] (1.5,1.8) to (1.5,2.1);
 \draw[draw=black,->,line width=0.8pt,dashed,rounded corners] (1.5,1.2) to (-2.8,1.2) to (-2.8,2.3) to (-2.5,2.3);
 \draw[draw=black,->,line width=0.8pt,dashed,rounded corners] (1.5,2.6) to (-2.8,2.6) to (-2.8,3.7) to (-2.5,3.7);
 \node[draw=black,circleplus] (cirle1) at (-1.5, 0.75) {$+$};
-\node[draw=black,circleplus] (cirle2) at (1.5, 0.75) {$+$};
+\node[draw=black,circleplus] (cirle2) at (0, 0.75) {$+$};
+\node[draw=black,circleplus] (cirle3) at (1.5, 0.75) {$+$};
 \draw[draw=black,->,line width=0.8pt] (cirle1) to (-1.5,1.4);
-\draw[draw=black,->,line width=0.8pt] (cirle2) to (1.5,1.4);
+\draw[draw=black,->,line width=0.8pt] (cirle2) to (0,1.4);
+\draw[draw=black,->,line width=0.8pt] (cirle3) to (1.5,1.4);
+\node (posenc) at (0,0) {\footnotesize Positional Encoding};
 
 \draw[draw=black,dashdotted, rounded corners] (-3.55,5.2) rectangle (2.9,0.4);
 
@@ -39,35 +44,41 @@
 \node[rotate=-90] (dec1) at (9.95, 1.9) {Decoder};
 \draw[rounded corners] (4,4.1) rectangle (9.7,-0.3);
 \node[draw=black,block,fill=yellow!15] (add3) at (7,3.7) {\tiny add \& normalize};
-\node[draw=black,feed,fill=blue!15] (feed2) at (8.5,3.0) {\tiny feed forward};
-\node[draw=black,feed,fill=blue!15] (feed1) at (5.5,3.0) {\tiny feed forward};
+\node[draw=black,block,fill=blue!15] (feed2) at (7,3.0) {\tiny feed forward};
 \node[draw=black,block,fill=yellow!15] (add2) at (7,2.3) {\tiny add \& normalize};
 \node[draw=black,block,fill=orange!15] (encdec1) at (7,1.6) {\tiny encoder-decoder attention};
 \node[draw=black,block,fill=yellow!15] (add1) at (7,0.9) {\tiny add \& normalize};
 \node[draw=black,block,fill=orange!15] (selfattention) at (7,0.2) {\tiny masked self-attention};
 \draw[->,line width=0.8pt] (5.5,5.0) to (5.5,5.4);
+\draw[->,line width=0.8pt] (7,5.0) to (7,5.4);
 \draw[->,line width=0.8pt] (8.5,5.0) to (8.5,5.4);
+\draw[->,line width=0.8pt] (7,3.9) to (7,4.4);
 \draw[->,line width=0.8pt] (5.5,3.9) to (5.5,4.4);
 \draw[->,line width=0.8pt] (8.5,3.9) to (8.5,4.4);
+\draw[->,line width=0.8pt] (7,3.9) to (7,4.4);
 \draw[->,line width=0.8pt] (5.5,3.2) to (5.5,3.5);
 \draw[->,line width=0.8pt] (8.5,3.2) to (8.5,3.5);
+\draw[->,line width=0.8pt] (7,3.2) to (7,3.5);
 \draw[->,line width=0.8pt] (5.5,2.5) to (5.5,2.8);
 \draw[->,line width=0.8pt] (8.5,2.5) to (8.5,2.8);
+\draw[->,line width=0.8pt] (7,2.5) to (7,2.8);
 \draw[->,line width=0.8pt] (5.5,1.8) to (5.5,2.1);
 \draw[->,line width=0.8pt] (8.5,1.8) to (8.5,2.1);
+\draw[->,line width=0.8pt] (7,1.8) to (7,2.1);
 \draw[->,line width=0.8pt] (5.5,1.1) to (5.5,1.4);
 \draw[->,line width=0.8pt] (8.5,1.1) to (8.5,1.4);
+\draw[->,line width=0.8pt] (7,1.1) to (7,1.4);
 \draw[->,line width=0.8pt] (5.5,0.4) to (5.5,0.7);
 \draw[->,line width=0.8pt] (8.5,0.4) to (8.5,0.7);
 \draw[->,line width=0.8pt,dashed,rounded corners] (8.5,-0.2) to (4.2,-0.2) to (4.2,0.9) to (4.5,0.9);
 \draw[->,line width=0.8pt,dashed,rounded corners] (8.5,1.2) to (4.2,1.2) to (4.2,2.3) to (4.5,2.3);
 \draw[->,line width=0.8pt,dashed,rounded corners] (8.5,2.6) to (4.2,2.6) to (4.2,3.7) to (4.5,3.7);
-\node[circleplus] (cirle3) at (5.5, -0.65) {$+$};
-\node[circleplus] (cirle4) at (8.5, -0.65) {$+$};
-\draw[->,line width=0.8pt] (cirle3) to (5.5,0.0);
-\draw[->,line width=0.8pt] (cirle4) to (8.5,0.0);
-\node (posenc) at (7,-0.6) {\footnotesize Positional};
-\node (posenc) at (7,-1) {\footnotesize Encoding};
+\node[circleplus] (cirle4) at (5.5, -0.65) {$+$};
+\node[circleplus] (cirle5) at (7, -0.65) {$+$};
+\node[circleplus] (cirle6) at (8.5, -0.65) {$+$};
+\draw[->,line width=0.8pt] (cirle4) to (5.5,0.0);
+\draw[->,line width=0.8pt] (cirle5) to (7,0.0);
+\draw[->,line width=0.8pt] (cirle6) to (8.5,0.0);
 \draw[->] (3.5,-0.65) to node[below]{Input} (4.75,-0.65);
 
 \draw[draw=black,->,line width=0.8pt,rounded corners] (-0.15,5.0) to (-0.15,5.4) to (3.5,5.4) to (3.5,1.6) to (4.5,1.6);
