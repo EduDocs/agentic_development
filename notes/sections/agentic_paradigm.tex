@@ -25,14 +25,12 @@ The context $C$ is assembled from the system prompt, the task description, a his
 The model $M$ reads the full context and selects an action: either a \emph{tool call} (drawn from $T$) or a \emph{final response}.
 The loop $L$ executes the tool call, appends the result to the context as a new observation, and invokes $M$ again.
 
-\begin{remark}
 The model $M$ is not a database and not a classical reasoner; it is a next-token predictor conditioned on $C$, and four properties of that substrate govern where an agent built on it will fail (Anthropic, 2025).
 It generates by statistical continuation, so it produces fluent text that may be confidently wrong, the failure mode called \emph{hallucination}.
 Its knowledge is a frozen snapshot fixed at a training cutoff, blind to anything more recent or too rare to have been well represented in training.
 Its working memory is exactly the context window introduced below and developed in Chapter~\ref{chapter:ContextEngineering}: bounded, non-persistent, and unevenly attended.
 And its steerability is pattern continuation rather than comprehension of intent: it follows the \emph{form} of an instruction, which is why long chains accumulate error and why text injected through a tool result can hijack a task.
 Each rung of the ladder that follows is, in part, a discipline for managing one of these four failure modes.
-\end{remark}
 
 \begin{figure}[htb!]
 \begin{center}
@@ -71,15 +69,14 @@ Context with dissonant content interferes with inference tasks, reasoning, and p
 Choosing what to put in the window, and where, remains consequential even as windows grow.
 \end{remark}
 
-\begin{remark}
 Not every task needs the full loop.
 The distinction between an \emph{agent}, which lets the model dynamically direct its own process and tool use, and a \emph{workflow}, which routes the model through predetermined code paths, is worth drawing early (Anthropic, 2024; Figure~\ref{figure:WorkflowAgentSpectrum}).
 A workflow fits predictable, well-scoped tasks whose steps are known in advance; an agent fits open-ended problems where the number of steps cannot be fixed ahead of time, at the price of higher cost and more room for compounding error.
 The rungs that follow, and the orchestration patterns of Chapter~\ref{chapter:Orchestration}, move along this spectrum rather than leaping to full autonomy; the durable advice, as of this writing in 2026, is to reach for a workflow when the task allows it and reserve full agency for problems that require it.
+
 These two designs describe the artifact that \emph{runs}; neither describes how it is \emph{built}.
 Agentic development, the practice these notes teach, is a build-time activity: a researcher directs an agent such as Claude Code, and the software it produces is frequently a deterministic workflow, or ordinary analysis code, with no agent inside it at all.
 Developing \emph{with} an agent is thus distinct from deploying one, and a central aim of these notes is to use the former to build reliable, largely non-agentic research pipelines, reserving in-production agency for the tasks that require it.
-\end{remark}
 
 \begin{figure}[htb!]
 \begin{center}

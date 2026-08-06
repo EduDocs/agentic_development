@@ -67,7 +67,7 @@ Figure~\ref{figure:EvolutionaryLoop} draws the loop, with \emph{Mutate} shown as
 \end{tikzpicture}
 \caption{The agentic evolutionary loop.
 An initial population seeds the \emph{Generate} step once; thereafter the steady-state cycle is evaluate~$\to$~select~$\to$~\emph{mutate}, and \emph{Mutate} --- not \emph{Generate} --- consumes the survivors, so each round's candidates are derived from the previous round's elite.
-Mutation is the one node absent from the generate--evaluate--select loop of Chapter~\ref{chapter:Orchestration}; the fitness function is the evaluation harness built in Challenge~2.}
+Mutation is the one node absent from the generate--evaluate--select loop of Chapter~\ref{chapter:Orchestration}; the fitness function is the evaluation harness of Chapter~\ref{chapter:Evaluation}.}
 \label{figure:EvolutionaryLoop}
 \end{center}
 \end{figure}
@@ -120,7 +120,7 @@ The mutator's context should include:
 \begin{enumerate}
 \item The current best expression and its score.
 \item The history of what has been tried and why it did or did not work.
-\item Retrieved domain knowledge relevant to the data (reusing the retrieval system from Challenge~3).
+\item Retrieved domain knowledge relevant to the data (reusing the retrieval system of Chapter~\ref{chapter:Retrieval}).
 \item The population's diversity — if all survivors are variations of the same form, the mutator should be told to explore a different region.
 \end{enumerate}
 This is the convergence of the two spines: \emph{evaluation becomes fitness} (Spine~1) and \emph{context engineering drives the mutator} (Spine~2).
@@ -177,7 +177,7 @@ Diversity is the fuel of evolution: without variation, the mutation operator has
 
 \begin{remark}
 Population collapse is one of the most common failure modes in early implementations.
-If the leaderboard score of the evolutionary run does not improve over the GES loop (Challenge~4), the most likely cause is collapse: the population converged early, and the mutation operator is spinning on a single form without finding anything new.
+If the leaderboard score of the evolutionary run does not improve over the GES loop of Chapter~\ref{chapter:Orchestration}, the most likely cause is collapse: the population converged early, and the mutation operator is spinning on a single form without finding anything new.
 \end{remark}
 
 \section{Fitness Design}
@@ -321,7 +321,7 @@ SR is the teaching vehicle for the course because it is:
 The domain changes; the framework does not.
 \item \textbf{Interpretable.} The output is a symbolic expression, not a neural network.
 The researcher can read and critique the discovered model.
-\item \textbf{Has established baselines.} Linear regression (Challenge~1) and PySR (a mature GP-based SR library) provide calibration points against which the evolutionary agent must compete.
+\item \textbf{Has established baselines.} Linear regression and PySR (a mature GP-based SR library) provide calibration points against which the evolutionary agent must compete.
 \end{enumerate}
 
 \subsection{The Baseline Ladder}
@@ -368,7 +368,7 @@ where $\mathrm{cost}(a)$ is the \emph{marginal} cost — in dollars of API usage
 
 Using the \emph{marginal} cost $\mathrm{cost}(a)$, rather than a run's total cost, is what makes the adjustment discriminating: a cost shared equally by every artifact would shift all fitnesses by the same constant and could not reorder candidates within a run.
 With $\mathrm{cost}(a)$, two candidates of equal $\Fitness$ are separated in favor of the one that was cheaper to obtain — the mutation drawn from a cheaper proposer model, or the expression that reached its score in fewer evaluation calls.
-This connects the capstone to Challenge~4's model benchmarking: a cheaper proposer that achieves comparable mutations is preferred by cost-adjusted fitness, even when its per-mutation quality is slightly lower.
+This connects the capstone to the multi-model benchmarking of Chapter~\ref{chapter:Orchestration}: a cheaper proposer that achieves comparable mutations is preferred by cost-adjusted fitness, even when its per-mutation quality is slightly lower.
 
 \begin{remark}
 Like the parsimony weight $\lambda$ (Section~\ref{subsection:MultiObjectiveScoring}), $\alpha$ is a calibrated design choice, not a universal constant.

@@ -2,22 +2,22 @@
 \label{chapter:Evaluation}
 % EVOLVE-BLOCK-START
 
-A research agent that cannot be evaluated cannot be trusted.\index{Evaluation harness}
-Evaluation is not a post-hoc check performed after a system is built; it is the foundation on which every comparison, every improvement claim, and eventually every evolutionary search rests.
-This chapter develops the theory and practice of the evaluation harness — the reusable module that scores an agent's output against ground truth.
+A research agent that cannot be evaluated should not be trusted.\index{Evaluation harness}
+Evaluation is not a post-hoc check performed after a system is built; it forms a foundation on which comparisons, every improvement claims, and eventually evolutionary searches rest.
+This chapter develops the theory and practice of the evaluation harness, the reusable module that scores an agent's output against ground truth.
 
-The reusable validation harness introduced in this chapter is the same object that becomes the fitness function of the evolutionary framework in Chapter~\ref{chapter:EvolutionaryFrameworks}; a separate final-test harness, evaluated once, remains an audit of the winner.
-Build them cleanly; you will live with them for the rest of the course.
+The reusable validation harness introduced in this chapter is the object that becomes the fitness function of the evolutionary framework in Chapter~\ref{chapter:EvolutionaryFrameworks}; a separate final-test harness, evaluated once, remains an audit of the retained solution.
+Build validation harnesses cleanly; they will be useful throughout the course.
 
 \section{The Evaluation Principle}
 \label{section:EvaluationPrinciple}
 
-An \emph{evaluation harness}\index{Evaluation harness} is a function that takes a candidate artifact and a reference dataset and returns a numerical score.
+An \emph{evaluation harness}\index{Evaluation harness} can be abstracted as a function that takes a candidate artifact and a reference dataset and returns a numerical score.
 \begin{definition}
 \label{definition:EvalHarness}
 An \emph{evaluation harness} is a tuple $(\mathcal{D}, \Score)$ where
 \begin{itemize}
-\item $\mathcal{D} = (\mathcal{D}_{\mathrm{train}}, \mathcal{D}_{\mathrm{val}}, \mathcal{D}_{\mathrm{test}})$ partitions the data into a \emph{training} split (on which the agent may fit parameters), a \emph{validation} --- or \emph{fitness} --- split (against which candidates are scored and selected, repeatedly, across a search), and a held-out \emph{final-test} split (reserved for a single audit), and
+\item $\mathcal{D} = (\mathcal{D}_{\mathrm{train}}, \mathcal{D}_{\mathrm{val}}, \mathcal{D}_{\mathrm{test}})$ partitions the data into a \emph{training} split (on which the agent may fit parameters), a \emph{validation} split (against which candidates are scored and selected, repeatedly, across a search), and a held-out \emph{final-test} split (reserved for a single audit), and
 \item $\Score : \Artifacts \times \mathcal{D}_{\mathrm{val}} \to \RealNumbers$ is the reusable scoring function that evaluates a candidate artifact $a \in \Artifacts$ against the validation split.
 \end{itemize}
 The reusable score of artifact $a$ is $\Score(a, \mathcal{D}_{\mathrm{val}})$; the final-test metric $\Score(a^{\star}, \mathcal{D}_{\mathrm{test}})$ is computed once, for the selected artifact $a^{\star}$ alone, after every modeling and selection choice is frozen.
@@ -27,14 +27,14 @@ A note on terminology: we write $a \in \Artifacts$ for a \emph{candidate artifac
 ``Model'' in these notes always means the language model; the discovered symbolic expression is the candidate (or, once selected, the discovered model \emph{of the data}), and we flag the latter reading explicitly wherever it appears.
 
 Three roles must stay distinct.
-A \emph{training} objective fits an artifact's parameters; a \emph{validation} (fitness) objective selects among artifacts and is what the search --- and later the evolutionary loop --- queries repeatedly; a \emph{final-test} metric supports the one generalization claim made at the end.
+A \emph{training} objective fits an artifact's parameters; a \emph{validation} (fitness) objective selects among artifacts and is what the search, and later the evolutionary loop, queries repeatedly; a \emph{final-test} metric supports the one generalization claim made at the end.
 Collapsing validation into test is the most common and most damaging error: a sequence of validation scores is an information channel, so an optimizer that selects against the validation split slowly overfits it --- \emph{adaptive overfitting}\index{Adaptive overfitting} --- even when it never sees a raw row.
 The held-out final test, evaluated once after all choices are frozen, is what stays trustworthy after that erosion.
 These separations are the most important properties of the harness, and the easiest to violate accidentally.
 
 \subsection{Why Evaluation Must Be Automatic}
 
-Automatic evaluation — a numerical score computed without human judgment — has three decisive advantages for agentic and evolutionary systems.
+Automatic evaluation, a numerical score computed without human judgment, has three decisive advantages for agentic and evolutionary systems.
 \begin{enumerate}
 \item \textbf{Speed.} An automated harness scores hundreds of candidates in the time a human would score one.
 \item \textbf{Consistency.} Automated scores are repeatable under controlled conditions --- fixed data, seed, and environment --- where human judgments vary; a stochastic evaluator or an LLM judge is only repeatable once its randomness is pinned (Section~\ref{section:LLMJudge}).
@@ -51,7 +51,7 @@ A good score is:
 \item \textbf{Faithful}: high scores correspond to genuinely good artifacts, not to artifacts that exploit loopholes in the scoring function.
 \item \textbf{Discriminating}: the score distinguishes between candidates of different quality; all candidates scoring the same is as bad as no score at all.
 \item \textbf{Leakage-resistant}: the score cannot be improved by exposing the artifact to test data during training.
-\item \textbf{Stable}: small, inconsequential changes to the artifact produce small changes in the score; large changes in quality produce large changes in the score.
+\item \textbf{Stable}: small, inconsequential changes to the artifact produce small changes in the score; large changes in quality can produce large changes in the score.
 \end{itemize}
 
 \section{Held-Out Data and Leakage}
@@ -107,9 +107,9 @@ Figure~\ref{figure:Leakage} shows the sanctioned data flow and the forbidden pat
 \draw[arr] (agent) -- node[above, font=\scriptsize]{$a$} (fit);
 \draw[arr] (fit) to[bend left=45] node[below, font=\scriptsize]{queried many times} (agent);
 \draw[arr] (fit) -- node[above, font=\scriptsize]{winner $a^\star$} (final);
-\draw[leak] (test.north) to[out=115, in=65, looseness=1.1]
-                      node[midway, font=\scriptsize, above]{leakage (forbidden)}
-                      node[pos=0.5, font=\large]{$\times$} (agent.north);
+\draw[leak] (test.east) to[out=-45, in=-60, looseness=1.25]
+                      node[midway, font=\scriptsize, below]{leakage (forbidden)}
+                      node[pos=0.5, font=\large]{$\times$} (agent.south);
 \end{tikzpicture}
 \caption{The sanctioned data flow of an evaluation harness, and the one forbidden path.
 The dataset is split before any modeling into three roles: $\mathcal{D}_{\mathrm{train}}$ reaches the agent; $\mathcal{D}_{\mathrm{val}}$ feeds the reusable fitness score the search queries many times; and the sealed $\mathcal{D}_{\mathrm{test}}$ is read once, to audit the selected winner $a^\star$.
@@ -149,7 +149,7 @@ def build_harness(data, val_fraction=0.2, seed=42):
     return fitness_score   # a closure over X_val, y_val
 \end{lstlisting}
 The caller receives only a scoring function; the validation rows are not handed back.
-This is a convenience and a reminder, not a security boundary --- a Python closure can be inspected, and, more to the point, querying the same validation split thousands of times adaptively overfits it even when no raw row is ever exposed.
+This is a convenience and a reminder, not a security boundary; a Python closure can be inspected, and, more to the point, querying the same validation split thousands of times adaptively overfits it even when no raw row is ever exposed.
 The held-out final test therefore lives behind a separate, one-shot report the search cannot call.
 This is the design pattern used in the course harness.
 
@@ -170,7 +170,7 @@ When MSE is on the leaderboard, the researcher reports the lower value as the be
 \subsection{Parsimony}
 
 A model that perfectly fits the data it was given by memorizing it is not a discovery.
-\emph{Parsimony}\index{Parsimony} — the preference for simpler models among those of comparable predictive quality — guards against this failure mode.
+\emph{Parsimony}\index{Parsimony}, the preference for simpler models among those of comparable predictive quality, guards against this failure mode.
 
 The parsimony of a symbolic expression is measured by its \emph{complexity}: the number of nodes in its expression tree, counting every operator, variable, and constant as one node.
 An alternative convention counts the operations required to evaluate the expression; the two usually track one another, and the course fixes on node count so that all leaderboard entries are comparable.
@@ -215,7 +215,13 @@ The stronger and more persistent the optimizer, the more aggressively it will fi
 Designing a harness you would trust an adversary to attack is more reliable than designing one that looks good on the first round of benign candidates.
 \end{principle}
 
-The adage is \emph{Goodhart's Law}, after the economist Charles Goodhart, whose 1975 observation was that a statistical regularity collapses once it is adopted as a policy target; the compact formulation used here — that a measure under optimization ceases to measure what it once did — is due to Strathern (1997).
+The adage is \emph{Goodhart's Law}, after the economist Charles Goodhart, whose 1975 observation came out of monetary policy.
+British authorities had years of data showing a stable relationship between a particular monetary aggregate and nominal income, which made the aggregate look like a dependable read on the state of the economy.
+It was a dependable read, for as long as it was only being watched.
+Once it was adopted as a policy target, banks reorganized around the measured category and moved lending outside it; the historical relationship broke, and the number could then be hit while the quantity it had stood for went elsewhere.
+The general form is the one that matters for a harness: an observed relation may genuinely capture an underlying phenomenon, but once the marker becomes the objective function, the optimization that ensues acts on the marker alone, and is free to take any route that moves the marker without moving the phenomenon.
+The correlation was never load-bearing; targeting is what puts load on it.
+The compact formulation used here, that a measure under optimization ceases to measure what it once did, is due to Strathern (1997).
 
 Common attack surfaces in a model discovery harness:
 \begin{enumerate}
@@ -230,7 +236,7 @@ Recognizing these attack surfaces in advance and closing them in the harness des
 
 \begin{remark}
 Goodhart pressure also has a temporal form.
-A benchmark that cleanly separates strong from weak candidates today can \emph{saturate}\index{Benchmark saturation} as capability rises, its scores bunching near the ceiling until the metric no longer discriminates --- decaying into noise without any single candidate ``cheating'' it (Anthropic, 2026).
+A benchmark that cleanly separates strong from weak candidates today can \emph{saturate}\index{Benchmark saturation} as capability rises, its scores bunching near the ceiling until the metric no longer discriminates, decaying into noise without any single candidate ``cheating'' it (Anthropic, 2026).
 Two safeguards follow: grade the \emph{outcome} --- the final artifact or state --- rather than a fixed trajectory a capable agent may bypass, and treat saturation as a signal to \emph{graduate} the task, retiring the solved benchmark to a regression check and authoring harder, often out-of-distribution problems.
 This is the evaluation-side form of the fitness-decay caution of Chapter~\ref{chapter:AgenticParadigm}, and it returns for evolutionary search in Chapter~\ref{chapter:EvolutionaryFrameworks}.
 \end{remark}
@@ -261,7 +267,7 @@ The critic and the evaluator are distinct where a formula exists (the critic of 
 \end{figure}
 
 Two nuances keep the spectrum honest.
-First, verifiability is a property of the \emph{problem}, not a choice, and a single artifact can straddle the poles depending on how it is posed: a mathematical proof is a matter of judgment at the research frontier, but becomes verifiable the moment it is formalized in a proof assistant such as Lean or Coq, where a checker accepts or rejects it outright.
+First, verifiability is a property of the \emph{problem}, not a choice, and a single artifact can straddle the poles depending on how it is posed: a mathematical proof is a matter of judgment at the research frontier, but becomes verifiable the moment it is formalized in a proof assistant such as Lean, where a checker accepts or rejects it outright.
 Second, the boundary is moving: as models grow more capable, the judgment end becomes trustworthy enough that strict formula-based evaluation is no longer the only norm, which widens the range of research an evolutionary loop can be pointed at beyond the cleanly verifiable.
 
 The judgment end carries a characteristic risk: the judge's biases become the harness's biases.
@@ -273,8 +279,8 @@ This is why the verifiable end, where it exists, stays the gold standard, and wh
 \section{The Harness as a Contract}
 \label{section:HarnessContract}
 
-The reusable validation harness is used across Challenges~2, 3, and 4, and becomes the fitness function in the capstone.
-Its interface must be \emph{stable} across this span.
+The reusable validation harness is built once and then called by every later unit of the course, and it becomes the fitness function of the evolutionary capstone.
+Its interface must be \emph{stable} across that span.
 
 \begin{definition}
 \label{definition:HarnessContract}
@@ -289,7 +295,7 @@ A harness satisfying this interface can be dropped into any unit in the course w
 If the harness interface must change — for example, because a new scoring dimension is added in a later challenge — the change must be documented and applied consistently to all prior baselines.
 An inconsistent harness produces incomparable leaderboard entries.
 
-This contract is the \emph{validation} (fitness) interface --- the reusable one the search calls many times over.
+This contract is the \emph{validation} (fitness) interface, the reusable one the search calls many times over.
 The final test is deliberately \emph{not} part of it: it is a separate, one-shot report, invoked once for the selected artifact and never wired into the loop.
 The organizing idea of the course is sharpest in this form: \emph{a reusable validation harness becomes fitness; a final-test harness remains an audit.}
 
