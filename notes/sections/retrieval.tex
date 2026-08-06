@@ -3,15 +3,16 @@
 % EVOLVE-BLOCK-START
 
 An agent knows only what it reads.\index{Retrieval}
-A language model's parametric knowledge — the information encoded in its weights during training — is broad but shallow, generic but stale, and unreliable in the specific details that matter for any particular research task.
+A language model's parametric knowledge, the information encoded in its weights during training, is broad but limited.
+It can be generic, stale, and unreliable with respect to the specific details that matter for any particular research task.
 A physicist's agent should know about dimensional analysis; a biologist's should know about enzyme kinetics; an economist's should know about functional forms in demand estimation.
 None of this domain-specific knowledge can be assumed to be reliably present in the model's weights.
 
-\emph{Retrieval-augmented generation} (RAG)\index{Retrieval-augmented generation} (Lewis et al., 2020) solves this by injecting relevant domain knowledge into the context at the time it is needed.
+\emph{Retrieval-augmented generation} (RAG)\index{Retrieval-augmented generation} (Lewis et al., 2020) addresses this by injecting relevant domain knowledge into the context at the time it is needed.
 Rather than relying on the model to remember a fact, the loop retrieves the fact from a curated corpus and places it directly in the window.
 
-In the course, retrieval is not a toy feature — it has a real job.
-The reference corpus holds domain units, functional forms, and dimensional constraints that constrain which model proposals are physically plausible.
+In the course, retrieval is not a secondary feature; it has a real job.
+The reference corpus holds domain units, functional forms, and dimensional constraints that dictates which model proposals are physically plausible.
 The challenge is to demonstrate that retrieval moves the leaderboard: a grounded agent should propose better candidates because its proposals are constrained by domain knowledge.
 
 \section{The Retrieval Problem}
@@ -22,12 +23,11 @@ The challenge is to demonstrate that retrieval moves the leaderboard: a grounded
 Let $\mathcal{K}$ denote the body of domain knowledge relevant to a task (scientific literature, textbooks, experimental notes).
 The context window can hold only a small fraction of $\mathcal{K}$ at any invocation.
 The \emph{retrieval problem} is to select the subset of $\mathcal{K}$ most relevant to the current query and place it in the context.
-
-Formally: given a query $q$ (the agent's current task description or question) and a corpus $\mathcal{K}$, return the $k$ passages from $\mathcal{K}$ that are most relevant to $q$.
+Formally, given a query $q$ (the agent's current task description or question) and a corpus $\mathcal{K}$, return the $k$ passages from $\mathcal{K}$ that are most relevant to $q$.
 
 \begin{remark}
 Retrieval is not automatically the right tool.
-When the entire relevant corpus fits comfortably in the context window --- a threshold on the order of a few hundred pages for current models --- loading it directly can beat retrieval on questions that require synthesis across the whole document (Chapter~\ref{chapter:ContextEngineering}), because no relevant passage can be missed.
+When the entire relevant corpus fits comfortably in the context window, a threshold on the order of a few hundred pages for current models, loading it directly can beat retrieval on questions that require synthesis across the whole document (Chapter~\ref{chapter:ContextEngineering}), because no relevant passage can be missed.
 Retrieval earns its place when $\mathcal{K}$ is far larger than any window, when only a small slice is relevant per query, or when injecting irrelevant material would crowd out what matters.
 The course corpora are deliberately small, so this boundary is worth checking before building an index at all.
 \end{remark}
@@ -35,7 +35,7 @@ The course corpora are deliberately small, so this boundary is worth checking be
 \subsection{Keyword vs.\ Semantic Retrieval}
 
 Classical retrieval systems (e.g., BM25, TF-IDF) match keywords: they return passages that contain the same words as the query.\index{Keyword retrieval}
-These systems fail when the query and the relevant passage use different vocabulary — for example, when the query asks about ``drag force'' and the relevant passage discusses ``aerodynamic resistance.''
+These systems fail when the query and the relevant passage use different vocabulary, for example, when the query asks about ``drag force'' and the relevant passage discusses ``aerodynamic resistance.''
 
 \emph{Semantic retrieval}\index{Semantic retrieval} avoids this failure by representing both query and passage as vectors in a shared semantic space, and returning the passages whose vectors are closest to the query vector.
 Two passages about the same concept have similar vectors even if they use different words.
@@ -56,7 +56,7 @@ An \emph{embedding model} is a function $\phi: V^* \to \RealNumbers^d$ trained s
 \mathrm{sim}(\phi(p_1), \phi(p_2)) > \mathrm{sim}(\phi(p_1), \phi(p_3)) ,
 \end{equation}
 where $\mathrm{sim}$ is a similarity function, typically cosine similarity.
-The property is statistical rather than universal: no finite-dimensional embedding orders \emph{every} triple correctly, and retrieval quality depends on how often the inequality holds for the passages that matter.
+The property is statistical rather than universal: typically, finite-dimensional embedding cannot order \emph{every} triple correctly; retrieval quality depends on how often the inequality holds for the passages that matter.
 \end{definition}
 
 \subsection{Cosine Similarity}
@@ -97,7 +97,7 @@ print(cosine_similarity(emb_drag, emb_density))  # ~0.23 (illustrative) — much
 Given a corpus of $N$ embedded passages $\{\phi(p_i)\}_{i=1}^N$ and a query embedding $\phi(q)$, the retrieval problem reduces to finding the $k$ passages with the highest cosine similarity to $\phi(q)$.
 This is the \emph{$k$-nearest-neighbor problem} in $\RealNumbers^d$.\index{$k$-nearest-neighbor}
 
-Exact nearest-neighbor search is $O(N \cdot d)$ per query — linear in the corpus size.
+Exact nearest-neighbor search is $O(N \cdot d)$ per query, linear in the corpus size.
 For the small corpora used in the course (hundreds to thousands of passages), exact search is fast enough.
 For larger corpora, \emph{approximate nearest-neighbor} (ANN) indices trade a small reduction in recall for a large reduction in query time (Johnson et al., 2021).
 
@@ -142,7 +142,7 @@ class FlatIndex:
 \label{section:ContextualRetrieval}
 
 A chunk extracted in isolation loses the context of the document it came from.
-A passage reading ``the growth rate falls to zero at high density'' does not say which population, which model, or under what assumption --- and the embedding of that fragment is correspondingly ambiguous.
+A passage reading ``the growth rate falls to zero at high density'' does not say which population, which model, or under what assumption; and the embedding of that fragment is correspondingly ambiguous.
 \emph{Contextual retrieval}\index{Contextual retrieval} (Anthropic, 2024) repairs this by using a language model to prepend a short, chunk-specific description of the surrounding document to each chunk \emph{before} it is embedded and indexed.
 The enriched chunk feeds both the semantic index and a keyword index, so semantic and lexical matching reinforce each other rather than compete.
 On the source's benchmark, contextualizing the embeddings reduced retrieval failures by roughly a third, and adding contextual keyword matching by roughly a half; the technique modifies the \textbf{embed} stage of the pipeline above, not the architecture around it.
@@ -167,25 +167,25 @@ These reductions compose, as Figure~\ref{figure:RetrievalStaircase} shows, which
 \node[font=\scriptsize, align=center] at (9.8,-0.5) {$+$ rerank};
 \end{tikzpicture}
 \caption{Retrieval failure rate (the fraction of queries whose relevant passage is missing from the top~$k$) falling in stackable increments as techniques are layered, on the source's benchmark (Anthropic, 2024): contextual embeddings alone cut baseline failures by roughly a third, adding contextual keyword matching reaches roughly a half, and a reranking second stage reaches roughly two-thirds.
-The takeaway is not the exact numbers --- which are benchmark-specific and will shift --- but the shape: each stage lowers the same measurable quantity, so retrieval quality is evaluated and improved the way Chapter~\ref{chapter:Evaluation} treats any score, not judged by feel.}
+The takeaway is not the exact numbers, which are benchmark-specific and will shift, but the shape: each stage lowers the same measurable quantity, so retrieval quality is evaluated and improved the way Chapter~\ref{chapter:Evaluation} treats any score, not judged by feel.}
 \label{figure:RetrievalStaircase}
 \end{center}
 \end{figure}
 
 \begin{remark}
 Retrieval quality improves further with a second stage.
-A \emph{reranker}\index{Reranker} takes a generous first-pass candidate set --- say the top~150 by vector similarity --- and rescores each candidate against the query with a more expensive model, keeping only the best handful.
+A \emph{reranker}\index{Reranker} takes a generous first-pass candidate set, say the top~150 by vector similarity, and rescores each candidate against the query with a more expensive model, keeping only the best handful.
 The pattern is general: a cheap, high-recall first stage followed by a precise, low-throughput second stage, which on the source's benchmark cut retrieval failures by about two-thirds overall (Anthropic, 2024).
 \end{remark}
 
 \begin{remark}
 Generating a context sentence for every chunk sounds expensive, but \emph{prompt caching} makes it cheap: the parent document is cached once and reused across all of its chunks rather than re-sent per chunk.
-The source reports a one-time cost on the order of a dollar per million document tokens (Anthropic, 2024) --- small enough that contextualization is a routine preprocessing step rather than a luxury.
+The source reports a one-time cost on the order of a dollar per million document tokens (Anthropic, 2024), small enough that contextualization is a routine preprocessing step rather than a luxury.
 \end{remark}
 
 \begin{remark}
 Flat similarity search is not the only shape a retrieval index can take.
-When the relationships \emph{between} entities carry more of the answer than the similarity of any single passage --- which protein interacts with which, which result cites which --- a \emph{structural} approach can help: build a graph over entities and their relations extracted from the corpus and retrieve connected subgraphs rather than isolated chunks, the family of techniques often called \emph{GraphRAG}.
+When the relationships \emph{between} entities carry more of the answer than the similarity of any single passage (which protein interacts with which, which result cites which) a \emph{structural} approach can help: build a graph over entities and their relations extracted from the corpus and retrieve connected subgraphs rather than isolated chunks, the family of techniques often called \emph{GraphRAG}.
 The tradeoff is a heavier, more brittle indexing step (entity and relation extraction can err) against better recall on multi-hop questions that a flat index answers poorly.
 As with grounding itself, the honest test is the ablation of Section~\ref{section:GroundingConstraint}: adopt the more complex index only where it measurably beats flat vector search on the questions that matter.
 \end{remark}
@@ -209,28 +209,28 @@ A \emph{retrieval-augmented} agent extends the basic loop with a retrieval step 
 \begin{center}
 \input{figures/concept-style}
 \begin{tikzpicture}[
-    node distance=0.7cm,
+    node distance=1cm,
     box/.style={conceptbox, minimum width=2.2cm, minimum height=1.0cm},
-    store/.style={conceptbox, dashed, fill=gray!8,
+    store/.style={conceptbox, fill=gray!8,
                   minimum width=3.0cm, minimum height=1.0cm},
     arr/.style={conceptflow}
 ]
 \node[box, fill=blue!15]                   (q)     {query $q$};
-\node[box, fill=blue!8,    right=of q]      (qe)    {embed\\$\phi(q)$};
+\node[box, fill=blue!8,    below=of q]      (qe)    {embed\\$\phi(q)$};
 \node[box, fill=green!20,  right=of qe]     (idx)   {vector index\\search};
 \node[box, fill=green!20,  right=of idx]    (topk)  {top-$k$\\passages};
 \node[box, fill=yellow!20, right=of topk]   (model) {model reads\\augmented context};
-\node[store, above=1.1cm of idx]            (corpus) {corpus $\mathcal{K}$ (sealed)\\chunk $+$ embed, offline};
+\node[store, above=of idx]            (corpus) {corpus $\mathcal{K}$ (sealed)\\chunk $+$ embed};
 
 \draw[arr] (q)    -- (qe);
 \draw[arr] (qe)   -- node[above,font=\scriptsize]{$\phi(q)$} (idx);
 \draw[arr] (idx)  -- node[above,font=\scriptsize]{$k$-NN}    (topk);
 \draw[arr] (topk) -- node[above,font=\scriptsize]{inject}    (model);
-\draw[arr] (corpus) -- (idx);
+\draw[arr,<->] (corpus) -- (idx);
 \end{tikzpicture}
 \caption{The retrieval-augmented generation pipeline.
-At query time (left to right) the query is embedded, matched against the vector index by $k$-nearest-neighbor search, and its top-$k$ passages are injected into the context the model reads.
-The corpus $\mathcal{K}$ is chunked and embedded once, offline (dashed), and sealed thereafter --- exactly the discipline of Section~\ref{section:VectorSearch}.
+At query time, the query is embedded, matched against the vector index by $k$-nearest-neighbor search, and its top-$k$ passages are injected into the context the model reads.
+The corpus $\mathcal{K}$ is chunked and embedded once, offline, and sealed thereafter; exactly the discipline of Section~\ref{section:VectorSearch}.
 Retrieval quality is set at the index-search step: an index that returns irrelevant passages spends context budget for no gain, and one that returns misleading passages actively steers the proposal wrong.}
 \label{figure:RAGPipeline}
 \end{center}
@@ -241,7 +241,7 @@ A retrieval system that returns irrelevant passages wastes context budget; one t
 
 \subsection{What Goes in the Corpus}
 
-The reference corpus for Challenge~3 contains domain notes organized by physical or scientific domain: common functional forms, dimensional analysis rules, typical parameter ranges, and known constraints.
+The reference corpus used for model discovery in this course contains domain notes organized by physical or scientific domain: common functional forms, dimensional analysis rules, typical parameter ranges, and known constraints.
 
 \begin{example}
 A representative corpus entry for population dynamics:
@@ -268,7 +268,7 @@ When the agent is given data from a population dynamics experiment, retrieving t
 \section{Grounding as Constraint}
 \label{section:GroundingConstraint}
 
-The central claim of Challenge~3 is that domain grounding \emph{moves the leaderboard}: a retrieval-augmented agent proposes better candidates because it is constrained to the space of scientifically plausible models.
+The central claim of this chapter is that domain grounding \emph{moves the leaderboard}: a retrieval-augmented agent proposes better candidates because it is constrained to the space of scientifically plausible models.
 
 \subsection{Constraint Mechanisms}
 
@@ -283,7 +283,7 @@ If the target is a rate with units $1/\text{time}$, and a proposed model has uni
 \end{enumerate}
 
 Together, these mechanisms shrink the search space to a plausible region.
-A search over a smaller, better-chosen space outperforms a search over a larger, undifferentiated space — provided the constraints are correct.
+A search over a smaller, better-chosen space outperforms a search over a larger, undifferentiated space (provided the constraints are correct).
 
 \subsection{When Grounding Helps and When It Hurts}
 
@@ -291,14 +291,14 @@ Grounding is not always beneficial.
 It helps when the retrieved knowledge is relevant and the domain is well-understood; it hurts when the retrieved knowledge is irrelevant, misleading, or too strong a prior.
 
 \begin{example}
-A dataset generated from the formula $y = e^{-x_1^2} \sin(x_2)$ is unusual (a product of Gaussian decay and oscillation --- a functional form that rarely appears in domain corpora organized around named physical laws).
+A dataset generated from the formula $y = e^{-x_1^2} \sin(x_2)$ is unusual (a product of Gaussian decay and oscillation, a functional form that rarely appears in domain corpora organized around named physical laws).
 If the corpus contains no entries about oscillatory-times-Gaussian forms, retrieval will return the nearest available match (perhaps a simple exponential decay), which could steer the agent away from the correct form.
 In this case, the ungrounded agent performs better than the grounded one because the domain prior is misaligned.
 \end{example}
 
 \begin{remark}
-Grounding helps when the retrieved prior is aligned and hurts when it is misaligned, and which case obtains cannot be assumed in advance.
-The ablation study required in Challenge~3 --- grounded vs.\ ungrounded on at least two datasets --- exists precisely to quantify this tradeoff rather than presume it.
+Grounding helps when the retrieved prior is aligned and hurts when it is misaligned, and which case is better cannot be assumed in advance.
+The grounded versus ungrounded ablation required in this course, run on at least two datasets, exists precisely to quantify this tradeoff rather than presume it.
 A dataset where grounding helps and a dataset where it hurts, analyzed together, build the researcher's intuition for when retrieval adds value.
 \end{remark}
 
