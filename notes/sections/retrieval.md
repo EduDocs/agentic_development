@@ -1,3 +1,9 @@
+---
+videos:
+  - title: Retrieval and Grounding
+    url: https://youtu.be/D6Ds2JRnkpY
+---
+
 # retrieval — scratch
 
 > Sidecar for `retrieval.tex`. Not part of the LaTeX build.
