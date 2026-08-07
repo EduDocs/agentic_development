@@ -1,3 +1,9 @@
+---
+videos:
+  - title: The Agentic Rig
+    url: https://youtu.be/78EovHQV55M
+---
+
 # agentic_rig — scratch
 
 > Sidecar for `agentic_rig.tex`. Not part of the LaTeX build.

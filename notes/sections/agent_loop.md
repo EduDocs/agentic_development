@@ -1,3 +1,9 @@
+---
+videos:
+  - title: Tool Use and the Agent Loop
+    url: https://youtu.be/lh2aTUmmbmI
+---
+
 # agent_loop — scratch
 
 > Sidecar for `agent_loop.tex`. Not part of the LaTeX build.

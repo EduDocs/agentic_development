@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Agentic Development &amp; Discovery</title>
+  <meta name="description" content="Course notes on agentic development and agentic evolutionary frameworks for research: empowering researchers in compute-adjacent fields." />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body class="page-about">
+  <header class="nav">
+    <a class="brand" href="index.html">Agentic Development &amp; Discovery</a>
+    <div class="links">
+      <a href="index.html" aria-current="page">About</a>
+      <a href="map.html">Concept map</a>
+      <a href="agentic-development-notes.pdf">Notes (PDF)</a>
+      <a href="https://www.youtube.com/playlist?list=PLadFOjg4dEzg">Playlist</a>
+      <a href="course/">Course &rarr;</a>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="hero">
+      <h1>Agentic Development &amp; Discovery</h1>
+      <p class="tagline">Empowering researchers in compute-adjacent fields.</p>
+      <p class="desc">
+        These notes develop agentic AI as an instrument of discovery: how to operate a
+        professional agentic rig, how to build agents that do real research work, and how to
+        turn a working agent into an <em>evolutionary framework</em> that searches for
+        artifacts (models, programs, designs) on its own.
+      </p>
+      <p class="desc">
+        The arc is deliberate. The first half builds competence from zero tooling through
+        context engineering, agentic coding, the agent loop, evaluation harnesses, retrieval,
+        and orchestration. The second half adds a single ingredient, a mutation operator, and
+        the loop assembled along the way becomes an evolutionary search. Symbolic regression
+        is the teaching vehicle because it scores automatically and re-skins across
+        quantitative disciplines.
+      </p>
+      <p class="desc">
+        The material assumes some Python and no background in agents, the shell, or git.
+        Examples are chosen so that a biologist, an economist, and a physicist each see a path
+        to their own work.
+      </p>
+
+      <div class="cta">
+        <a class="primary" href="agentic-development-notes.pdf">Read the notes (PDF)</a>
+        <a class="secondary" href="map.html">Explore the concept map</a>
+      </div>
+    </section>
+
+    <h2 class="section-title">Two ways in</h2>
+    <div class="split">
+      <a class="card" href="map.html">
+        <h3>The notes</h3>
+        <p>A standalone book. Read it front to back, or jump in through the concept map and
+           the chapter dependency graph.</p>
+      </a>
+      <a class="card" href="course/">
+        <h3>The course</h3>
+        <p>The graduate course built on these notes: syllabus, calendar, onboarding tasks,
+           four challenges, the capstone, and the tutorial catalog.</p>
+      </a>
+    </div>
+
+    <h2 class="section-title">What is inside</h2>
+    <ul class="chapters" id="chapters">
+      <li><span class="num">&nbsp;</span><span class="name">Loading the chapter list&hellip;</span></li>
+    </ul>
+
+    <p class="note">
+      Dedicated to the public domain under
+      <a href="https://creativecommons.org/publicdomain/zero/1.0/">CC0&nbsp;1.0&nbsp;Universal</a>.
+      Copy, modify, distribute, and use this material, including commercially, without asking
+      permission or providing attribution.
+    </p>
+  </main>
+
+  <script>
+    // The chapter list is drawn from the same graph.json the concept map uses,
+    // so the landing page can never drift from the book's actual structure.
+    (async () => {
+      const el = document.getElementById("chapters");
+      const esc = s => String(s).replace(/[&<>"]/g, c =>
+        ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+      try {
+        const res = await fetch("data/graph.json");
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+        el.innerHTML = data.nodes.map(n => {
+          const label = n.part === "main" ? n.number
+                      : n.part === "appendix" ? "App." : "&mdash;";
+          return `<li><span class="num">${label}</span><span class="name">${esc(n.title)}</span></li>`;
+        }).join("");
+      } catch (err) {
+        el.innerHTML = `<li><span class="num">&nbsp;</span><span class="name">Chapter list unavailable.</span></li>`;
+      }
+    })();
+  </script>
+</body>
+</html>

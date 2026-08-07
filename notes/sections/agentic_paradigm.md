@@ -1,3 +1,9 @@
+---
+videos:
+  - title: The Agentic Paradigm
+    url: https://youtu.be/0gAxZLV9BvQ
+---
+
 # agentic_paradigm — scratch
 
 > Sidecar for `agentic_paradigm.tex`. Not part of the LaTeX build.

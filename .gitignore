@@ -77,13 +77,19 @@ build/
 dist/
 output/
 _site/
-site/
+# Anchored: this is the MkDocs output at the repo root. Unanchored `site/`
+# would also swallow notes/site/, which is hand-authored and must be tracked.
+/site/
 .venv-site/
 # Website source: ignore the generated symlinks (regenerate with `just site-links`),
 # but keep the real, hand-authored files (the homepage and the brand stylesheet).
 site-src/*
 !site-src/index.md
 !site-src/stylesheets/
+# Notes site: pages, styles, and the built book PDF are all tracked and ship
+# with a push. Only the concept-map data is ignored — CI regenerates it from
+# PROGRESSION.md on every deploy (`just notes-data` locally).
+notes/site/data/
 *.aux
 *.toc
 *.out

@@ -1,3 +1,9 @@
+---
+videos:
+  - title: Prompt and Context Engineering
+    url: https://youtu.be/MNoIMWF6RdY
+---
+
 # context_engineering — scratch
 
 > Sidecar for `context_engineering.tex`. Not part of the LaTeX build.
