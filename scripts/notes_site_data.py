@@ -62,19 +62,32 @@ def fenced_block(text: str, marker: str) -> list[str]:
 
 
 def parse_edges(lines: list[str]) -> list[dict]:
-    """``parent -> child   # why`` lines into edge records."""
-    edges = []
+    """``parent -> child   # why`` lines into edge records.
+
+    De-duplicated: the same pair declared twice (once on the backbone and again
+    among the convergence edges, say) is one edge, not two. A duplicate would
+    otherwise show the target twice in the map's "Leads to" list and hand
+    Cytoscape two elements with the same id. The first occurrence wins, but a
+    later duplicate's note fills in if the first had none.
+    """
+    edges: list[dict] = []
+    seen: dict[tuple[str, str], dict] = {}
     for line in lines:
         stripped = line.strip()
         if not stripped or stripped.startswith("#"):
             continue
         m = EDGE_RE.match(line)
-        if m:
-            edges.append({
-                "source": m.group(1),
-                "target": m.group(2),
-                "note": (m.group(3) or "").strip(),
-            })
+        if not m:
+            continue
+        key = (m.group(1), m.group(2))
+        note = (m.group(3) or "").strip()
+        if key in seen:
+            if note and not seen[key]["note"]:
+                seen[key]["note"] = note
+            continue
+        edge = {"source": key[0], "target": key[1], "note": note}
+        seen[key] = edge
+        edges.append(edge)
     return edges
 
 

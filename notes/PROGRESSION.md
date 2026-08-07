@@ -142,12 +142,13 @@ agentic_coding       -> agent_loop
 agent_loop           -> evaluation
 evaluation           -> retrieval
 retrieval            -> orchestration
-orchestration        -> evolutionary_frameworks
+orchestration        -> evolutionary_frameworks   # evolution = the GES loop (Def.~GenEvalSel) + a mutation operator
 # Non-obvious convergence edges — what the evolutionary capstone reaches back to.
+# (The backbone edge from orchestration above is the fourth such reach-back; it is
+#  declared once, up there, rather than repeated here.)
 agentic_paradigm     -> evolutionary_frameworks   # the two spines are introduced here and converge at the capstone
 context_engineering  -> evolutionary_frameworks   # Spine 2: context engineering feeds the LLM mutation operator
 evaluation           -> evolutionary_frameworks   # Spine 1: the eval harness becomes the fitness function
-orchestration        -> evolutionary_frameworks   # evolution = the GES loop (Def.~GenEvalSel) + a mutation operator
 ```
 
 ### Excluded from the website
