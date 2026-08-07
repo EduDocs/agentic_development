@@ -4,6 +4,10 @@
 scratch/*
 !scratch/README.md
 
+# Ageation working trees (and their variants, e.g. ageation-french/)
+ageation
+ageation*
+
 # ─────────────────────────────────────────────────────────────
 # Secrets & credentials — never commit
 # ─────────────────────────────────────────────────────────────
