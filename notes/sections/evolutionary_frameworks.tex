@@ -4,7 +4,7 @@
 
 The pivot from orchestration to evolution is a single conceptual step.\index{Evolutionary framework}
 Across the foundations half of the course, a loop was assembled: generate candidates, evaluate them with the shared harness, select the best, and repeat.
-The Generate–Evaluate–Select (GES) loop of Chapter~\ref{chapter:Orchestration} is already an optimization procedure — a search over the space of candidate models driven by the evaluation score.
+The generate–evaluate–select (GES) loop of Chapter~\ref{chapter:Orchestration} is already an optimization procedure, a search over the space of candidate models driven by the evaluation score.
 
 One ingredient distinguishes a random search from an evolutionary search: \emph{mutation}.\index{Mutation operator}
 A mutation operator derives new candidates from survivors by making structured, small edits to them.
@@ -14,10 +14,10 @@ Over generations, the population improves because good structure is inherited an
 This chapter formalizes the evolutionary loop, develops the components that make it work, and traces the lineage from classical genetic programming through FunSearch and AlphaEvolve to the systems a researcher builds in the capstone.
 
 \begin{remark}
-It is worth asking why an \emph{external} loop is needed at all, now that a capable model can reason at length before it answers --- iterating, reconsidering, and backtracking within a single call (Chapter~\ref{chapter:AgentLoop}).
+It is worth asking why an \emph{external} loop is needed at all, now that a capable model can reason at length before it answers: iterating, reconsidering, and backtracking within a single call (Chapter~\ref{chapter:AgentLoop}).
 For a problem whose solution lies inside the space the model can search internally, that deliberation may indeed do the work, and it is worth trying as a baseline before building a harness.
 Two things keep the loop irreducible when it is.
-First, the \emph{evaluator is an external oracle}: the model can reason \emph{about} whether a candidate works, but the ground-truth signal --- does this program run, what error does the simulator return, what does the measurement say --- comes from executing against the world, not from further thought (Spine~1 of Section~\ref{section:TwoSpines}, in its starkest form).
+First, the \emph{evaluator is an external oracle}: the model can reason \emph{about} whether a candidate works, but the ground-truth signal (does this program run, what error does the simulator return, what does the measurement say) comes from executing against the world, not from further thought (Spine~1 of Section~\ref{section:TwoSpines}, in its starkest form).
 Second, search over a large, rugged space of structured artifacts is a different regime from bounded per-call reasoning: the population, its memory of what has already failed, and the selection pressure across generations explore a landscape no single forward pass exhausts.
 Even a model that searches \emph{within} its own deliberation --- as in Tree-of-Thoughts (Yao et al., 2023), which explores intermediate reasoning steps for a single problem instance --- is doing internal, self-scored search, not the external, harness-scored search across a population this chapter builds.
 Extended thinking makes each \emph{proposal} smarter; it does not replace the external check or the search around it.
@@ -26,7 +26,7 @@ Extended thinking makes each \emph{proposal} smarter; it does not replace the ex
 \section{The Evolutionary Loop}
 \label{section:EvolutionaryLoop}
 
-Definition~\ref{definition:GenEvalSel} is already in place; this chapter adds the one missing ingredient — a mutation operator — and shows what changes when candidates are derived from survivors rather than drawn afresh.
+Definition~\ref{definition:GenEvalSel} is already in place; this chapter adds the one missing ingredient, a mutation operator, and shows what changes when candidates are derived from survivors rather than drawn afresh.
 
 \begin{definition}
 \label{definition:EvolutionaryLoop}
@@ -46,27 +46,29 @@ Starting from $\Population_0$, the loop produces generations $\Population_1, \Po
 \end{definition}
 
 The key insight from~\eqref{equation:EvolutionaryLoop} is that the next generation is drawn from the union of (a) the survivors of the current generation (the \emph{elite}), and (b) mutations of those survivors.
-Good structure is not discarded — it is carried forward and explored around.
+Good structure is not discarded, it is carried forward and explored around.
 Figure~\ref{figure:EvolutionaryLoop} draws the loop, with \emph{Mutate} shown as a node distinct from \emph{Generate}: mutation is the single operator absent from the generate--evaluate--select loop of Chapter~\ref{chapter:Orchestration}, and it is what makes the candidates depend on the survivors.
 
 \begin{figure}[htb!]
 \begin{center}
 \input{figures/concept-style}
 \begin{tikzpicture}
-\node[conceptbox, fill=yellow!20, minimum width=3.4cm] (pop) at (0, 2.4)   {Initial population $\Population_0$};
-\node[conceptbox, fill=blue!8]          (gen) at (0, 0.8)   {Generate};
-\node[conceptbox, fill=blue!15]         (mut) at (0,-0.8)   {Mutate};
-\node[conceptbox, fill=green!20]        (fit) at (4.4, 0)   {Evaluate\\(Fitness)};
-\node[conceptbox, fill=orange!20]       (sel) at (4.4,-2.2) {Select};
+% One-time seed on the left; the steady-state cycle runs clockwise on the right.
+\node[conceptbox, fill=yellow!20, minimum width=3.4cm] (pop) at (0, 2.0) {Initial population $\Population_0$};
+\node[conceptbox, fill=blue!8]    (gen) at (0,    0)    {Generate};
+\node[conceptbox, fill=green!20]  (fit) at (5.2,  0)    {Evaluate\\(Fitness)};
+\node[conceptbox, fill=orange!20] (sel) at (10.4, 0)    {Select};
+\node[conceptbox, fill=blue!15]   (mut) at (5.2, -2.2)  {Mutate};
 
-\draw[conceptflow] (pop) -- node[conceptlabel,right]{seed} (gen);
-\draw[conceptflow] (gen.east) -- node[conceptlabel,above,pos=0.55]{initial}    (fit);
-\draw[conceptflow] (mut.east) -- node[conceptlabel,below,pos=0.55]{candidates} (fit);
-\draw[conceptflow] (fit) -- node[conceptlabel,right]{scored} (sel);
-\draw[conceptflow] (sel.south) -- ++(0,-0.8) -| node[conceptlabel,pos=0.25,below]{survivors $\Population_{t+1}$} (mut.south);
+\draw[conceptflow] (pop) -- node[conceptlabel, midway, right]{seed}    (gen);
+\draw[conceptflow] (gen) -- node[conceptlabel, midway, above]{initial} (fit);
+\draw[conceptflow] (fit) -- node[conceptlabel, midway, above]{scored}  (sel);
+\draw[conceptflow] (sel.south) -- (sel.south |- mut.east)
+    -- node[conceptlabel, midway, below]{survivors $\Population_{t+1}$} (mut.east);
+\draw[conceptflow] (mut) -- node[conceptlabel, midway, right]{candidates} (fit);
 \end{tikzpicture}
 \caption{The agentic evolutionary loop.
-An initial population seeds the \emph{Generate} step once; thereafter the steady-state cycle is evaluate~$\to$~select~$\to$~\emph{mutate}, and \emph{Mutate} --- not \emph{Generate} --- consumes the survivors, so each round's candidates are derived from the previous round's elite.
+An initial population seeds the \emph{Generate} step once; thereafter the steady-state cycle is evaluate~$\to$~select~$\to$~\emph{mutate}, and it is \emph{Mutate}, not \emph{Generate}, that takes the survivors as input, so each round's candidates are derived from the previous round's elite rather than drawn afresh.
 Mutation is the one node absent from the generate--evaluate--select loop of Chapter~\ref{chapter:Orchestration}; the fitness function is the evaluation harness of Chapter~\ref{chapter:Evaluation}.}
 \label{figure:EvolutionaryLoop}
 \end{center}
@@ -84,12 +86,12 @@ Classical \emph{genetic programming}\index{Genetic programming} (GP) represents 
 \item \textbf{Crossover}: swap subtrees between two parent expressions.
 \end{itemize}
 These operations are \emph{blind} as \emph{variation}: the mutation and crossover operators propose changes without regard to whether the change improves fitness, and direction enters only later, through selection.
-(Classical practice is not monolithic --- genetic-programming variants, symbolic-regression packages, and program synthesis differ, and some add typed or guided operators --- but undirected variation is the shared baseline the next section improves on.)
+Classical practice is not monolithic: genetic-programming variants, symbolic-regression packages, and program synthesis differ, and some add typed or guided operators; but undirected variation is the shared baseline the next section improves on.
 GP is effective when the search space is smooth enough that random perturbations frequently produce useful variation.
 
 \subsection{LLM as Mutation Operator}
 
-A large language model as the mutation operator replaces blind tree operations with \emph{knowledge-guided variation}.\index{LLM mutation operator}
+A large language model as the mutation operator replaces blind or random tree operations with \emph{knowledge-guided variation}.\index{LLM mutation operator}
 Instead of choosing a random subtree to replace, the LLM reads the current best expression, the data, and domain context, and proposes a specific, motivated variant.
 
 \begin{example}
@@ -111,7 +113,8 @@ using variables x0, x1, x2.
 The LLM might return \code{"x0 * exp(-x1 / x2)"} — a motivated variation informed by domain knowledge that a blind mutation would find only by chance.
 \end{example}
 
-This is the advantage that separates LLM-guided evolution from classical genetic programming — including mature libraries such as PySR, the GP-based symbolic-regression baseline on the course ladder (Table~\ref{table:BaselineLadder}), whose variation operators remain essentially blind tree edits: the LLM mutation operator carries \emph{priors} about which variations are likely to be meaningful, and it can use \emph{domain context} to make those priors specific.
+This is the advantage that separates LLM-guided evolution from classical genetic programming, including mature libraries such as PySR, the GP-based symbolic-regression baseline on the course ladder (Table~\ref{table:BaselineLadder}), whose variation operators remain essentially blind tree edits.
+The LLM mutation operator carries \emph{priors} about which variations are likely to be meaningful, and it can use \emph{domain context} to make those priors specific.
 
 \subsection{Context Engineering for the Mutator}
 
@@ -120,8 +123,8 @@ The mutator's context should include:
 \begin{enumerate}
 \item The current best expression and its score.
 \item The history of what has been tried and why it did or did not work.
-\item Retrieved domain knowledge relevant to the data (reusing the retrieval system of Chapter~\ref{chapter:Retrieval}).
-\item The population's diversity — if all survivors are variations of the same form, the mutator should be told to explore a different region.
+\item Retrieved domain knowledge relevant to the data (possibly leveraging the retrieval system of Chapter~\ref{chapter:Retrieval}).
+\item The population's diversity; if all survivors are variations of the same form, the mutator should be told to explore a different region.
 \end{enumerate}
 This is the convergence of the two spines: \emph{evaluation becomes fitness} (Spine~1) and \emph{context engineering drives the mutator} (Spine~2).
 Figure~\ref{figure:TwoSpinesConverge} shows the two threads entering the loop at the two nodes they govern: the evaluation harness \emph{becomes} the fitness that scores each candidate, and context engineering \emph{drives} the mutator that proposes the next one.
@@ -139,7 +142,7 @@ Neither is new machinery: both are foundations threaded since the opening chapte
 \begin{example}
 To see the two spines converge on one artifact, follow a single expression through one generation.
 The survivor \code{x0 * exp(-x1)} enters the round carrying the harness score of Chapter~\ref{chapter:Evaluation}: $\mathrm{MSE} = 0.0045$, complexity $C = 5$, and composite $\Score = \mathrm{MSE} + \lambda C = 0.0055$ at $\lambda = 0.0002$.
-The generate--evaluate--select loop of Chapter~\ref{chapter:Orchestration} selects it as an elite and passes it --- together with that very score and a retrieved domain note on Arrhenius kinetics --- into the mutation prompt shown above.
+The generate--evaluate--select loop of Chapter~\ref{chapter:Orchestration} selects it as an elite and passes it, together with that very score and a retrieved domain note on Arrhenius kinetics, into the mutation prompt shown above.
 The mutator returns the motivated variant \code{x0 * exp(-x1 / x2)}.
 The \emph{same} harness now scores the variant: $\mathrm{MSE} = 0.0021$, complexity $C = 7$, and composite $\Score = 0.0021 + 0.0002 \cdot 7 = 0.0035$.
 Because $0.0035 < 0.0055$, selection keeps the variant, and the next mutation prompt will carry \emph{its} score in turn.
@@ -152,8 +155,8 @@ That reuse --- one harness, one score, two roles --- is what ``evaluation become
 
 \subsection{Elitism}
 
-\emph{Elitism}\index{Elitism} is the practice of always carrying the top-$k$ candidates from one generation to the next, regardless of what mutations are generated.
-Without elitism, a mutation round can accidentally reduce the best score in the population — a random regression.
+\emph{Elitism}\index{Elitism} is the practice of carrying the top-$k$ candidates from one generation to the next, regardless of what mutations are generated.
+Without elitism, a mutation round can accidentally reduce the best score in the population, a random regression.
 With elitism, the best score is monotonically non-increasing across generations.
 
 \subsection{Selection Strategies}
@@ -184,7 +187,7 @@ If the leaderboard score of the evolutionary run does not improve over the GES l
 \label{section:FitnessDesign}
 
 The fitness function is the evaluation harness.
-In the evolutionary setting, the harness is the target of a persistent, tireless optimizer — and every weakness in the harness is an attack surface.
+In the evolutionary setting, the harness is the target of a persistent, tireless optimizer; and every weakness in the harness is an attack surface.
 
 \begin{remark}
 The attack surface widens sharply when the fitness evaluation itself runs in a tool-enabled environment.
@@ -201,7 +204,7 @@ For long evolutionary runs, the optimizer often finds unexpected ways to minimiz
 Common exploits:
 \begin{enumerate}
 \item An expression of zero complexity: a constant fitted to the training data.
-If $\mathrm{MSE}$ is computed on the validation split, a global constant performs worse than a simple model on diverse points — but if $\lambda$ is too large relative to the MSE gap, the complexity reduction can dominate.
+If $\mathrm{MSE}$ is computed on the validation split, a global constant performs worse than a simple model on diverse points; but if $\lambda$ is too large relative to the MSE gap, the complexity reduction can dominate.
 \item Expressions that overfit the validation split via extreme complexity: $10^6$-order polynomials.
 The parsimony term must scale to prevent this.
 \end{enumerate}
@@ -215,7 +218,7 @@ The evolutionary algorithm can become trapped at local optima if selection press
 Strategies for avoiding local optima:
 \begin{itemize}
 \item Run multiple independent populations (islands) and periodically share the best candidates between them.
-\item Allow the mutator to make larger jumps — propose entirely new functional forms rather than just small edits to existing ones.
+\item Allow the mutator to make larger jumps; propose entirely new functional forms rather than just small edits to existing ones.
 \item Maintain explicit diversity pressure: penalize candidates that are too similar to existing survivors.
 \end{itemize}
 
@@ -306,7 +309,7 @@ Unlike conventional regression, the functional form of $\hat{m}$ is not fixed in
 \label{definition:SymbolicRegression}
 Given a dataset $\mathcal{D} = \{(x_i, y_i)\}_{i=1}^{N}$ and a space of expressions $\Artifacts$, \emph{symbolic regression} seeks
 \begin{equation}
-\hat{m}^* = \operatorname*{argmin}_{a \in \Artifacts} \Score(a, \mathcal{D}_{\mathrm{val}})
+\hat{m}^* = \operatorname*{arg\;min}_{a \in \Artifacts} \Score(a, \mathcal{D}_{\mathrm{val}})
 \end{equation}
 where $\Score$ is the composite score of~\eqref{equation:CompositeScore} and $\mathcal{D}_{\mathrm{val}}$ is the validation (fitness) split of the harness (Definition~\ref{definition:EvalHarness}); the discovered $\hat{m}^*$ is then reported once against the untouched final-test split.
 \end{definition}
@@ -327,6 +330,7 @@ The researcher can read and critique the discovered model.
 \subsection{The Baseline Ladder}
 
 The course maintains a \emph{baseline ladder}\index{Baseline ladder}: a sequence of methods of increasing sophistication against which each researcher's system is compared.
+Beating the each rung is not required; being comparable to it, on a well-designed harness, is.
 
 \begin{table}[htb!]
 \begin{center}
@@ -349,8 +353,6 @@ A stronger method is expected to score lower (better) than weaker methods on the
 \end{center}
 \end{table}
 
-Beating the rung above is not required; being comparable to it, on a well-designed harness, is.
-
 \section{Cost-Aware Search}
 \label{section:CostAwareSearch}
 
@@ -363,7 +365,7 @@ The \emph{cost-adjusted fitness} of an artifact $a$ is
 \tilde{\Fitness}(a) = \Fitness(a) + \alpha \cdot \mathrm{cost}(a) ,
 \label{equation:CostAdjustedFitness}
 \end{equation}
-where $\mathrm{cost}(a)$ is the \emph{marginal} cost — in dollars of API usage — of producing and evaluating $a$, and $\alpha > 0$ converts that cost to the scale of the fitness score.
+where $\mathrm{cost}(a)$ is the \emph{marginal} cost (in dollars of API usage) of producing and evaluating $a$, and $\alpha > 0$ converts that cost to the scale of the fitness score.
 \end{definition}
 
 Using the \emph{marginal} cost $\mathrm{cost}(a)$, rather than a run's total cost, is what makes the adjustment discriminating: a cost shared equally by every artifact would shift all fitnesses by the same constant and could not reorder candidates within a run.
@@ -375,7 +377,8 @@ Like the parsimony weight $\lambda$ (Section~\ref{subsection:MultiObjectiveScori
 Its units are fitness per dollar, so its scale depends on both the MSE scale of the dataset and the dollar cost of a typical mutation.
 A workable default fixes $\alpha$ so that halving an artifact's cost is worth the same as a small, stated fraction of the MSE gap between adjacent baselines.
 For research purposes the primary leaderboard uses unadjusted fitness so that discovery quality is the dominant signal; the cost analysis is reported separately, enabling the reader to understand the resource requirements of each method.
-More fundamentally, generation cost is a property of the \emph{path} that produced an artifact, not of the artifact itself --- the same expression can be reached cheaply or expensively --- so folding cost into an artifact's fitness can distort survivor selection.
+More fundamentally, generation cost is a property of the \emph{path} that produced an artifact, not of the artifact itself, the same expression can be reached cheaply or expensively.
+Folding cost into an artifact's fitness can distort survivor selection.
 Read the cost-adjusted scalar as scoring a search \emph{policy} rather than an artifact, and prefer a run-level budget or an explicit Pareto view (quality, complexity, dollars, wall-clock) when quality and cost cannot be honestly collapsed into one number.
 \end{remark}
 
@@ -383,7 +386,8 @@ Read the cost-adjusted scalar as scoring a search \emph{policy} rather than an a
 \label{section:WhatYouHaveBuilt}
 
 The chapters of these notes form one argument.
-A researcher who can operate a rig, build a loop, engineer context, evaluate honestly, and orchestrate reliably has already assembled every component of an evolutionary search --- the mutation operator of this chapter is the one part that was missing, and it reuses the proposer, the harness, and the orchestration that came before.
+A researcher who can operate a rig, build a loop, engineer context, evaluate honestly, and orchestrate reliably has already assembled every component of an evolutionary search.
+The mutation operator of this chapter is the one part that was missing, and it reuses the proposer, the harness, and the orchestration that came before.
 The capstone is therefore not a new topic; it is these components, finally pointed at your own research problem, and the artifact they evolve is a model of your own data.
 
 \section*{Further Reading}
