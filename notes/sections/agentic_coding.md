@@ -1,3 +1,9 @@
+---
+videos:
+  - title: Agentic Coding
+    url: https://youtu.be/mZCFOGAJCUs
+---
+
 # agentic_coding — scratch
 
 > Sidecar for `agentic_coding.tex`. Not part of the LaTeX build.

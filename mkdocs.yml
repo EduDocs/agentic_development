@@ -5,6 +5,13 @@ site_description: >-
 site_author: Agentic Development in Research
 copyright: Dedicated to the public domain under CC0 1.0 Universal.
 
+# The course is a SUB-SITE. The notes landing page (notes/site/) owns the
+# deployment root, and this build is assembled into _site/course/ by
+# .github/workflows/pages.yml. site_url must carry the /course/ prefix or the
+# canonical links, the sitemap, and the search base all resolve one level too
+# high. Change it here if the Pages URL ever changes.
+site_url: https://edudocs.github.io/agentic_development/course/
+
 # Single source of truth: site-src/ holds the homepage plus directory symlinks to
 # the real course folders, so the site renders the same markdown the PDF build uses
 # without duplicating any content. The symlinks are not committed — they regenerate

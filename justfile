@@ -55,14 +55,45 @@ site-links:
     done
     echo "site-src/ symlinks ready"
 
-# Live-preview the site at http://127.0.0.1:8000 (auto-reloads on save)
+# Live-preview the COURSE at http://127.0.0.1:8000 (auto-reloads on save)
 serve: site-links
     {{VENV}}/bin/mkdocs serve
 
-# Build the static site into site/ (gitignored)
+# Build the static course site into site/ (gitignored)
 site: site-links
     {{VENV}}/bin/mkdocs build --strict
     @echo "Built site/ — open site/index.html"
+
+# ── Notes site (landing page + concept map + book PDF) ─────────────────────
+# Lives in notes/site/ so a future split of notes/ into its own repo takes the
+# site with it. The pages and the PDF are committed; the concept-map data is
+# generated. Deployed at the site ROOT, with the course under /course/.
+
+# Regenerate the concept map's data from PROGRESSION.md and the sidecars
+notes-data:
+    python3 scripts/notes_site_data.py
+
+# Rebuild the book and refresh the committed PDF the notes site serves
+# (run whenever the manuscript changes, then commit and push)
+notes-pdf:
+    just --justfile notes/justfile --working-directory notes build
+    cp notes/build/main.pdf notes/site/agentic-development-notes.pdf
+    @echo "Updated notes/site/agentic-development-notes.pdf — commit it to publish."
+
+# Preview the NOTES alone at http://localhost:8001
+notes-serve: notes-data
+    @echo "Notes site at http://localhost:8001 (the Course link 404s here; use 'just web')"
+    python3 -m http.server 8001 --directory notes/site
+
+# Preview the ASSEMBLED site (notes at /, course at /course/) — mirrors CI
+web: site-links notes-data
+    rm -rf _site
+    mkdir -p _site/course
+    {{VENV}}/bin/mkdocs build --strict
+    cp -R notes/site/. _site/
+    cp -R site/.       _site/course/
+    @echo "Assembled site at http://localhost:8000  (course at /course/)"
+    python3 -m http.server 8000 --directory _site
 
 # Requires `gh auth login` and, one-time, the repo's Pages source set to
 # "GitHub Actions" (Settings -> Pages). Deploys the *pushed* state of the
@@ -82,7 +113,7 @@ site-deploy:
 
 # Remove build outputs
 clean:
-    rm -rf output site
+    rm -rf output site _site
 
 # Internal: strip per-file front matter, concatenate with page breaks, render to PDF
 _pdf title outfile +files:

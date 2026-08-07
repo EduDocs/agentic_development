@@ -1,11 +1,18 @@
 name: Deploy course site
 
-# Builds the MkDocs course site and deploys it to GitHub Pages.
+# Builds the site and deploys it to GitHub Pages.
 #
-# Mirrors the probability repo's pattern: the site is built in CI and published
-# via the *GitHub Actions* Pages source (not the gh-pages branch). The build step
-# runs `mkdocs build --strict`, so a broken link or a missing nav file fails the
-# run rather than shipping a broken site: that is the "test" in build/test/deploy.
+# Two pieces are assembled into one deployment:
+#   /          the notes landing page + concept map + book PDF (notes/site/)
+#   /course/   the MkDocs course site (site-src/ -> site/)
+#
+# The site is built in CI and published via the *GitHub Actions* Pages source
+# (not the gh-pages branch). The build step runs `mkdocs build --strict`, so a
+# broken link or a missing nav file fails the run rather than shipping a broken
+# site: that is the "test" in build/test/deploy.
+#
+# The book PDF is built locally (`just notes-pdf`) and COMMITTED under
+# notes/site/, so a push carries the current build. Nothing here runs LaTeX.
 #
 # One-time setup in the repo's GitHub settings:
 #   Settings -> Pages -> Build and deployment -> Source: "GitHub Actions".
@@ -55,15 +62,41 @@ jobs:
             ln -sfn "../$f" "site-src/$f"
           done
 
-      # Build (and test) the static site into site/. --strict fails on broken
+      # Build (and test) the course site into site/. --strict fails on broken
       # links and nav warnings.
-      - name: Build the site (strict)
+      - name: Build the course site (strict)
         run: mkdocs build --strict
+
+      # The concept map's data is derived from notes/PROGRESSION.md and the
+      # sidecars, so it is generated here rather than committed. No third-party
+      # dependencies: the generator is plain python3 on purpose.
+      - name: Generate the notes concept-map data
+        run: python3 scripts/notes_site_data.py
+
+      # Assemble the deployment: the notes own the root, the course lives under
+      # /course/. The book PDF is committed in notes/site/ and comes along with
+      # the first copy.
+      - name: Assemble _site (notes at root, course under /course/)
+        run: |
+          mkdir -p _site/course
+          cp -R notes/site/. _site/
+          cp -R site/.       _site/course/
+
+      # mkdocs --strict only gates the course subtree; guard the assembly too,
+      # so a broken root cannot ship just because the course built cleanly.
+      - name: Smoke-check the assembled site
+        run: |
+          test -f _site/index.html
+          test -f _site/map.html
+          test -f _site/data/graph.json
+          test -f _site/course/index.html
+          test -f _site/agentic-development-notes.pdf || \
+            echo "::warning::notes PDF missing — run 'just notes-pdf' and commit it"
 
       - name: Upload the Pages artifact
         uses: actions/upload-pages-artifact@v5
         with:
-          path: site
+          path: _site
 
   deploy:
     needs: build

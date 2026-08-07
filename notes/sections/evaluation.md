@@ -1,3 +1,9 @@
+---
+videos:
+  - title: Evaluation Harnesses
+    url: https://youtu.be/AFDTbhK2PFE
+---
+
 # evaluation — scratch
 
 > Sidecar for `evaluation.tex`. Not part of the LaTeX build.

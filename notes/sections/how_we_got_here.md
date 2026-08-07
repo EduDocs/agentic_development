@@ -1,3 +1,11 @@
+---
+videos:
+  - title: From Words to Attention
+    url: https://youtu.be/gpdenPUcwuY
+  - title: From Scale to Agents
+    url: https://youtu.be/U96X7U5MC9c
+---
+
 # how_we_got_here — scratch
 
 > Sidecar for `how_we_got_here.tex`. Not part of the LaTeX build.

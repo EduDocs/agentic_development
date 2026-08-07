@@ -69,13 +69,30 @@ prose verbatim). Both are surgical, additive, and ask before writing.
 
 ## Sidecar skeleton
 
+The optional YAML front matter is read by the notes website (`scripts/notes_site_data.py`),
+which attaches each chapter's videos to its node in the concept map. Two lists, kept apart on
+purpose: `videos` is our own material (rendered under **Videos**), `external` is a curated list
+of pertinent material we did not make (rendered under **Related viewing**, with its `source`
+credited). Both are optional, and a chapter may carry any number of entries in either.
+
 ```markdown
+---
+videos:
+  - title: <our video's title>
+    url: https://www.youtube.com/watch?v=...
+external:
+  - title: <someone else's video>
+    url: https://...
+    source: <channel or author, shown under the title>
+---
+
 # <Section> — scratch
 
 > Scratch/ideas only. The shipped prose lives in `<name>.tex`. Not part of the LaTeX build.
 
 ## Purpose
 What this section must accomplish for the reader.
+The website also uses this paragraph as the chapter's summary in the concept map.
 
 <!-- EVOLVE-BLOCK-START -->
 ## Key points / spine
