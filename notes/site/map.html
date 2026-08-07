@@ -104,14 +104,23 @@
       }
       const showDetail = makeShowDetail(titleOf, incoming, outgoing, data.pdf);
 
+      // Which sections appear on the site is declared in PROGRESSION.md's
+      // `# site-exclude` block, not decided by this page. An excluded section
+      // stays in graph.json so the record matches the book.
+      const mapped = data.nodes.filter(n => n.on_site !== false);
+      const onMap = new Set(mapped.map(n => n.id));
+
       const elements = [];
-      for (const n of data.nodes) elements.push({ data: { ...n, label: n.title }, classes: n.offmap ? "offmap" : "" });
-      for (const e of data.edges) elements.push({ data: { id: `${e.source}__${e.target}`, source: e.source, target: e.target } });
+      for (const n of mapped) elements.push({ data: { ...n, label: n.title }, classes: n.offmap ? "offmap" : "" });
+      for (const e of data.edges) {
+        if (!onMap.has(e.source) || !onMap.has(e.target)) continue;
+        elements.push({ data: { id: `${e.source}__${e.target}`, source: e.source, target: e.target } });
+      }
 
       // Rank by reading order: hidden "ordering" edges chain the chapters in
       // sequence so dagre stacks them top-to-bottom in reading order (while
       // still placing them horizontally). Never drawn; ignored by highlighting.
-      const byOrder = [...data.nodes].sort((a, b) => a.order - b.order);
+      const byOrder = [...mapped].sort((a, b) => a.order - b.order);
       for (let i = 0; i + 1 < byOrder.length; i++) {
         elements.push({
           data: { id: `order__${byOrder[i].id}__${byOrder[i + 1].id}`, source: byOrder[i].id, target: byOrder[i + 1].id },

@@ -123,7 +123,8 @@ Default reading order is the `\input{sections/<name>}` sequence in `main.tex`. D
 
 ```
 # progression-map
-# Linear backbone (reading order), minus the off-map prologue and appendices.
+# Linear backbone (reading order), minus the off-map appendices.
+how_we_got_here      -> agentic_paradigm   # the history motivates the vocabulary it hands off to
 agentic_paradigm     -> agentic_rig
 agentic_rig          -> context_engineering
 context_engineering  -> agentic_coding
@@ -137,6 +138,19 @@ agentic_paradigm     -> evolutionary_frameworks   # the two spines are introduce
 context_engineering  -> evolutionary_frameworks   # Spine 2: context engineering feeds the LLM mutation operator
 evaluation           -> evolutionary_frameworks   # Spine 1: the eval harness becomes the fitness function
 orchestration        -> evolutionary_frameworks   # evolution = the GES loop (Def.~GenEvalSel) + a mutation operator
+```
+
+### Excluded from the website
+
+A section named in the `# site-exclude` block below is dropped from the website entirely: it
+appears neither as a node on the concept map nor in the chapter list on the landing page. It
+remains fully part of the book, compiled in its place in the reading order. Use this for
+sections that orient the reader rather than teach a concept. An **empty** block (or no block at
+all) puts every section on the site.
+
+```
+# site-exclude
+preface
 ```
 
 ## Stable anchors
@@ -163,7 +177,10 @@ evaluation
 
 ### Off-map files
 - **`abstract`** — front-matter summary of the whole note, not a node in the dependency chain.
-- **`how_we_got_here`** — the opening chapter: a high-level, cited history of the field (word2vec → Transformer → pretraining → scale → RAG → agents). A prologue that *forward-references* the ladder chapters and introduces no concept they depend on, so it sits off the dependency chain even though it opens the book.
+- **`preface`** — front matter: it orients the reader to the book rather than teaching a concept. Named in `# site-exclude` above, so the website omits it entirely; it remains in the book and in the reading order.
+
+Formerly off-map, now on the backbone:
+- **`how_we_got_here`** — the opening chapter: a high-level, cited history of the field (word2vec → Transformer → pretraining → scale → RAG → agents). It was originally treated as a pure prologue that only *forward-references* the ladder chapters. It now carries a backbone edge into `agentic_paradigm`: the history is what motivates the vocabulary that chapter establishes, so a reader arrives at the paradigm having been given the reason it exists. It remains a stable anchor.
 - **`rig_reference`** — appendix reference manual for the Claude Code CLI (leaf off `agentic_rig`); a deliberate product-surface snapshot, outside the conceptual dependency chain.
 - **`cowork_reference`** — concept-level appendix on delegated agentic environments (Cowork, Codex); a leaf that draws on the capability ladder, the specify–review loop (`agentic_coding`), and Spine 1 (evaluation-becomes-fitness), but adds no new dependency the chapters rely on. A dated product-surface snapshot like `rig_reference`.
 

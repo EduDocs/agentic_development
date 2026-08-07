@@ -4,8 +4,9 @@
 Reads what the notes project already maintains, so the map owns no source of
 truth of its own:
 
-  notes/PROGRESSION.md    the ``# progression-map`` edge list and the
-                          ``# stable-anchors`` block
+  notes/PROGRESSION.md    the ``# progression-map`` edge list, the
+                          ``# stable-anchors`` block, and ``# site-exclude``
+                          (sections that stay in the book but off the website)
   notes/main.tex          the \\include order (reading order, and whether a
                           section is front matter, a chapter, or an appendix)
   notes/sections/*.tex    the shipped ``\\chapter{...}`` title
@@ -211,6 +212,7 @@ def main() -> int:
     prog = PROGRESSION.read_text(encoding="utf-8")
     edges = parse_edges(fenced_block(prog, "# progression-map"))
     anchors = set(parse_names(fenced_block(prog, "# stable-anchors")))
+    excluded = set(parse_names(fenced_block(prog, "# site-exclude")))
 
     order = read_order(MAIN_TEX.read_text(encoding="utf-8"))
     if not order:
@@ -251,9 +253,13 @@ def main() -> int:
             "number": chapter_no if part == "main" else None,
             "summary": purpose(body),
             "anchored": stem in anchors,
-            # Off the dependency chain (prologue, appendices): still in the
-            # reading order, just not a node anything depends on.
+            # Off the dependency chain (appendices): still in the reading
+            # order, just not a node anything depends on.
             "offmap": stem not in linked,
+            # Declared in PROGRESSION.md's `# site-exclude`. Such a section
+            # stays in this file, so the record matches the book, but every
+            # page of the website skips it.
+            "on_site": stem not in excluded,
             "videos": parse_video_list(frontmatter, "videos"),
             "external": parse_video_list(frontmatter, "external"),
         })

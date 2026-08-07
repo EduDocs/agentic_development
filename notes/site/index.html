@@ -87,7 +87,9 @@
         const res = await fetch("data/graph.json");
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
-        el.innerHTML = data.nodes.map(n => {
+        // Sections named in PROGRESSION.md's `# site-exclude` are part of the
+        // book but not of the website; the generator flags them for us.
+        el.innerHTML = data.nodes.filter(n => n.on_site !== false).map(n => {
           const label = n.part === "main" ? n.number
                       : n.part === "appendix" ? "App." : "&mdash;";
           return `<li><span class="num">${label}</span><span class="name">${esc(n.title)}</span></li>`;
