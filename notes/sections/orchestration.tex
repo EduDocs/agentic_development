@@ -3,10 +3,10 @@
 % EVOLVE-BLOCK-START
 
 A single agent executing a single task is the simplest case of agentic work.\index{Orchestration}
-Real research tasks are more demanding: they require long, multi-step computations; they benefit from having one agent check another's work; they must run reliably for hours without supervision; and they must report failures honestly when they do fail.
+Some research tasks are more demanding: they require long, multi-step computations; they benefit from having one agent check another's work; they must run reliably for hours without supervision; and they must report failures honestly when they do fail.
 \emph{Orchestration} is the practice of composing multiple agents and operations into a trustworthy workflow.
 
-Challenge~4 builds an orchestrated pipeline that previews the evolutionary framework.
+The orchestrated pipeline built in this course previews the evolutionary framework.
 The loop implemented here — \textbf{propose → evaluate → select → repeat} — is the same loop that becomes an evolutionary algorithm when a mutation operator is added at the pivot.
 Section~\ref{section:MultiStepWorkflows} composes single operations into pipelines; Section~\ref{section:MultiAgentArchitectures} adds a second agent to check the first; Section~\ref{section:MemoryState} handles what must be remembered across steps; Section~\ref{section:Reliability} makes the pipeline survive long unattended runs; and Section~\ref{section:GenEvalSel} distills all of it into the generate--evaluate--select loop that the next chapter turns into evolution.
 
@@ -67,9 +67,9 @@ Always set seeds and record exactly which candidates were selected.
 The most common multi-agent pattern in the course is the \emph{proposer--critic} pattern (Figure~\ref{figure:ProposerCritic}):\index{Proposer--critic pattern}
 \begin{itemize}
 \item A \emph{proposer} agent generates candidate artifacts: model expressions, hypotheses, experimental designs.
-Its goal is breadth — generating diverse, plausible candidates quickly.
+Its goal is breadth: generating diverse, plausible candidates quickly.
 \item A \emph{critic} (or \emph{verifier}) agent examines each candidate for correctness, plausibility, or constraint satisfaction before the candidate is passed to the evaluator.
-Its goal is precision — filtering out candidates that are obviously wrong.
+Its goal is precision: filtering out candidates that are obviously wrong.
 \end{itemize}
 
 \begin{figure}[htb!]
@@ -80,16 +80,16 @@ Its goal is precision — filtering out candidates that are obviously wrong.
     box/.style={conceptbox},
     arr/.style={conceptflow}
 ]
-\node[box, fill=blue!15]   (prop) {Proposer};
-\node[box, fill=orange!20, right=of prop] (crit) {Critic};
-\node[box, fill=green!20,  right=of crit] (eval) {Evaluator};
+\node[box, fill=blue!15]                 (prop) at (0,0) {Proposer};
+\node[box, fill=orange!15, right=of prop] (crit) {Critic};
+\node[box, fill=green!15,  right=of crit] (eval) {Evaluator};
 \node[box, fill=gray!15,   below=of eval] (sel)  {Selector};
 
-\draw[arr] (prop) -- node[above,font=\scriptsize]{candidates} (crit);
-\draw[arr] (crit) -- node[above,font=\scriptsize]{survivors}  (eval);
-\draw[arr] (eval) -- node[right,font=\scriptsize]{scores}     (sel);
-\draw[arr] (sel.west) -- ++(-3.8,0) |-
-    node[pos=0.25,below,font=\scriptsize]{iterate / report} (prop.west);
+\draw[arr] (prop) -- node[midway, above, conceptlabel]{candidates} (crit);
+\draw[arr] (crit) -- node[midway, above, conceptlabel]{survivors}  (eval);
+\draw[arr] (eval) -- node[midway, right, conceptlabel]{scores}     (sel);
+\draw[arr] (sel.west) -- node[midway, above, conceptlabel]{iterate / report}
+    (prop.south |- sel.west) -- (prop.south);
 \end{tikzpicture}
 \caption{The proposer--critic--evaluator architecture.
 The proposer generates candidates, the critic filters out obvious errors, the evaluator scores the survivors, and the selector feeds the best back to the proposer for the next round.}
@@ -105,7 +105,7 @@ In the symbolic regression context, a critic might check:
 \item whether the expression is numerically stable on the training domain, and
 \item whether the expression has already been tried in a previous round (deduplication).
 \end{itemize}
-Filtering before evaluation saves evaluation cost — especially important when evaluation requires model calls or expensive computation.
+Filtering before evaluation saves evaluation cost; this is especially important when evaluation requires model calls or expensive computation.
 This proposer--critic loop is the pattern Anthropic's engineering writing (2024) names the \emph{evaluator--optimizer} workflow, and it presupposes what Chapter~\ref{chapter:Evaluation} supplies: explicit criteria against which iteration demonstrably improves the artifact, which is why the critic is a filter and not a rubber stamp.
 
 \subsection{Verifiers}
@@ -128,17 +128,17 @@ following check and report whether the claim is true or false:
   X, y = load_dataset('data/tier1_growth.npz')
   print(np.min(X), np.any(X <= 0))
 \end{lstlisting}
-The verifier can catch mistakes the proposer made silently — here, the possibility that some feature values are zero or negative.
+The verifier can catch mistakes the proposer made silently, e.g., the possibility that some feature values are zero or negative.
 \end{example}
 
 \subsection{Dynamic Sub-Agent Spawning}
 
 The proposer--critic topology above is \emph{static}: the agents and their wiring are fixed before the run begins.
-A more flexible pattern lets an \emph{orchestrator}\index{Orchestrator agent} agent spawn specialist sub-agents on demand --- calling a tool that launches a fresh agent instance with its own context window, tool set, and task, then collecting the result.
+A more flexible pattern lets an \emph{orchestrator}\index{Orchestrator agent} agent spawn specialist sub-agents on demand: calling a tool that launches a fresh agent instance with its own context window, tool set, and task, then collecting the result.
 This is how a single agent decomposes a large job at run time: a research orchestrator might spawn one sub-agent per candidate dataset, or one per section of a report, each working in an isolated context so that the orchestrator's own window is not flooded with intermediate detail (Figure~\ref{figure:OrchestratorWorker}).
-The reliability discipline of this chapter applies unchanged --- each spawned agent can fail, so its result must be validated and its failures surfaced (Section~\ref{section:Reliability}).
+The reliability discipline of this chapter applies unchanged; each spawned agent can fail, so its result must be validated and its failures surfaced (Section~\ref{section:Reliability}).
 Current agent SDKs (for example, Claude's agent SDK) expose this spawning as a built-in tool; it is the dynamic generalization of the fixed proposer--critic wiring.
-When parallel agents must \emph{write} --- not just analyze --- they also need isolated working directories so their changes cannot collide; the git-worktree pattern that provides this is described in Appendix~\ref{chapter:RigReference}.
+When parallel agents must \emph{write} (not just analyze) they also need isolated working directories so their changes cannot collide; the git-worktree pattern that provides this is described in Appendix~\ref{chapter:RigReference}.
 
 \begin{figure}[htb!]
 \begin{center}
@@ -162,7 +162,8 @@ When parallel agents must \emph{write} --- not just analyze --- they also need i
 \end{tikzpicture}
 \caption{The orchestrator--worker pattern (Anthropic, 2025).
 A lead agent decomposes a task and spawns worker sub-agents that run in parallel, each with its own context window, then synthesizes their results.
-Because each worker's context is isolated, the orchestrator's window is not flooded with intermediate detail and independent sub-questions are explored at once --- at the cost of roughly an order of magnitude more tokens than a single agent, so the topology pays off for breadth-first tasks whose parts are genuinely independent, not for tightly coupled work.}
+Because each worker's context is isolated, the orchestrator's window is not flooded with intermediate detail and independent sub-questions are explored at once, at the cost of roughly an order of magnitude more tokens than a single agent.
+The topology pays off for breadth-first tasks whose parts are genuinely independent, not for tightly coupled work.}
 \label{figure:OrchestratorWorker}
 \end{center}
 \end{figure}
@@ -184,7 +185,7 @@ An orchestrated workflow that runs many rounds, or that spawns parallel agents, 
 
 \subsection{Memory in Practice}
 
-External memory is most simply a file — a JSON or CSV record updated after each round.
+External memory is most simply a file: a JSON or CSV record updated after each round.
 
 \begin{lstlisting}[language=python]
 import json, pathlib
@@ -213,7 +214,7 @@ The memory file is the primary artifact of an orchestrated run: it records what 
 The single JSON file is the reproducible \emph{floor}, not the ceiling.
 Production agents increasingly back external memory with a vector store, so that ``already tried'' can match \emph{semantically equivalent} candidates rather than only string-identical ones, and with hierarchical or episodic memory for runs that span many sessions (as of 2026).
 The file-based version here is the minimal form that keeps a run resumable and honestly reportable; the richer stores are the same idea with a better index.
-Two 2025 studies formalize \emph{what} an agent should keep across runs: \emph{ReasoningBank} distills reusable reasoning strategies from past attempts, and \emph{Agentic Context Engineering} treats the agent's evolving context itself as the artifact to optimize (arXiv:2509.25140; arXiv:2510.04618).
+Two 2025 studies formalize \emph{what} an agent should keep across runs: \emph{ReasoningBank} (Ouyang et al., 2025) distills reusable reasoning strategies from past attempts, and \emph{Agentic Context Engineering} (Zhang et al., 2025) treats the agent's evolving context itself as the artifact to optimize.
 
 \section{Reliability Engineering}
 \label{section:Reliability}
@@ -224,24 +225,46 @@ Every model call can return an error; every tool can produce an unexpected resul
 
 \subsection{Retries with Backoff}
 
-A \emph{retry}\index{Retry} re-attempts a failed operation after a waiting period.
+The operations worth protecting here are the ones that leave the process.
+A proposer round is an \emph{API call}\index{API call} to a model provider over the network, and a critic that checks a candidate against a database or a web service issues an \emph{MCP query}\index{MCP} to a server running behind the protocol of Chapter~\ref{chapter:ContextEngineering}.
+Both cross a boundary the pipeline does not control, so both can fail for reasons that have nothing to do with whether the request was well formed: the provider is momentarily rate limiting the account, a server is overloaded, a connection drops mid-response.
+A \emph{retry}\index{Retry} re-attempts such a failed operation after a waiting period.
 \emph{Exponential backoff}\index{Exponential backoff} increases the waiting period after each successive failure, reducing the load on the server that produced the error.
+
+The waiting period also carries a random \emph{jitter}\index{Jitter} term, and the reason is the parallelism of Section~\ref{section:MultiStepWorkflows}.
+Four proposers launched together will hit the same rate limit at the same moment; without jitter they would sleep for identical intervals and retry in lockstep, reproducing the burst that caused the error.
+
+Retrying is only correct for \emph{transient} faults: those a second attempt could plausibly survive.
+A \emph{deterministic} failure returns the same error however many times it is attempted, and the catalogue is familiar: a malformed request, an expired credential, a query naming a resource that does not exist, or a tool whose backing software is missing from the machine or installed broken.
+Wrapping those in a retry loop buys nothing and costs three things: it turns a fast, informative error into a slow one, it spends tokens or quota on each doomed attempt, and it buries the actual diagnosis under a stack of timeouts.
+The predicate is therefore which exceptions the loop catches, not how long it sleeps.
 
 \begin{lstlisting}[language=python]
 import time, random
-from anthropic import RateLimitError, APIError   # provider SDK exception types
+from anthropic import (RateLimitError,       # 429: account is being throttled
+                       APIConnectionError,   # network dropped or timed out
+                       InternalServerError)  # 5xx, including 529 "overloaded"
+
+# Transient only. A malformed request (400) or a bad key (401) is NOT here:
+# those raise straight through to the caller on the first attempt.
+TRANSIENT = (RateLimitError, APIConnectionError, InternalServerError)
 
 def with_retry(fn, max_attempts=5, base_delay=1.0):
     for attempt in range(max_attempts):
         try:
             return fn()
-        except (RateLimitError, APIError) as e:
+        except TRANSIENT:
             if attempt == max_attempts - 1:
-                raise
+                raise                        # budget spent: surface it
             delay = base_delay * (2 ** attempt) + random.uniform(0, 1)
             time.sleep(delay)
     raise ValueError("with_retry needs max_attempts >= 1")
 \end{lstlisting}
+
+The same split governs the MCP and tool layer, though the exception types come from that client rather than from a model SDK.
+An MCP server that is briefly unreachable is transient; an MCP server that is not running, or a tool that shells out to a binary the machine does not have, is deterministic, and the pipeline should say so on the first attempt rather than on the fifth.
+Note also that provider SDKs already retry transient errors internally a few times, so a hand-written loop like this one is a coarser outer guard, not the first line of defense.
+When the retry budget is exhausted, the loop re-raises rather than returning a fallback value, which is Principle~\ref{principle:HonestFailure} applied at the level of a single call.
 
 \subsection{Logging}
 
@@ -272,10 +295,10 @@ If the critic rejected every proposal in a round, report why.
 A failure report is not a sign of a bad system; a failure report that is absent is a sign of an untrustworthy one.
 \end{principle}
 
-\section{The Generate→Evaluate→Select Loop}
+\section{The Generate--Evaluate--Select Loop}
 \label{section:GenEvalSel}
 
-The orchestration assembled in Challenge~4 follows a pattern that recurs throughout the rest of the course.
+The orchestration assembled in this chapter follows a pattern that recurs throughout the rest of the course.
 
 \begin{definition}
 \label{definition:GenEvalSel}
@@ -293,7 +316,7 @@ Every run of the loop is this small story repeated.
 
 This loop is an evolutionary algorithm in all but name.
 The one ingredient missing is a \emph{mutation operator}: a procedure that derives new candidates from the survivors rather than proposing from scratch.
-Adding mutation transforms the GES loop into the full generate→evaluate→select→\textbf{mutate} evolutionary loop of Chapter~\ref{chapter:EvolutionaryFrameworks}.
+Adding mutation transforms the GES loop into the generate--evaluate--select--\textbf{mutate} evolutionary loop of Chapter~\ref{chapter:EvolutionaryFrameworks}.
 
 The researcher who understands the GES loop and its failure modes (why candidates are duplicated, why the evaluator can be fooled, why the proposer collapses to a single good candidate) is ready for the evolutionary framework.
 The pivot is not a new topic; it is an addition to a loop already understood.
