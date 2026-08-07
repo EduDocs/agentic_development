@@ -41,15 +41,43 @@
       return titles.map(t => `<span class="chip ${kind}">${esc(t)}</span>`).join("");
     }
 
-    // Our own videos and the curated external list render the same way; only
-    // the heading and the marker colour differ (see .videos.external in the CSS).
-    function videoSection(list, heading, cls) {
+    function videoItems(list, cls) {
+      const items = list.map(v =>
+        `<li><a href="${esc(v.url)}" target="_blank" rel="noopener">${esc(v.title)}</a></li>`
+      ).join("");
+      return `<ul class="videos ${cls}">${items}</ul>`;
+    }
+
+    // Our own material.
+    function ourVideos(list) {
       if (!list || list.length === 0) return "";
-      const items = list.map(v => {
-        const src = v.source ? `<span class="src">${esc(v.source)}</span>` : "";
-        return `<li><a href="${esc(v.url)}" target="_blank" rel="noopener">${esc(v.title)}</a>${src}</li>`;
+      return `<h3>Videos</h3>${videoItems(list, "ours")}`;
+    }
+
+    // Material we did not make. Grouped by creator so the credit appears once,
+    // prominently, and links to their channel — rather than repeated in small
+    // type under every entry. Nothing is embedded: every link leaves for the
+    // creator's own page, so the view and the subscriber are theirs.
+    function externalVideos(list) {
+      if (!list || list.length === 0) return "";
+      const groups = [];
+      for (const v of list) {
+        const key = v.source || "";
+        const last = groups[groups.length - 1];
+        if (last && last.key === key) last.items.push(v);
+        else groups.push({ key, source: v.source, source_url: v.source_url, items: [v] });
+      }
+      const blocks = groups.map(g => {
+        if (!g.source) return videoItems(g.items, "external");
+        const credit = g.source_url
+          ? `<a href="${esc(g.source_url)}" target="_blank" rel="noopener">${esc(g.source)}</a>`
+          : esc(g.source);
+        return `<p class="credit">by ${credit}</p>${videoItems(g.items, "external")}`;
       }).join("");
-      return `<h3>${esc(heading)}</h3><ul class="videos ${cls}">${items}</ul>`;
+      return `<h3>Related viewing</h3>${blocks}
+        <p class="attrib">Linked, not hosted. Each video belongs to its creator and is offered
+        under their own terms, not this book's. Listing here is our recommendation, not their
+        endorsement.</p>`;
     }
 
     function positionLabel(d) {
@@ -74,8 +102,8 @@
             <div class="chips">${chips((incoming[d.id] || []).map(titleOf), "in", "nothing — a starting point")}</div>
             <h3>Leads to</h3>
             <div class="chips">${chips((outgoing[d.id] || []).map(titleOf), "out", "nothing — a leaf")}</div>
-            ${videoSection(d.videos, "Videos", "ours")}
-            ${videoSection(d.external, "Related viewing", "external")}
+            ${ourVideos(d.videos)}
+            ${externalVideos(d.external)}
             <a class="read" href="${esc(pdf)}">Read the notes &rarr;</a>
           </div>`;
       };

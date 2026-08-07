@@ -168,7 +168,11 @@ def _list_block(frontmatter: str, key: str) -> list[str]:
 
 
 def parse_video_list(frontmatter: str, key: str) -> list[dict]:
-    """Parse a ``key:`` list of ``- title:`` / ``url:`` / ``source:`` entries.
+    """Parse a ``key:`` list of video entries.
+
+    Recognized fields: ``title`` and ``url`` (both required), plus ``source``
+    and ``source_url`` for material we did not make, which the site groups and
+    credits by creator.
 
     Hand-rolled on purpose: these are the only front-matter keys the site
     reads, and two flat lists of scalars do not justify a YAML dependency.
@@ -186,7 +190,7 @@ def parse_video_list(frontmatter: str, key: str) -> list[dict]:
             line = line[2:].strip()
         if current is None:
             continue
-        m = re.match(r"^(title|url|source):\s*(.+?)$", line)
+        m = re.match(r"^(title|url|source_url|source):\s*(.+?)$", line)
         if m:
             current[m.group(1)] = m.group(2).strip().strip("\"'")
     if current:
@@ -196,8 +200,9 @@ def parse_video_list(frontmatter: str, key: str) -> list[dict]:
     for e in entries:
         if e.get("title") and e.get("url"):
             item = {"title": e["title"], "url": e["url"]}
-            if e.get("source"):
-                item["source"] = e["source"]
+            for field in ("source", "source_url"):
+                if e.get(field):
+                    item[field] = e[field]
             out.append(item)
     return out
 

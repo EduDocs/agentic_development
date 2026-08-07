@@ -128,7 +128,11 @@ aside#panel {
 .detail ul.videos a::before { content: "\25B6"; color: #c4302b; font-size: .7rem; }
 .detail ul.videos a:hover { text-decoration: underline; }
 .detail ul.videos.external a::before { color: var(--muted); }
-.detail ul.videos .src { display: block; color: var(--muted); font-size: .82rem; padding-left: 1.2rem; }
+/* One credit per creator, above their group — see externalVideos() in map.html. */
+.detail .credit { margin: .5rem 0 .3rem; font-size: .88rem; color: var(--muted); }
+.detail .credit a { color: var(--accent); text-decoration: none; font-weight: 600; }
+.detail .credit a:hover { text-decoration: underline; }
+.detail .attrib { margin: .9rem 0 0; font-size: .78rem; line-height: 1.45; color: var(--muted); }
 
 .loading, .error { padding: 1.4rem; color: var(--muted); }
 .error { color: #a3402f; }

@@ -72,8 +72,17 @@ prose verbatim). Both are surgical, additive, and ask before writing.
 The optional YAML front matter is read by the notes website (`scripts/notes_site_data.py`),
 which attaches each chapter's videos to its node in the concept map. Two lists, kept apart on
 purpose: `videos` is our own material (rendered under **Videos**), `external` is a curated list
-of pertinent material we did not make (rendered under **Related viewing**, with its `source`
-credited). Both are optional, and a chapter may carry any number of entries in either.
+of pertinent material we did **not** make (rendered under **Related viewing**). Both are
+optional, and a chapter may carry any number of entries in either.
+
+Attribution for `external` entries is the point of the split, so give every one a `source`, and
+a `source_url` pointing at the creator's own channel or page wherever you can. The site groups
+consecutive entries sharing a `source` and prints that credit **once, above the group**, linked:
+one clear acknowledgment reads as real credit where the same name repeated in small type under
+seven titles reads as noise. Nothing is embedded; every link leaves for the creator's page, so
+the view is theirs. A standing note under the list records that the material is linked rather
+than hosted, carries its own terms rather than this book's, and that inclusion is our
+recommendation and not the creator's endorsement.
 
 ```markdown
 ---
@@ -83,7 +92,8 @@ videos:
 external:
   - title: <someone else's video>
     url: https://...
-    source: <channel or author, shown under the title>
+    source: <creator or channel — credited above their group>
+    source_url: <link to their channel; optional but strongly preferred>
 ---
 
 # <Section> — scratch

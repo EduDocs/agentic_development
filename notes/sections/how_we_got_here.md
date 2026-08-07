@@ -4,6 +4,35 @@ videos:
     url: https://youtu.be/gpdenPUcwuY
   - title: From Scale to Agents
     url: https://youtu.be/U96X7U5MC9c
+external:
+  - title: What is a neural network
+    url: https://youtu.be/aircAruvnKk
+    source: 3Blue1Brown
+    source_url: https://www.youtube.com/@3blue1brown
+  - title: Gradient descent, how neural networks learn
+    url: https://youtu.be/IHZwWFHWa-w
+    source: 3Blue1Brown
+    source_url: https://www.youtube.com/@3blue1brown
+  - title: Backpropagation, intuitively
+    url: https://youtu.be/Ilg3gGewQ5U
+    source: 3Blue1Brown
+    source_url: https://www.youtube.com/@3blue1brown
+  - title: Backpropagation calculus
+    url: https://youtu.be/tIeHLnjs5U8
+    source: 3Blue1Brown
+    source_url: https://www.youtube.com/@3blue1brown
+  - title: Large Language Models
+    url: https://youtu.be/LPZh9BOjkQs
+    source: 3Blue1Brown
+    source_url: https://www.youtube.com/@3blue1brown
+  - title: Transformers
+    url: https://youtu.be/wjZofJX0v4M
+    source: 3Blue1Brown
+    source_url: https://www.youtube.com/@3blue1brown
+  - title: Attention
+    url: https://youtu.be/eMlx5fFNoYc
+    source: 3Blue1Brown
+    source_url: https://www.youtube.com/@3blue1brown
 ---
 
 # how_we_got_here — scratch
