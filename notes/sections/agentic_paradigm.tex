@@ -25,11 +25,26 @@ The context $C$ is assembled from the system prompt, the task description, a his
 The model $M$ reads the full context and selects an action: either a \emph{tool call} (drawn from $T$) or a \emph{final response}.
 The loop $L$ executes the tool call, appends the result to the context as a new observation, and invokes $M$ again.
 
+\begin{example}
+A concrete trajectory makes the four parts easier to hold onto.
+Suppose an ecologist asks an agent whether a published growth model still fits a newly released field dataset.
+The tool set $T$ holds three capabilities: list the contents of a directory, read a file, and run a Python script.
+The context $C$ begins with the request itself and a note that the data live in a folder called \code{field2026}.
+On the first pass the model $M$ reads $C$, has no idea what that folder contains, and calls the directory-listing tool; the loop $L$ runs it and appends the file names as the next observation.
+On the second pass $M$ now sees a file named \code{biomass.csv}, calls the file-reading tool on its opening lines, and learns the column names.
+On the third it writes a short fitting script, calls the run-Python tool, and reads back the residuals.
+Only then does it produce a final answer.
+The ecologist never specified this sequence: each step was chosen from what the previous step returned, which is exactly what distinguishes a loop from a recipe.
+\end{example}
+
 The model $M$ is not a database and not a classical reasoner; it is a next-token predictor conditioned on $C$, and four properties of that substrate govern where an agent built on it will fail (Anthropic, 2025).
+\emph{Next-token prediction} means the model repeatedly estimates a distribution over the next fragment of text given everything in $C$, draws one fragment from it, appends it, and repeats.
+There is no stored table of facts it consults and no separate step that checks a claim before writing it down.
 It generates by statistical continuation, so it produces fluent text that may be confidently wrong, the failure mode called \emph{hallucination}.
 Its knowledge is a frozen snapshot fixed at a training cutoff, blind to anything more recent or too rare to have been well represented in training.
 Its working memory is exactly the context window introduced below and developed in Chapter~\ref{chapter:ContextEngineering}: bounded, non-persistent, and unevenly attended.
 And its steerability is pattern continuation rather than comprehension of intent: it follows the \emph{form} of an instruction, which is why long chains accumulate error and why text injected through a tool result can hijack a task.
+That last failure is worth picturing concretely: a web page an agent has been asked to summarize may itself contain a sentence addressed to the agent, and a system that continues patterns rather than weighing whose instruction it is reading may simply follow it.
 Each rung of the ladder that follows is, in part, a discipline for managing one of these four failure modes.
 
 \begin{figure}[htb!]
@@ -44,8 +59,12 @@ The agent observes the current state of the environment, reasons to select an ac
 \subsection{Tools}
 
 A \emph{tool}\index{Tool} is any capability the model can invoke as a discrete action: reading a file, running a shell command, calling a web API, querying a database, or invoking another model.
+Two items on that list deserve a gloss for readers new to professional tooling.
+A \emph{shell command} is an instruction typed at a text prompt that drives the operating system directly, the interface Chapter~\ref{chapter:AgenticRig} takes up in earnest.
+An \emph{API}\index{API}, an application programming interface, is a machine-facing entry point to a service: the same archive a website serves to a human, reachable by a program and answering with structured data rather than a rendered page.
 A more recent tool type is \emph{computer use}\index{Computer use}: instead of calling a purpose-built API, the model observes a screenshot and issues keyboard and mouse actions, which lets it operate arbitrary desktop software that exposes no programmatic interface.
 Tools are described to the model as structured specifications (a name, a natural-language description, and a parameter schema), so the model knows what each tool does and how to call it.
+The \emph{parameter schema} is the machine-readable equivalent of a function signature, a declaration of which arguments the tool accepts and of what type: a \code{fetch\_series} tool might declare a station identifier as text and a start and end year as integers, so a malformed request can be caught before anything is executed.
 Chapter~\ref{chapter:AgentLoop} treats tool definitions in depth.
 
 The tool set $T$ determines what the agent can \emph{do}, while the model $M$ determines what it \emph{chooses} to do.
@@ -55,8 +74,10 @@ Designing the right tool set for a task and selecting a model are two of the ear
 \subsection{Context}
 
 The \emph{context window}\index{Context window} is the finite-length sequence of tokens the model reads at each invocation.
-Everything the agent knows at a given step such as its instructions, its history, domain knowledge, tool results must fit within this window.
+A \emph{token}\index{Token} is the unit in which the model reads and writes, roughly a common word or a fragment of one; as a rule of thumb English prose runs about three tokens to four words, so a window of two hundred thousand tokens holds a few hundred pages of text.
+Everything the agent knows at a given step (its instructions, its history, domain knowledge, tool results) must fit within this window.
 Unless managed explicitly, context is not persistent: what the model does not hold in its context window, it does not know.
+The practical consequence catches newcomers out: an agent that worked out a calibration constant an hour ago has no memory of it in a fresh session, and will only know it again if something puts it back in front of the model, whether a file it re-reads or a note the loop injects.
 
 This constraint makes the management of context one of the central engineering problems in agentic systems.
 Chapter~\ref{chapter:ContextEngineering} develops context engineering as a discipline; Chapter~\ref{chapter:Retrieval} shows how retrieval extends the effective knowledge available within a fixed window.
@@ -73,6 +94,13 @@ Not every task needs the full loop.
 The distinction between an \emph{agent}, which lets the model dynamically direct its own process and tool use, and a \emph{workflow}, which routes the model through predetermined code paths, is worth drawing early (Anthropic, 2024; Figure~\ref{figure:WorkflowAgentSpectrum}).
 A workflow fits predictable, well-scoped tasks whose steps are known in advance; an agent fits open-ended problems where the number of steps cannot be fixed ahead of time, at the price of higher cost and more room for compounding error.
 The rungs that follow, and the orchestration patterns of Chapter~\ref{chapter:Orchestration}, move along this spectrum rather than leaping to full autonomy; the durable advice, as of this writing in 2026, is to reach for a workflow when the task allows it and reserve full agency for problems that require it.
+
+\begin{example}
+A single laboratory produces both designs in the same week.
+Nightly processing of instrument output (load the file, drop the calibration rows, fit the standard curve, write a report) is a workflow: the steps are fixed, their order never varies, and a model may well be used inside one step, say to caption anomalies, without deciding what happens next.
+Investigating why last Tuesday's run looks wrong is agentic: nobody can say in advance whether the answer lies in the instrument log, the reagent lot, or a code change, so the sequence of lookups has to be chosen as evidence arrives.
+The first belongs in a script that runs unattended; the second is where letting a model steer earns its unpredictability.
+\end{example}
 
 These two designs describe the artifact that \emph{runs}; neither describes how it is \emph{built}.
 Agentic development, the practice these notes teach, is a build-time activity: a researcher directs an agent such as Claude Code, and the software it produces is frequently a deterministic workflow, or ordinary analysis code, with no agent inside it at all.
@@ -110,6 +138,7 @@ The foundation is being able to drive an existing agent reliably and reproducibl
 The habit most worth instilling first is deceptively plain, stating the objective before the agent acts, which appears to track downstream proficiency more closely than knowledge of any particular feature (Anthropic, 2025).
 This rung trains goal clarity before any tooling.
 This means understanding the terminal, using version control, accessing a model through an API, and giving the agent instructions that produce predictable, revisable results.
+Each of those has a purpose worth stating plainly before Chapter~\ref{chapter:AgenticRig} teaches the mechanics: the terminal is where an agent's actions actually run, version control records periodic snapshots of a project so that any edit an agent makes can be inspected and undone, and API access is what lets a model be called from a script rather than only from a chat window.
 Many researchers skip this rung and never develop the habit of \emph{assessing modifications} the agent makes, a deficit that can grow more costly with each rung climbed.
 
 There is a genuine tailwind here: as agentic tooling improves, operating the rig gets steadily easier in practice, so the mechanical barrier to entry keeps falling.
@@ -123,11 +152,13 @@ That judgment stays the researcher's to hold; the promise of everything that fol
 \paragraph{Build.}
 Building an agentic evolutionary framework  means implementing the loop and the tools from scratch rather than simply configuring a pre-existing system.
 The user writes tool definitions, assembles a control loop, and decides how structured outputs will be formatted and validated.
+Formatting and validation are less abstract than the words suggest: they amount to deciding that a proposal must come back in a fixed layout, say a candidate expression together with its parameter count, and then writing the check that rejects anything that does not parse.
 An evaluation harness is also introduced at this rung: the agent must be judged by something more reliable than intuition.
 
 \paragraph{Orchestrate.}
 This rung involves composing multiple agents or steps into a reliable workflow.
 It often entails failure handling, logging, memory, and the \emph{proposer–critic} pattern, in which one agent generates candidates and a second verifies or scores them.
+The first two items in that list carry more weight than they look: a run that touches a few hundred candidates will meet a timed-out request, a malformed response, and a tool that silently returns nothing, and what separates an orchestration from a script is that it is written to expect these, record them, and carry on.
 A reliable orchestration that can run unattended for hours is a prerequisite for the next rung: an evolutionary search cannot be trusted if it fails silently.
 
 \paragraph{Evolve.}
@@ -165,6 +196,13 @@ It must be \emph{automatic} (it runs without human judgment), \emph{leakage-resi
 A benchmark that is too costly, too noisy, non-stationary, unsafe under repeated use, or reserved for final reporting is not a drop-in fitness function.
 \end{principle}
 
+\begin{example}
+Suppose an economist is evolving a forecasting rule for regional unemployment.
+Dividing the historical record into three portions makes each criterion concrete: rules are fitted on a \emph{training} portion, the search proposes and scores them thousands of times against a \emph{validation} portion, and a \emph{test} portion covering the most recent years is locked away and consulted once, at the end, to report performance honestly.
+\emph{Leakage} is what happens when that boundary is not airtight, for instance when a predictor is standardized using the whole series and so quietly carries information from the test years, and the rule then scores well for a reason that will not survive contact with the future.
+Cost matters just as sharply: an evaluation taking ten minutes is perfectly workable for comparing three methods by hand, and completely infeasible for a search that must score thousands of candidates.
+\end{example}
+
 How that automatic score is computed depends on the task, along a spectrum of \emph{evaluability}.
 At one end are \emph{verifiable} problems, where an unambiguous oracle settles quality: the density of a sphere packing, whether a program passes its tests against a defined interface, the error of a fitted model.
 At the other are problems of \emph{judgment}, where no formula exists and a capable model must act as the evaluator, a \emph{critic} scoring an artifact against a rubric: the soundness of a proof at the research frontier, the quality of a written argument, the promise of an idea.
@@ -183,6 +221,8 @@ This lever has itself matured through three levels.
 \emph{Context engineering} arrived with large windows and persistent profiles: the question became how to fill a hundred-thousand- or million-token window well, where to position each element within it, when caching earlier tokens pays off, and when to clear the window rather than let it accumulate.
 \emph{Agentic context engineering} is the current shift, and the reason this spine is named with that adjective in mind: the context is increasingly assembled not by the researcher but by an agent, such as Claude or Codex, working on the researcher's own machine, which is what motivates giving that agent access to one's files, tools, and knowledge.
 The questions move accordingly, toward how to keep a file hierarchy an agent can navigate, how to make a corpus searchable with ordinary unix tools (\code{grep}, \code{sed}, \code{awk}), which file formats are cheap in tokens and time, and how to curate the tools, instruction files (\code{CLAUDE.md}, \code{AGENTS.md}), skills, and connectors an agent draws on.
+Those unix tools are decades old and deliberately unglamorous: \code{grep} reports every line matching a pattern across a whole directory tree, so an agent able to run it can search a corpus of a thousand files while pulling only the matching lines into its window.
+The instruction files are equally plain, ordinary text kept at a project's root and read at the start of a session, so that standing conventions need not be restated each time.
 Chapters~\ref{chapter:AgenticRig} and~\ref{chapter:ContextEngineering} take up these subtleties; here it is enough to feel the richness, that the lever has moved from wording a prompt to shaping the environment an agent builds its own context from.
 
 This thread begins with prompt engineering and agentic context management, deepens in Challenge~3 as retrieval-augmented grounding, and reaches its culmination in the evolutionary capstone: the LLM mutation operator is most effective when its context contains the lineage of what has been tried, the domain priors, and the current population's best candidates.
@@ -206,6 +246,7 @@ The model can, in principle, perform the same actions a human researcher perform
 
 \paragraph{Structured output.}
 Models can be constrained to produce output in a specified schema (JSON, typed records, code blocks), allowing the output of one agent to serve as the structured input of the next.
+JSON is simply a text format for labelled values, and the constraint buys something mechanical: a downstream step can read a field by name instead of hunting for a number inside a paragraph of prose.
 This is the glue of multi-agent orchestration.
 
 Together, these capabilities make a language model a plausible substrate for a research assistant that can be directed, composed, and evaluated programmatically.

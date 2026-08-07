@@ -15,6 +15,8 @@ Section~\ref{section:MultiStepWorkflows} composes single operations into pipelin
 
 A \emph{workflow}\index{Workflow} is a directed graph of operations: some operations depend on the outputs of others; some can run in parallel.
 The orchestrator's job is to schedule these operations correctly and collect their results.
+The graph is a picture of dependency, not of time: an edge means the downstream operation cannot start until the upstream one has produced what it needs, while two operations with no path between them may run in either order, or at once.
+A study that loads a dataset, fits three candidate models to it, and then compares their errors is already a graph of this shape: the three fits each depend on the load, none depends on another, and the comparison depends on all three.
 
 \subsection{Pipeline Composition}
 
@@ -35,12 +37,15 @@ def run_pipeline(dataset_path, k=5):
     return best
 \end{lstlisting}
 Each step can be a model call, a tool invocation, or a subprocess; the pipeline connects them.
+Read the data flow rather than the syntax: \code{context} is produced by step~1 and consumed by step~2, and \code{candidates} is produced by step~2 and consumed by step~3, so these three lines admit only one order.
+Note also that \code{min} is the correct selector only because the score here is an error, for which lower is better; under a fitness convention where higher is better, the same line would need \code{max}.
 \end{example}
 
 \subsection{Parallel Execution}
 
 Some operations are independent: multiple agents can propose candidates simultaneously, or a critic can score candidates in parallel with new proposals being generated.
 \emph{Parallel execution}\index{Parallel execution} reduces wall-clock time by running independent operations concurrently.
+The saving is largest exactly where research pipelines spend their time: if one proposer call waits ninety seconds for the provider to answer, four such calls in sequence cost six minutes and four at once cost about ninety seconds, because the waiting overlaps.
 
 \begin{example}
 Spawning multiple proposer agents in parallel (conceptual):
@@ -55,8 +60,23 @@ with concurrent.futures.ThreadPoolExecutor(max_workers=4) as pool:
 The four proposers run concurrently; the orchestrator collects and merges their outputs.
 \end{example}
 
+Four pieces of that listing behave unlike ordinary Python lines, and each is worth naming.
+A \emph{thread pool}\index{Thread pool} is a small crew of workers that the program hands jobs to, and \code{max\_workers} caps how many run at once: twenty submitted jobs would still occupy at most four workers at a time, the rest queueing.
+\code{pool.submit} does not run \code{proposer.run}; it queues that call and returns immediately with a \emph{future}\index{Future}, a placeholder object standing for a result that does not exist yet, which is why all four submissions complete in a fraction of a second even though no proposer has answered yet.
+\code{f.result()} is where the program actually waits: it blocks until that particular proposer has finished, then hands back its return value, so by the time the comprehension on the last line ends, all four have returned.
+It also re-raises whatever exception the worker raised, which matters for Section~\ref{section:Reliability}: a proposer that failed inside the pool surfaces at \code{result()} rather than vanishing silently.
+The \code{with} block shuts the pool down on exit, including when an exception escapes it.
+
+\begin{remark}
+A thread pool is the right instrument here because this work is dominated by \emph{waiting}: each proposer sits idle on a network response for nearly its whole lifetime, and an idle thread costs almost nothing.
+It is the wrong instrument for work dominated by computation written in pure Python, where the interpreter's global lock lets only one thread execute Python bytecode at a time and four threads finish no faster than one.
+Numerical libraries such as NumPy release that lock inside their compiled kernels, so array-heavy evaluation does speed up across threads; a hand-written Python loop scoring candidates does not, and wants \code{ProcessPoolExecutor}, which uses separate operating-system processes and so escapes the shared lock, at the price of copying data between them.
+\end{remark}
+
 The principal hazard of parallel execution is \emph{non-determinism}\index{Non-determinism}: the order in which parallel operations complete is not predictable across runs.
 If the final selection depends on ordering (e.g., in case of a tie), the result may differ between runs.
+Concretely: two proposers independently arrive at the same expression with identical error, and the selector returns whichever of the two it met first.
+When that encounter order is set by which worker happened to finish first, the same seed reports one expression on Monday and the other on Tuesday; neither result is wrong, which is precisely what makes the discrepancy hard to explain to a reviewer.
 Always set seeds and record exactly which candidates were selected.
 
 \section{Multi-Agent Architectures}
@@ -106,12 +126,23 @@ In the symbolic regression context, a critic might check:
 \item whether the expression has already been tried in a previous round (deduplication).
 \end{itemize}
 Filtering before evaluation saves evaluation cost; this is especially important when evaluation requires model calls or expensive computation.
+The arithmetic is worth doing once: if the critic rejects half of a hundred candidates at negligible cost and each surviving evaluation is a thirty-second simulation, the round finishes in twenty-five minutes rather than fifty.
+
+\begin{example}
+The four checks above are symbolic regression's instance of a pattern that re-skins wherever the proposer emits something executable.
+An epidemiologist's critic rejects a proposed compartmental model whose compartments do not sum to the population; an economist's rejects a demand specification that slopes upward across the observed price range; an engineer's rejects a controller whose gain the actuator could not physically deliver.
+Each check encodes domain knowledge the evaluation harness does not have, and the reason to house it in a separate agent rather than in the proposer's prompt is that it can then be stated, tested, and revised without disturbing how candidates are generated.
+\end{example}
+
 This proposer--critic loop is the pattern Anthropic's engineering writing (2024) names the \emph{evaluator--optimizer} workflow, and it presupposes what Chapter~\ref{chapter:Evaluation} supplies: explicit criteria against which iteration demonstrably improves the artifact, which is why the critic is a filter and not a rubber stamp.
 
 \subsection{Verifiers}
 
 A \emph{verifier}\index{Verifier} is an agent whose explicit task is to try to \emph{disprove} a claim or detect an error.
 Where a critic checks soft constraints, a verifier checks hard correctness properties.
+The distinction is best read as a difference in what a failed check licenses you to conclude.
+A critic's verdict is a judgement about plausibility: a candidate it rejects was probably not worth evaluating, but it might have been, and a critic tuned too aggressively will throw away good work.
+A verifier's verdict is a fact established by running something, and it is decisive: if the check below reports a negative minimum, the claim it was auditing is false, however confidently the proposer asserted it.
 
 \begin{example}
 A verifier for a data analysis step:
@@ -129,6 +160,8 @@ following check and report whether the claim is true or false:
   print(np.min(X), np.any(X <= 0))
 \end{lstlisting}
 The verifier can catch mistakes the proposer made silently, e.g., the possibility that some feature values are zero or negative.
+Notice the shape of the assignment: the verifier is handed one claim and told to test it, not asked whether anything is wrong with the analysis.
+A narrow, falsifiable question is one an agent can answer reliably, because there is a check that settles it; an open invitation to find problems returns plausible-sounding commentary whose accuracy nobody can assess.
 \end{example}
 
 \subsection{Dynamic Sub-Agent Spawning}
@@ -209,6 +242,11 @@ class RunMemory:
         return any(t["expression"] == expression
                    for t in self.state["tried"])
 \end{lstlisting}
+Three details in that class carry the weight.
+The constructor loads the file when it exists and otherwise starts an empty record, so one code path both begins a fresh run and resumes an interrupted one; nothing special has to be done to restart.
+\code{record} rewrites the whole file on every call, which is wasteful and deliberate: a run killed by a cluster time limit or a dropped connection still leaves a valid, complete file on disk describing everything up to the last candidate.
+\code{already\_tried} compares expression strings exactly, so \code{x0*x1} and \code{x1*x0} count as different candidates even though they are the same model, which is a real weakness and the reason the next paragraph reaches for a better index.
+
 The memory file is the primary artifact of an orchestrated run: it records what was tried and what the best result was, enabling the run to be resumed if it is interrupted and reported honestly if it fails.
 
 The single JSON file is the reproducible \emph{floor}, not the ceiling.
@@ -261,6 +299,12 @@ def with_retry(fn, max_attempts=5, base_delay=1.0):
     raise ValueError("with_retry needs max_attempts >= 1")
 \end{lstlisting}
 
+Read the listing twice, once for its control flow and once for its predicate.
+\code{try} runs the call; if the call raises one of the three exception classes gathered into \code{TRANSIENT}, control jumps to the \code{except} block, the loop sleeps and comes around again, and any exception \emph{not} in that tuple propagates straight out to the caller because no handler here claims it.
+That silence about the other exceptions is the design, not an omission.
+The sleep doubles as \code{attempt} advances, giving delays of about one second, then two, four, and eight, and the \code{random.uniform} term is the jitter of the preceding paragraph.
+The bare \code{raise} on the final attempt re-throws the exception that was caught rather than inventing a new one, which keeps the provider's own diagnosis intact for whoever later reads the traceback.
+
 The same split governs the MCP and tool layer, though the exception types come from that client rather than from a model SDK.
 An MCP server that is briefly unreachable is transient; an MCP server that is not running, or a tool that shells out to a binary the machine does not have, is deterministic, and the pipeline should say so on the first attempt rather than on the fifth.
 Note also that provider SDKs already retry transient errors internally a few times, so a hand-written loop like this one is a coarser outer guard, not the first line of defense.
@@ -279,6 +323,10 @@ Every orchestrated run should log:
 \item every error and its resolution, and
 \item the final result and elapsed time.
 \end{itemize}
+
+Write the log in a machine-readable form, one JSON object per line, because the questions asked of it afterwards are aggregate questions: what fraction of calls were retried, where the wall-clock time actually went, whether the best score improved monotonically across rounds.
+A line carrying a timestamp, an event name, the round index, token counts, a latency, and a status field answers all three once a few thousand of its siblings are read back into a dataframe; the same information written out as English sentences answers none of them.
+This is the same instinct that makes a researcher log an experiment in a table rather than a lab notebook paragraph, applied to a run whose ``experiments'' number in the thousands.
 
 \subsection{Honest Failure Reporting}
 
@@ -313,6 +361,11 @@ The \emph{generate–evaluate–select} (GES) loop is the procedure:
 
 Concretely: in round~1 the proposer generates five candidate expressions; the harness scores them $0.12$, $0.08$, $0.23$, $0.07$, $0.15$; with $k=2$ (and lower scores better), the selector retains the candidates scoring $0.07$ and $0.08$ as the elites that seed round~2.
 Every run of the loop is this small story repeated.
+That two-item short list is the whole inheritance from one round to the next, which is what makes $k$ a consequential dial\index{Elites}: a small $k$ concentrates the next round's effort on the current leader, and a large $k$ keeps more of the field alive at the cost of pursuing weaker leads.
+
+The \emph{val} subscript in step~2 is load-bearing rather than decorative.
+The loop consults its scorer once per candidate per round, which over a full run is thousands of queries, and a split queried that often is a split the search has effectively been fit to.
+The sealed test split is spent the moment the loop is allowed to see it, which is why it is scored exactly once, at the end, on the single winner.
 
 This loop is an evolutionary algorithm in all but name.
 The one ingredient missing is a \emph{mutation operator}: a procedure that derives new candidates from the survivors rather than proposing from scratch.

@@ -6,6 +6,9 @@ The loop described in Chapter~1 becomes concrete when the researcher must actual
 Building the loop yourself, rather than configuring a pre-built one, means understanding exactly what the agent can and cannot do, and knowing where to intervene when it fails.
 Building a research agent means writing tool definitions, choosing how to structure the control loop, specifying what the agent should return, and anticipating the ways the loop can fail.
 This chapter develops each of these in turn.
+None of it requires new mathematics, and the program is smaller than it sounds: an agent of the kind built here is a few dozen lines of ordinary Python wrapped around one repeated network call.
+Your code sends the conversation so far to the model's API (the network endpoint a program sends text to and reads a reply from), inspects the reply, and, when the reply asks for a tool, runs the matching Python function and sends its result back.
+The machinery is small; what is unfamiliar is that one participant in the loop is not deterministic, so the program must be written to tolerate a collaborator that will sometimes do the wrong thing.
 Section~\ref{section:ToolDefinitions} covers tool definitions and their schemas; Section~\ref{section:ReAct} develops the ReAct control pattern that interleaves reasoning and action; Section~\ref{section:StructuredOutputs} shows how to constrain what the agent returns; Section~\ref{section:FailureModes} catalogs the ways the loop breaks and how to guard against each; and Section~\ref{section:WorkflowsAndAgents} steps back to when a fixed workflow, rather than an agent, is the better thing to build.
 
 A word on emphasis before the mechanics.
@@ -19,6 +22,8 @@ We learn it here in full, then choose deliberately where on the spectrum each re
 
 In the context of building agents, a \emph{tool}\index{Tool!definition} is defined by three things: a name, a natural-language description, and a parameter schema.
 The model reads all three when deciding which tool to call and how to call it.
+The third of these is the part most likely to be unfamiliar: a \emph{parameter schema}\index{Schema} is a machine-readable declaration of the arguments a tool accepts, naming each one, giving its type (text, a number, a list) and marking which are mandatory.
+A serviceable mental image is the header of a well-documented function together with its docstring, except that both are handed to the model as data to read rather than compiled into a fixed call site.
 Tool definitions are therefore as much a form of documentation as they are a programmatic contract.
 
 This is a genuine departure from how software has classically been built.
@@ -54,9 +59,20 @@ In the Anthropic API, a tool is specified as a JSON object with the following st
 }
 \end{lstlisting}
 
+The tool above belongs to the symbolic-regression setting used throughout the course: a candidate formula goes in as text, and a number measuring how badly it fits comes back.
+JSON is nothing more than a text format for nested key-value data, the same shape as a Python dictionary, so the object repays a close reading field by field.
+The \code{name} is the identifier the model emits when it wants the tool; it comes back verbatim in the model's reply, and the loop uses it to look up which Python function to run.
+The \code{input\_schema} declares the arguments in JSON Schema, a small conventional vocabulary for describing data:
+\code{"type": "object"} says the arguments arrive as a set of named fields, \code{properties} lists those fields with a type and a description apiece, and \code{required} names the ones the model may not omit.
+Note also what the object does \emph{not} contain, which is any code that fits anything:
+the definition is the advertisement, and the implementation is a separate Python function the loop invokes when the model asks for the tool by name.
+
 The description field is the most consequential.
 It tells the model \emph{when to call the tool} (what preconditions must hold), \emph{what the tool expects} (the semantics of each parameter), and \emph{what the tool returns} (what the model should do with the result).
 A vague description produces inconsistent tool-call behavior; a precise description produces reliable output.
+The difference is not stylistic.
+Shorten the description above to ``fits a model'' and the model has no way to know that the expression must be Python-evaluable, that the variables are named \code{x0}, \code{x1}, and so on rather than by their scientific names, or that the returned number is computed on held-out data and is therefore something to drive down.
+Each omission surfaces later as its own class of malformed call that the loop has to catch.
 
 \subsection{Tool Design Principles}
 
@@ -73,6 +89,7 @@ A tool that has side effects (writes a file, posts to an API, spends tokens) sho
 
 \item \textbf{Return only what the model needs.}
 A tool that returns a hundred lines of raw data when the model only needs a score fills the context window unnecessarily.
+The fitting tool above should return the error, and perhaps a one-line residual summary, not the ten thousand fitted values it computed on the way there.
 Post-process tool output to the informative essentials before returning it.
 
 \item \textbf{Return informative errors.}
@@ -98,6 +115,11 @@ By this writing in 2026, passing an image alongside text is a routine agent acti
 When the model invokes a tool, the loop executes the corresponding function, collects the result, and appends it to the context as a \emph{tool result message}.
 The model reads this result alongside the prior context and decides whether to call another tool or produce a final response.
 
+It is worth being concrete about what ``the context'' is in code, because the word suggests something more mysterious than it is.
+Your program holds a list of messages, each tagged with a role: what the researcher asked, what the model replied, what each tool returned.
+Every turn sends that entire list again, because the model retains nothing between calls, so the growing list \emph{is} the agent's memory and appending a tool result is literally how the agent comes to know what happened.
+This is also why the context-window budget of Chapter~\ref{chapter:ContextEngineering} governs how long an agent can run: each step makes the list longer, and the list is resent in full.
+
 \begin{example}
 A typical two-step tool use sequence:
 \begin{lstlisting}[language=python]
@@ -119,6 +141,9 @@ A typical two-step tool use sequence:
 #     {"expression": "x0**2 * x1"}
 #   </tool_use>
 \end{lstlisting}
+The angle-bracket markers are a reading convention for the page, not characters the model types: in the API the request arrives as an already-parsed field of the reply, carrying a tool name and a dictionary of arguments.
+The rhythm is what matters here.
+The model never executes anything itself; it asks, and the loop decides whether and how to honor the request, which is precisely where a researcher retains control over an otherwise autonomous process.
 \end{example}
 
 \begin{remark}
@@ -170,6 +195,54 @@ The explicit thought step serves two purposes.
 First, it conditions the subsequent action on intermediate reasoning, reducing errors that arise from the model jumping directly from context to action without an intermediate planning step.
 Second, it produces an \emph{audit trail}: by reading the thought steps, the researcher can understand exactly why the agent made each tool call.
 
+The figure is a picture of a program, and the program is short enough to read whole.
+Everything the chapter has introduced so far, the tool definitions, the message list, the tool result, meets in about twenty lines.
+
+\begin{example}
+The control loop, stripped to its essentials.
+\begin{lstlisting}[language=python]
+messages = [{"role": "user", "content": task_description}]
+
+for step in range(MAX_STEPS):
+    reply = client.messages.create(
+        model=MODEL, tools=TOOL_DEFS, messages=messages
+    )
+    messages.append({"role": "assistant", "content": reply.content})
+
+    calls = [b for b in reply.content if b.type == "tool_use"]
+    if not calls:                  # nothing requested: the agent is done
+        return reply
+
+    results = []
+    for c in calls:                # one turn may request several tools
+        try:
+            out = TOOLS[c.name](**c.input)
+        except Exception as err:   # the error becomes the next observation
+            out = f"ERROR {type(err).__name__}: {err}"
+        results.append({"type": "tool_result",
+                        "tool_use_id": c.id,
+                        "content": str(out)})
+
+    messages.append({"role": "user", "content": results})
+
+raise StepBudgetExceeded(step)     # no answer within budget: fail loudly
+\end{lstlisting}
+\end{example}
+
+Five features of those lines carry the chapter's argument, and each is worth locating in the code.
+The \code{messages} list is the agent's whole memory, resent in full on every pass;
+\code{TOOL\_DEFS} is the list of JSON objects from Section~\ref{section:ToolDefinitions},
+and \code{TOOLS} is the companion dictionary mapping each declared name to the Python function that implements it, which is where the definition and the implementation are finally joined.
+The reply is appended \emph{before} any tool runs, so the transcript records what the agent intended even when the tool then fails.
+The exit condition is the absence of a tool request: an agent stops when the model answers in prose rather than asking for an action, which means nothing in the loop itself decides that the work is finished.
+The \code{try}/\code{except} block is not defensive clutter but the mechanism of Section~\ref{section:FailureModes} in miniature,
+since the formatted exception is appended as an observation the model reads on its next pass and can act on, which is why a tool that fails informatively is worth more than one that fails silently.
+And the bound on \code{MAX\_STEPS} is the only thing standing between a confused agent and an unbounded run.
+
+One detail is idiomatic rather than conceptual and tends to puzzle first readers: tool results are sent back in a message with the \code{user} role, because from the model's vantage point they are information arriving from outside itself, in the same channel as the original request.
+Note too what is absent from the listing.
+There is no \code{Thought:} scaffold and no parsing of the model's prose, because tool calls arrive as structured fields rather than as text to be scraped; the ReAct rhythm of Figure~\ref{figure:ReAct} is realized by the message protocol itself, and the next subsection takes up where the reasoning step has gone.
+
 \subsection{Reasoning Models and Implicit ReAct}
 
 The ReAct pattern makes the thought step \emph{explicit}: the model is prompted to write its reasoning into the transcript before each action.
@@ -189,11 +262,16 @@ This makes the failure-mode discipline of Section~\ref{section:FailureModes} ---
 
 An agent that produces unstructured text is an endpoint; an agent that produces \emph{structured output}\index{Structured output} is a component that can be composed with other components.
 Structured outputs allow the result of one agent to serve as the input of the next without brittle string parsing.
+The failure this avoids is worth naming, because it is the ordinary way small research pipelines rot.
+If the agent reports ``the best expression I found is \code{x0*x1 + 3}, with an MSE of 0.0023'', the next stage has to recover two values by pattern-matching over English, and that extraction breaks on the day the model writes ``an MSE of roughly 0.0023'' instead.
+Structured output shifts the burden from guessing what the text meant to declaring, in advance, which fields must be present and what type each one has.
 
 \subsection{Output Schemas}
 
 The output of the agent's final action should conform to a schema known in advance.
 In Python, this is most naturally expressed as a typed dictionary, a dataclass, or a Pydantic model.
+Pydantic is a widely used library in which the fields and their types are declared as an ordinary class,
+and the declaration doubles as a validator that rejects anything not conforming: a missing field, an extra one, or an \code{mse} that arrived as the text \code{"0.0023"} rather than as a number.
 
 \begin{example}
 A structured output for a model discovery result:
@@ -227,6 +305,9 @@ If validation fails, the calling code returns the validation error to the model 
 \end{enumerate}
 
 The first mechanism makes schema-valid output far more likely and is preferable when the API supports it, but in both cases the calling code remains the authoritative validator.
+Where only the second mechanism is available, it is a small loop built exactly like the main one: parse the reply, and on failure append the validator's own complaint (\code{"complexity: field required"}) as the next message, which a capable model usually repairs on the first retry.
+Budget those retries the way the outer loop is budgeted.
+A schema the model cannot satisfy after two or three attempts is usually an ambiguous schema rather than a failing model, and the fix belongs in the field descriptions rather than in more retries.
 
 \section{Failure Modes}
 \label{section:FailureModes}
@@ -247,6 +328,8 @@ These calls fail at execution and return error messages; the model must recover 
 
 Good tool descriptions reduce the frequency of hallucinated arguments.
 Tool schemas with \code{enum} constraints for categorical parameters are particularly effective: the model is restricted to valid choices by the schema itself.
+An \code{enum} simply lists the permitted values of a field, so a \code{split} parameter declared as one of \code{"train"}, \code{"validation"}, \code{"test"} cannot be called with a plausible-sounding \code{"holdout"}.
+The general move is to push whatever can be checked into the schema, where it is enforced before the call, rather than into the description, where it is merely suggested.
 
 \subsection{Loops Without Progress}
 
@@ -258,6 +341,9 @@ The most common causes are:
 \item an error message that the model consistently misinterprets, or
 \item a constraint in the task that the model cannot satisfy with the available tools.
 \end{itemize}
+The third cause is the one to watch for, because it looks like stubbornness and is actually an incomplete tool set.
+The model calls the fitting tool with a column name it guessed from the task description, the tool answers with a key error, the model tries a near-synonym, and the cycle continues, because nothing in the tool set ever lets it ask what the columns are actually called.
+The fix is a tool that lists the schema of the loaded data, not a sterner instruction.
 The loop should have a maximum step count; if it is exceeded without producing a final answer, the loop should exit and report the failure.
 
 \subsection{Context Overrun}
@@ -265,12 +351,16 @@ The loop should have a maximum step count; if it is exceeded without producing a
 If the context window fills before the agent produces a final answer, the model cannot proceed.
 The loop must either truncate the history (losing information) or terminate.
 Long tool results, such as stack traces, raw data dumps, or verbose API responses, are the most common cause.
+The arithmetic is unforgiving: a single failed command can return a stack trace of several thousand tokens, and a handful of those will crowd out the task description the agent is still working from.
 Truncating tool results to their informative essentials is the primary mitigation.
+For a stack trace, keeping the first and last few lines usually preserves everything diagnostic, since that is where the exception type and the failing call site live.
 
 \subsection{Cascading Errors}
 
 A mistake in an early step propagates silently through subsequent steps.
 The model fits a model to the wrong data, reports a score on that data, and selects the model as the best, but the score is meaningless because the data was wrong from the start.
+The underlying pattern is familiar from ordinary analysis: a units mismatch in a loaded column, a date filter that silently drops the first year of a panel, a merge that quietly duplicates every matched row.
+What is new is only that no one is looking at the intermediate output unless the loop was written to look, and that a fluent final report can make a corrupted run read like a successful one.
 Defense against cascading errors requires:
 \begin{itemize}
 \item validation at each tool boundary (verify that the data loaded correctly before fitting),

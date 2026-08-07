@@ -24,6 +24,7 @@ Let $\mathcal{K}$ denote the body of domain knowledge relevant to a task (scient
 The context window can hold only a small fraction of $\mathcal{K}$ at any invocation.
 The \emph{retrieval problem} is to select the subset of $\mathcal{K}$ most relevant to the current query and place it in the context.
 Formally, given a query $q$ (the agent's current task description or question) and a corpus $\mathcal{K}$, return the $k$ passages from $\mathcal{K}$ that are most relevant to $q$.
+In practice $k$ is small, a handful of passages rather than hundreds, because retrieved text competes for the same window budget as the agent's instructions, its tools, and its accumulated history.
 
 \begin{remark}
 Retrieval is not automatically the right tool.
@@ -39,7 +40,9 @@ These systems fail when the query and the relevant passage use different vocabul
 
 \emph{Semantic retrieval}\index{Semantic retrieval} avoids this failure by representing both query and passage as vectors in a shared semantic space, and returning the passages whose vectors are closest to the query vector.
 Two passages about the same concept have similar vectors even if they use different words.
+The word \emph{shared} carries the weight here: the query and every passage are mapped by the same function into the same space, so their coordinates are directly comparable and geometric closeness can stand in for closeness in meaning.
 In current practice the two are usually combined rather than chosen between: a \emph{hybrid} index runs keyword and semantic retrieval together and merges their results, and the contextual-retrieval technique of Section~\ref{section:ContextualRetrieval} sharpens both at once.
+Keyword matching keeps its value precisely where meaning blurs: an exact identifier such as a gene name, a statute number, or the symbol one particular paper uses for a parameter is matched more reliably by the literal string than by any embedding of it.
 
 \section{Embeddings and Semantic Similarity}
 \label{section:Embeddings}
@@ -48,6 +51,12 @@ In current practice the two are usually combined rather than chosen between: a \
 
 An \emph{embedding}\index{Embedding} is a function $\phi: V^* \to \RealNumbers^d$ that maps a text passage to a real vector.
 Embedding models are trained so that semantically similar passages map to nearby vectors under a standard distance metric.
+
+Two pieces of that signature deserve unpacking.
+The domain $V^*$ is the set of all finite strings of text, so $\phi$ accepts a five-word query and a five-hundred-word passage alike, while the codomain $\RealNumbers^d$ has a \emph{fixed} dimension, typically between~768 and~3072 in current models, so both inputs come back as vectors of the same length and can therefore be compared.
+The function itself is a neural network trained on very large collections of text pairs known to belong together (a question and the passage that answers it, a title and its abstract), under an objective that pulls the vectors of related pairs together and pushes unrelated pairs apart.
+Its coordinates are not individually interpretable: no axis means ``biology,'' no single number can be read on its own, and only the relative geometry of the vectors carries meaning.
+In practice a researcher never touches the network: producing an embedding is one API call that takes a string and returns a list of $d$ floating-point numbers.
 
 \begin{definition}
 \label{definition:Embedding}
@@ -59,6 +68,9 @@ where $\mathrm{sim}$ is a similarity function, typically cosine similarity.
 The property is statistical rather than universal: no finite-dimensional embedding orders \emph{every} triple correctly, and retrieval quality depends on how often the inequality holds for the passages that matter.
 \end{definition}
 
+The definition is deliberately a statement about \emph{ordering} rather than about distances: it constrains which of two passages ranks closer to a third, and says nothing about what any particular similarity value means in absolute terms.
+That is exactly the guarantee retrieval needs, because a retrieval system only ever sorts candidates and keeps the top few.
+
 \subsection{Cosine Similarity}
 
 \emph{Cosine similarity}\index{Cosine similarity} measures the angle between two vectors, independent of their magnitude:
@@ -69,6 +81,7 @@ The property is statistical rather than universal: no finite-dimensional embeddi
 Values near~1 indicate high similarity; values near~0 indicate orthogonality (unrelated topics); values near $-1$ occur rarely and indicate strong opposition.
 In practice the cosine similarities produced by a trained text-embedding model occupy a compressed positive band rather than the full $[-1, 1]$ range: unrelated passages typically score well above~0, so a value like~$0.23$ should be read as ``much less similar,'' not as literal orthogonality.
 Cosine similarity is preferred over Euclidean distance because it is invariant to the magnitude of the embedding vectors, which vary with passage length and model implementation.
+The practical consequence of the compressed band is that absolute cutoffs do not transfer: a rule such as ``keep everything scoring above~$0.8$'' tuned on one embedding model or one corpus is meaningless on another, so either calibrate the cutoff against the score distribution of your own corpus or avoid cutoffs entirely and simply take the top~$k$.
 
 \begin{example}
 Embedding two domain passages and computing their similarity:
@@ -87,6 +100,7 @@ emb_density = embed("Material density is mass divided by volume")
 print(cosine_similarity(emb_drag, emb_resist))   # ~0.91 (illustrative) — similar
 print(cosine_similarity(emb_drag, emb_density))  # ~0.23 (illustrative) — much less similar
 \end{lstlisting}
+What to notice is the pair that scores high: those two passages share no content word at all (``drag force'' against ``aerodynamic resistance,'' ``the square of velocity'' against ``$v^2$''), so a keyword index would rank them as unrelated, while the embedding places them beside each other.
 \end{example}
 
 \section{Vector Search}
@@ -98,20 +112,26 @@ Given a corpus of $N$ embedded passages $\{\phi(p_i)\}_{i=1}^N$ and a query embe
 This is the \emph{$k$-nearest-neighbor problem} in $\RealNumbers^d$.\index{$k$-nearest-neighbor}
 
 Exact nearest-neighbor search is $O(N \cdot d)$ per query, linear in the corpus size.
+Concretely, one similarity score costs $d$ multiplications and additions, so a corpus of ten thousand passages at $d = 1536$ costs roughly fifteen million multiply-adds per query: milliseconds on a laptop.
 For the small corpora used in the course (hundreds to thousands of passages), exact search is fast enough.
 For larger corpora, \emph{approximate nearest-neighbor} (ANN) indices trade a small reduction in recall for a large reduction in query time (Johnson et al., 2021).
+Recall here is the fraction of the true top~$k$ that the approximate search actually returns, and the speed is bought by grouping vectors into neighborhoods and searching only the promising ones, accepting that the search will occasionally walk past a genuine neighbor.
 
 \subsection{Building a Retrieval Index}
 
 The workflow for building a retrieval system has three stages:
 \begin{enumerate}
 \item \textbf{Chunk.} Split the corpus into passages of a manageable size (typically 200--500 tokens).
+Those counts amount to roughly one to three paragraphs of English prose.
 Smaller chunks retrieve more precisely; larger chunks provide more context per retrieved passage.
+The choice matters more than its mechanical description suggests, because the chunk is the unit of retrieval: whatever the index returns, it returns whole chunks, so chunk size fixes the granularity of what the agent can be handed.
+It is equally the unit of representation, since a single vector must summarize the entire chunk; a forty-page paper embedded whole yields one point averaging its introduction, its methods, and its discussion, sitting vaguely near everything and decisively near nothing.
 
 \item \textbf{Embed.} Run each passage through the embedding model to produce a vector.
 Store the vectors alongside the passage text.
 
 \item \textbf{Index.} Build a data structure (a flat array for exact search, or an ANN index for approximate search) that supports efficient nearest-neighbor queries.
+The word \emph{index} promises something more exotic than it is: for exact search it is literally the $N \times d$ array of stored vectors plus the scan that reads it, and it earns the name only once the structure starts skipping candidates.
 \end{enumerate}
 
 At query time: embed the query, search the index for the $k$ nearest passage vectors, retrieve the corresponding texts, and inject them into the agent's context.
@@ -136,6 +156,9 @@ class FlatIndex:
         top_k  = np.argsort(scores)[::-1][:k]
         return [(self.passages[i], float(scores[i])) for i in top_k]
 \end{lstlisting}
+Two details in this listing carry the idea.
+Every stored vector is normalized once at build time, which turns Eq.~\eqref{equation:CosineSimilarity} into a plain inner product, so the whole search collapses to the single line \texttt{self.vectors @ q\_norm}: one matrix-vector product against the entire corpus.
+And the passage text is stored alongside the vectors, because what the agent eventually reads is text; the vectors exist only to decide \emph{which} text.
 \end{example}
 
 \subsection{Contextual Retrieval}
@@ -144,6 +167,8 @@ class FlatIndex:
 A chunk extracted in isolation loses the context of the document it came from.
 A passage reading ``the growth rate falls to zero at high density'' does not say which population, which model, or under what assumption; and the embedding of that fragment is correspondingly ambiguous.
 \emph{Contextual retrieval}\index{Contextual retrieval} (Anthropic, 2024) repairs this by using a language model to prepend a short, chunk-specific description of the surrounding document to each chunk \emph{before} it is embedded and indexed.
+Concretely, the ambiguous fragment above might be stored and embedded as ``From a chapter on logistic population growth, describing the model's behavior as the population $P$ approaches the carrying capacity $K$: the growth rate falls to zero at high density.''
+The added clause costs a few dozen tokens and moves the chunk's vector next to the queries about carrying capacity that the bare fragment would have missed.
 The enriched chunk feeds both the semantic index and a keyword index, so semantic and lexical matching reinforce each other rather than compete.
 On the source's benchmark, contextualizing the embeddings reduced retrieval failures by roughly a third, and adding contextual keyword matching by roughly a half; the technique modifies the \textbf{embed} stage of the pipeline above, not the architecture around it.
 These reductions compose, as Figure~\ref{figure:RetrievalStaircase} shows, which is the point: retrieval quality is a measurable quantity that improves in stackable increments, not a single knob to be tuned by feel.
@@ -175,11 +200,14 @@ The takeaway is not the exact numbers, which are benchmark-specific and will shi
 \begin{remark}
 Retrieval quality improves further with a second stage.
 A \emph{reranker}\index{Reranker} takes a generous first-pass candidate set, say the top~150 by vector similarity, and rescores each candidate against the query with a more expensive model, keeping only the best handful.
+That second model is more accurate because it reads the query and the candidate passage \emph{together} and scores the pair, instead of embedding each separately and comparing afterwards.
+Such a joint reading cannot be precomputed, which is precisely why it is unaffordable across a whole corpus and is confined to a shortlist.
 The pattern is general: a cheap, high-recall first stage followed by a precise, low-throughput second stage, which on the source's benchmark cut retrieval failures by about two-thirds overall (Anthropic, 2024).
 \end{remark}
 
 \begin{remark}
 Generating a context sentence for every chunk sounds expensive, but \emph{prompt caching} makes it cheap: the parent document is cached once and reused across all of its chunks rather than re-sent per chunk.
+Prompt caching is a provider-side facility that retains the processed form of a repeated prompt prefix, so each subsequent call beginning with the same document pays a reduced rate for that prefix instead of the full input price.
 The source reports a one-time cost on the order of a dollar per million document tokens (Anthropic, 2024), small enough that contextualization is a routine preprocessing step rather than a luxury.
 \end{remark}
 
@@ -263,6 +291,8 @@ growth. At high densities, the growth rate decreases to zero.
 same units (individuals, biomass, etc.).
 \end{lstlisting}
 When the agent is given data from a population dynamics experiment, retrieving this passage provides exactly the prior knowledge needed to constrain proposals to plausible functional forms.
+Notice that the entry is written to be found: a heading that names the concept, the closed-form expression, the limiting behavior at both extremes, and an explicit dimensional-constraint line.
+Each of those is a hook a query can match, and each is plain text rather than a figure or a typeset table, because the chunk that gets retrieved is exactly the text the model will read.
 \end{example}
 
 \section{Grounding as Constraint}
@@ -282,6 +312,13 @@ Instead of proposing arbitrary polynomial combinations, the agent proposes varia
 If the target is a rate with units $1/\text{time}$, and a proposed model has units $\text{mass}/\text{time}^2$, the mismatch can be detected and the proposal discarded before any fitting is attempted.
 \end{enumerate}
 
+\begin{example}
+The constraint line of the logistic corpus entry above supports a filter a reader can apply by hand to a proposed rate law.
+That line states that $r$ has units of $1/\text{time}$ and that $K$ carries the same units as the population $P$.
+The proposal $\dot{P} = r P (1 - P/K)$ passes, since $P/K$ is dimensionless and both sides are therefore a population per unit time.
+The proposal $\dot{P} = r P (1 - P) - K$ fails twice over: $1 - P$ subtracts a population from a pure number, and the trailing $K$ adds a population to a rate.
+\end{example}
+
 Together, these mechanisms shrink the search space to a plausible region.
 A search over a smaller, better-chosen space outperforms a search over a larger, undifferentiated space (provided the constraints are correct).
 
@@ -294,6 +331,8 @@ It helps when the retrieved knowledge is relevant and the domain is well-underst
 A dataset generated from the formula $y = e^{-x_1^2} \sin(x_2)$ is unusual (a product of Gaussian decay and oscillation, a functional form that rarely appears in domain corpora organized around named physical laws).
 If the corpus contains no entries about oscillatory-times-Gaussian forms, retrieval will return the nearest available match (perhaps a simple exponential decay), which could steer the agent away from the correct form.
 In this case, the ungrounded agent performs better than the grounded one because the domain prior is misaligned.
+The mechanism is worth naming: a similarity index has no way to report that nothing it holds is relevant, since it ranks whatever it has and returns the top~$k$ regardless, so an absent answer arrives looking exactly like a present one.
+Guarding against that takes an explicit score threshold or a reranker permitted to hand back an empty shortlist.
 \end{example}
 
 \begin{remark}

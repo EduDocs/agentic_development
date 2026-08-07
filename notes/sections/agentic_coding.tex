@@ -11,6 +11,7 @@ This distinction matters because agentic tools can produce large volumes of plau
 The risk is not that the agent writes bad code; it is that the researcher stops reading.
 The moment the researcher outsources \emph{comprehension} to the agent, the work ceases to be reproducible, auditable, or defensible.
 Code ownership is key.
+A practical test of it: if a collaborator, a reviewer, or a thesis committee asked why a particular line is there, could you answer without replaying the session that produced it?
 
 Section~\ref{section:AgenticCodingLoop} lays out the read--direct--inspect loop; the sections that follow sharpen each phase in turn: directing the agent with precise instructions, reading the diff it produces (Section~\ref{section:ReadingDiff}), pinning a reproducible environment (Section~\ref{section:ReproducibleEnvironments}), and keeping a clean version history so the work stays auditable.
 
@@ -26,13 +27,22 @@ Agentic coding proceeds in a cycle that alternates between researcher direction 
 \item \textbf{Commit or revise.} When the change is appropriate and understood, commit it. If not, provide corrective direction and iterate through the loop.
 \end{enumerate}
 
+One word in that list carries technical weight worth pinning down before the loop can be run.
+To \emph{commit}\index{Commit} is to record the project's current state in its version history, along with a short note saying what changed and why.
+A commit is not a backup of a file: it is a labelled point the project can be returned to, compared against, or undone back to, and it is what turns a session of edits into a record someone else can audit.
+
 This iterative process is deliberately incremental.
 Each cycle should produce a small, reviewable change, not a thousand-line scaffolding dump.
 A change the researcher cannot fully read is a change the researcher does not own.
 
 What makes the execute step more than fast code generation is the \emph{verification oracle}\index{Verification oracle}: the interpreter, test runner, or compiler the agent can invoke on its own output.
+Each of those is a program that answers a question the agent cannot settle by reasoning alone.
+The Python interpreter answers ``does this run at all'';
+a \emph{test}\index{Test} is a small piece of code that calls your code on an input whose correct answer is already known and reports whether the two agree,
+and a test runner is the program that executes every such check and tallies the failures.
 In a chat interface, ``this code runs'' is a prediction.
 In an agentic rig, it is a checked fact, and a failure returns a structured error signal (the line number, the type mismatch, the stack trace) that tells the agent exactly which assumption was violated.
+A stack trace is simply the interpreter's report of where execution stopped and through which chain of calls it got there, which is why an agent can often repair a crash it did not anticipate.
 This is why the loop converges even when the first attempt is wrong: each run--fail--fix cycle is grounded feedback, denser and more reliable than any specification the researcher could have written up front.
 The same oracle, formalized as a scoring function, becomes the evaluation harness of Chapter~\ref{chapter:Evaluation}.
 
@@ -61,7 +71,9 @@ Vague instructions produce vague implementations; incomplete specifications prod
 \subsection{Specify the Interface First}
 
 Before asking the agent to implement a function, state its interface: name, parameters, return type, and any invariants.
+The \emph{interface} is everything a caller needs to know in order to use the function without reading its body, and an \emph{invariant} is a property that must hold on every call: that the returned value is never negative, that two arrays have matching lengths, that the input is left unmodified.
 A well-specified interface constrains the implementation space and makes correctness easier to verify.
+What it buys is a contract fixed before any code exists: with the interface written down, the researcher can say whether an implementation is right without first reconstructing what was intended.
 
 \begin{example}
 A poor specification:
@@ -76,6 +88,8 @@ def score(model, X_test, y_test):
     The return value is a non-negative float.
     Raise ValueError if arrays have incompatible shapes."""
 \end{lstlisting}
+The second version is not code the researcher had to write: it is a signature and a docstring, handed to the agent \emph{as} the instruction, with the body left for the agent to fill in.
+Notice that it pins four separate things: what is computed, what the inputs are, what the output looks like, and what should happen when the inputs are malformed.
 The second version leaves far less room to misunderstand the task; a precise interface constrains ambiguity, though it cannot rule out semantic misunderstanding entirely.
 \end{example}
 
@@ -83,7 +97,9 @@ The second version leaves far less room to misunderstand the task; a precise int
 
 When the implementation must interact with existing code, name the files explicitly.
 ``Extend the loader to support CSV files'' is less precise than ``modify \code{src/loader.py}, specifically the \code{load\_dataset} function, to accept files with a \code{.csv} extension as well as \code{.npz}.''
+The notation \code{src/loader.py} is a path: it names the file \code{loader.py} inside the folder \code{src} inside the project, and it is how one refers to a file unambiguously when a project holds dozens of them.
 The agent may otherwise modify a different file, or write new code that duplicates existing functionality.
+This is a common and expensive failure: the project ends up with two loaders that disagree, and the one being tested is not the one being run.
 
 \subsection{One Task per Instruction}
 
@@ -117,9 +133,29 @@ A minimal diff showing the addition of a CSV branch to a loader:
 +        return X, y
      raise ValueError(f"Unsupported format: {path}")
 \end{lstlisting}
+The layout is worth decoding once, since every diff a reader will ever see shares it.
+The first two lines name the file as it was (\code{a/}) and as it now is (\code{b/});
+the line beginning \code{@@} locates the excerpt, reporting where in the file the shown region starts and how long it is before and after the change.
+Lines beginning with a space are unchanged context, printed only so the reader can see where the new lines land,
+and the text after the closing \code{@@} names the enclosing function.
+A diff therefore shows a neighborhood, not a whole file: it is meant to be read in full in seconds, which is what makes reading every one of them a realistic habit rather than a pious one.
 Reading this diff reveals that the CSV branch assumes the target column is named \code{'target'} and that the remaining columns are all features.
 Neither of these constraints appears in the instruction; both affect correctness on real data.
 The diff also introduces a dependency on \code{pandas} (the \code{pd} alias) that must already be present in the environment, itself a change worth catching in the diff rather than at run time on a clean machine.
+\end{example}
+
+\begin{example}
+Consequential changes are not always large ones.
+Asked to make the loader robust to malformed input, an agent might change a single line:
+\begin{lstlisting}[language=diff]
+-        df = pd.read_csv(path)
++        df = pd.read_csv(path).dropna()
+\end{lstlisting}
+The code runs, the shapes printed to the screen look reasonable, and any test that only checks the loader returns two arrays still passes.
+What changed is the sample: every row holding a single missing measurement is now silently discarded.
+An economist loses the households that skipped one survey question, an ecologist loses the sites with one unread sensor, and in both cases the remaining rows are no longer a random subset.
+Nothing downstream announces this, and no oracle in the loop is asking the question.
+The diff is the only place the change is visible before the results are written up.
 \end{example}
 
 Reading diffs develops two habits.
@@ -135,11 +171,14 @@ Its companion competences in that framework, \emph{description} and \emph{discer
 \label{section:ReproducibleEnvironments}
 
 A piece of code is reproducible when anyone can clone the repository, follow the documented procedure, and obtain the same result.\index{Reproducible environment}
+To \emph{clone} a repository is to copy the project, with its full history, onto another machine; the phrase stands in for the realistic case in which a collaborator, a referee, or the researcher a year from now begins with nothing but the repository and a computer that has never run this code.
 For Python projects, reproducibility requires that the exact versions of all dependencies be recorded and restorable.
+The failure this guards against is mundane: an analysis works on your laptop because you happened to install a library there two years ago, and the repository never says so, so it works nowhere else.
 
 \subsection{Dependency Pinning}
 
 A \emph{pinned dependency}\index{Dependency pinning} specifies an exact package version, not a version range.
+Both files below are plain text, live at the top of the project, and are read by the installer; the \code{==} is the pin, meaning ``this version and no other.''
 
 \begin{example}
 A loosely specified dependency and its pinned equivalent:
@@ -153,7 +192,9 @@ numpy==2.1.3
 scikit-learn==1.6.1
 scipy==1.14.1
 \end{lstlisting}
+Notice that the pinned list contains \code{scipy}, which nobody asked for: it arrives because \code{scikit-learn} depends on it, and pinning what your dependencies themselves depend on is what makes the environment reconstructable rather than merely described.
 The loose specification allows a collaborator to install a different version than the author used, potentially changing numerical results.
+A changed default solver or a reseeded random-number stream between two minor releases is enough to move a fitted coefficient, and two runs of the same analysis then disagree for reasons no one can see in the code.
 The pinned specification pins the Python package versions, a necessary step toward reproducibility, though not by itself a guarantee of an identical environment.
 \end{example}
 
@@ -174,6 +215,12 @@ source .venv/bin/activate          # activate it (macOS / Linux)
 pip install -r requirements.txt    # install pinned dependencies
 \end{lstlisting}
 
+The three commands do three different things.
+The first creates a folder named \code{.venv} inside the project holding a private copy of Python;
+the second rewires the terminal session so that \code{python} and \code{pip} refer to that copy instead of the machine-wide one;
+the third installs the pinned versions into it.
+Activation lasts only for that terminal window, which is why a freshly opened terminal must activate again before the project's packages are visible: a great deal of early confusion is nothing more than a forgotten activation.
+
 Modern projects often use tools like \code{uv} or \code{poetry} to manage virtual environments and pin dependencies automatically.
 
 \subsection{One-Command Run}
@@ -190,6 +237,8 @@ run:
 # the researcher (or evaluator) runs:
 just run
 \end{lstlisting}
+A \code{justfile} is a plain text file at the top of the project listing named recipes; \code{just run} looks up the recipe called \code{run} and executes the commands underneath it.
+The point is not the tool but the relocation of knowledge: the exact invocation is written down once by the author rather than reconstructed by every reader from a paragraph of prose in a README.
 If an evaluator cannot reproduce the result with one command, the work is not reproducible.
 \end{example}
 
@@ -202,6 +251,8 @@ An agent that is given broad latitude will often produce long sessions of change
 
 An \emph{atomic commit}\index{Atomic commit} is a commit that contains exactly one conceptual change.
 Atomic commits make the history navigable: each commit can be understood, reverted, or cherry-picked independently.
+To \emph{revert} a commit is to undo exactly that change while keeping everything committed after it; to \emph{cherry-pick} one is to copy that change, and only that change, onto a different line of work.
+Both operations are only as sharp as the commits allow, because neither can extract half of a commit: this is the whole practical argument for keeping them atomic.
 A cohesive change and the tests that verify it are one conceptual change, not two: splitting an implementation from its tests leaves commits that do not pass on their own, so the aim is a commit that is coherent, tested, and independently reviewable rather than merely small.
 
 \begin{principle}
@@ -224,8 +275,9 @@ git commit -m "fix bug"
 # better
 git commit -m "Score on validation split, not full dataset (was leaking into fitness)"
 \end{lstlisting}
+The bug it names is a leak: the model was being scored on data it had already been fitted to, which inflates the score and makes a weak model look strong.
 The second message names the bug and explains why it matters.
-Six months later, the author will be grateful for it.
+Six months later, the author will be grateful for it, and so will anyone auditing which reported numbers were affected.
 \end{example}
 
 \section*{Further Reading}

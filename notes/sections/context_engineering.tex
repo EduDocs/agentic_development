@@ -5,6 +5,10 @@
 A large language model is, at each invocation, a function of its context.\index{Context engineering}
 Its instructions, history, domain knowledge, and the results of previous tool calls are all encoded in the same token sequence the model reads.
 The model has no persistent state outside this sequence: what it does not read, it does not know.
+Two terms in that claim are worth pinning down before any formalism arrives.
+A \emph{token} is the unit the model actually reads: a sub-word fragment, roughly three quarters of an English word on average, so a page of prose is a few hundred tokens and a full research article a few thousand.
+And ``no persistent state'' is meant literally: when a session ends, nothing the agent learned survives except what was written to a file, and the next session begins by reading that file back in as ordinary text.
+An agent that appears to remember your project's conventions from yesterday is reading them off disk, not recalling them.
 This constraint makes \emph{context engineering}, the deliberate construction of what enters the context window, the primary lever available to the agent builder.
 
 This chapter distinguishes two related but distinct disciplines.
@@ -17,6 +21,8 @@ Section~\ref{section:LLMContextFunction} develops the view of the model as a fun
 
 Let $V$ denote the model's \emph{token vocabulary}\index{Token vocabulary}: the finite set of tokens it reads and emits, each with its own embedding vector.
 Let $V^*$ denote the space of all finite token sequences over $V$, and let $\mathcal{A}$ denote the space of possible actions (tool calls plus text responses).
+The star is the standard notation for ``any finite sequence of these symbols, of any length,'' so $V^*$ is the space of every conversation, file, and tool output that could ever be handed to the model.
+The breadth of $\mathcal{A}$ is deliberate: writing a paragraph and calling a tool (running a script, reading a file, querying a database) are both elements of it, because the model produces both the same way, by emitting tokens.
 A language model $M$ can be understood informally as a mapping
 \begin{equation}
 M : V^* \to \Delta(\mathcal{A}) ,
@@ -24,6 +30,11 @@ M : V^* \to \Delta(\mathcal{A}) ,
 \end{equation}
 where $\Delta(\mathcal{A})$ is the set of probability distributions over actions.
 The context — the full token sequence including system prompt, prior turns, and any injected material — determines this distribution completely.
+The \emph{system prompt}\index{System prompt} named there is not a privileged side channel: it is the block of standing instructions that happens to be placed ahead of everything else in the sequence.
+Two features of Eq.~\eqref{equation:ModelAsFunction} carry the rest of the chapter.
+Its domain is $V^*$ alone, with no second argument for hidden memory, user identity, or last week's session, so anything that should shape behavior must be written into the token sequence.
+Its codomain is $\Delta(\mathcal{A})$ rather than $\mathcal{A}$: the model does not return an answer, it returns a probability distribution over answers, from which one is then drawn.
+That distinction is what the next principle turns on, and it is why an agent can give two different answers to the same question without anything being broken.
 This view has a direct practical consequence.
 
 \begin{principle}
@@ -33,6 +44,10 @@ The realized \emph{sample} depends further on the sampling temperature (introduc
 The practical consequence is unchanged: if the agent behaves unexpectedly, look first to the context, either something unexpected is present, or something necessary is absent.
 \end{principle}
 
+The advice is more useful than it sounds, because the reflex it displaces is so common.
+An agent that keeps writing its output to the wrong directory is rarely suffering a reasoning failure: either a stale instruction naming that directory is still sitting in the window, or the correct path was never put there in the first place.
+Inspecting what the model was actually given is faster than rewording the request, and it is the step most researchers skip.
+
 \subsection{The Context Window}
 
 The \emph{context window}\index{Context window} is the finite-length sequence that $M$ receives at a single invocation.
@@ -40,6 +55,8 @@ Window sizes for frontier models in 2025–2026 range from roughly 100,000 to 1,
 This is large but not unlimited: a dense academic paper runs roughly 8{,}000--15{,}000 tokens and a book-length monograph 150{,}000--500{,}000, while a large codebase can exceed any window.
 These figures are best read as a point on a fast-moving trajectory rather than a fixed ceiling: the first 100,000-token window was itself a frontier result in 2023, an order-of-magnitude jump over the few thousand tokens available shortly before (Anthropic, 2023), and the limit has kept climbing since.
 The practical lesson survives each increase: reason about how to \emph{use} a window rather than assume the next one will be large enough to make the question moot.
+It survives partly because in agentic work the unit that fills the window is not the document but the session.
+A single run that opens a dozen source files, executes a test suite, and reads back the failures can spend tens of thousands of tokens on tool output alone, so windows fill from beneath long before anyone deliberately pastes in a book.
 
 Even within the window, not all tokens are equal.
 Empirical studies consistently find \emph{recency bias} (later tokens receive more weight) and \emph{primacy bias} (early tokens, particularly system-prompt content, also receive elevated attention), with a \emph{lost-in-the-middle} effect (Liu et al., 2024) where relevant information buried in the center of a long context is underused (Figure~\ref{figure:LostInTheMiddle}).
@@ -82,10 +99,15 @@ On this view the lost-in-the-middle curve is the visible signature of a budget s
 
 The model samples an action from the distribution $M(C)$.
 The \emph{temperature}\index{Temperature} parameter divides the logits by the temperature before the softmax; the limiting case of temperature~0 is taken to mean deterministic greedy selection of the highest-logit token (the argmax) rather than a literal division by zero, and higher temperatures flatten the distribution and produce more varied output.
+The \emph{logits}\index{Logits} are the raw scores the model assigns each candidate next token, and the \emph{softmax} is the exponential-normalization step that turns those scores into probabilities summing to one.
+Dividing by a number below one exaggerates the gaps between scores and concentrates probability on the leading token; dividing by a number above one shrinks the gaps and spreads probability across the rest of the vocabulary.
+What a researcher observes is simply this: near temperature~0, asking the same question twice returns near-identical text, while near temperature~1 the two answers differ in wording and sometimes in approach.
 
 For most agentic tasks, low temperature is preferred: the agent should follow instructions precisely rather than improvising.
 Higher temperatures are appropriate when the goal is to generate diverse candidates, for example, during the proposal step of an evolutionary search (Chapter~\ref{chapter:EvolutionaryFrameworks}).
 Entropy and randomness is partly what make inference time compute possible, and agentic evolutionary frameworks successful.
+\emph{Inference-time compute}\index{Inference-time compute} names the practice of spending more computation at the moment a model is used rather than only when it was trained: sampling many candidates, reasoning at greater length, retrying a failed attempt.
+That spending buys nothing if every sample is the same sample, so a nonzero temperature is the precondition for it, and by extension for any search that improves by generating alternatives and keeping the best.
 
 \section{Prompt Engineering}
 \label{section:PromptEngineering}
@@ -125,10 +147,30 @@ A single instruction that asks the model to perform many steps is more error-pro
 Where possible, break multi-part tasks into explicit stages.
 \end{enumerate}
 
+\begin{example}
+The five principles applied to a single request.
+A weak instruction:
+\begin{lstlisting}
+Clean up the survey data and see if the treatment worked.
+\end{lstlisting}
+A stronger one:
+\begin{lstlisting}
+Read data/survey_2024.csv.
+Step 1: drop rows where income is missing; report how many were dropped.
+Step 2: regress income on treatment plus the controls in notes/controls.md.
+Step 3: return a JSON object with keys coef, se, n for the treatment term.
+Do not modify data/survey_2024.csv; write any new file into output/.
+\end{lstlisting}
+The second version is not merely longer.
+It names the file rather than the topic (specificity), fixes the shape of the return value so a script can consume it (format), splits the work into three stages each of which can be checked on its own (decomposition), and forbids the one action that would be expensive to undo (constraint).
+Each removed ambiguity is one fewer decision the model makes on your behalf without telling you.
+\end{example}
+
 \subsection{Chain-of-Thought Prompting}
 
 \emph{Chain-of-thought prompting}\index{Chain-of-thought prompting} (Wei et al., 2022) encourages the model to work through a task before committing to a final answer.
 On tasks that require multi-step reasoning, prompting for intermediate steps, classically think step-by-step, can substantially improve accuracy, because it conditions the final answer on intermediate conclusions and reduces errors from premature closure.
+\emph{Premature closure} is the failure of committing to an answer before the quantities that determine it have been computed: asked point-blank for a $p$-value, a model can emit a plausible-looking number, whereas asked first to state the test, the sample sizes, and the statistic, it tends to produce a number consistent with those.
 The general principle is to \emph{allocate reasoning effort where the task benefits} and to ask for concise, checkable evidence --- a short derivation, the values used, the alternative rejected --- rather than reasoning for its own sake.
 Two cautions keep this current.
 Exposed step-by-step text is neither required nor guaranteed: modern reasoning models perform the reasoning internally and expose only a summary, or nothing at all (Chapter~\ref{chapter:HowWeGotHere}), and even when a trace is shown it is not a faithful audit log of how the answer was actually reached.
@@ -150,6 +192,9 @@ A well-engineered context for an agentic session has a layered structure.
 \item \textbf{System prompt.} The invariant instructions that define the agent's role, tools, behavioral norms, and project-specific conventions.
 In practice a researcher rarely writes this layer as raw text: it is realized by the project's \emph{instruction files}, the \code{CLAUDE.md} (or its cross-tool equivalent \code{AGENTS.md}) at the repository root that an agentic CLI loads automatically at the start of every session (Section~\ref{section:InstructionFiles}; the automatic loading is developed in Section~\ref{section:AutomatedContext}).
 This content is static across sessions but should be reviewed and updated when the project's needs change.
+Two pieces of that description deserve unpacking for a reader new to the tooling.
+A \emph{repository} is a project folder once it is placed under version control (Chapter~\ref{chapter:AgenticRig}), and its \emph{root} is the top-level directory holding the code, data, and notes.
+An \emph{agentic CLI}\index{Agentic CLI} is the command-line program that runs the agent loop inside that directory; on startup it reads \code{CLAUDE.md} from the root and places its contents ahead of the conversation, which makes this layer something a researcher edits in an ordinary text editor rather than something buried in code.
 
 \item \textbf{Task description.} The specific goal of the current session, provided at the start of the conversation.
 This is where the researcher specifies what to accomplish today.
@@ -170,6 +215,7 @@ Researchers who spend hours crafting a perfect system prompt but place nothing r
 
 Not everything that is \emph{relevant} should be placed in the context: filling the window with loosely related material can degrade performance as reliably as providing too little.
 The right question is not ``what is relevant to the project?'' but ``what does the agent need to know \emph{right now} to take the next action correctly?''
+The cost of ignoring this is concrete rather than theoretical: an agent handed an entire repository when it needed one data schema will often edit a plausible but wrong file, precisely because several files in the window matched the description it was given.
 
 \begin{principle}
 \label{principle:SelectiveContext}
@@ -190,6 +236,7 @@ When the necessary context exceeds what can be injected directly, three strategi
 
 \begin{enumerate}
 \item \textbf{Retrieval.} Index a large corpus and retrieve the most relevant chunks for the current task.
+To \emph{index} a corpus is to pre-process it once into retrievable pieces (\emph{chunks}: paragraphs or sections rather than whole documents) so that a later query can pull back only the few that bear on it.
 This is the subject of Chapter~\ref{chapter:Retrieval}.
 Retrieval and long context are a genuine tradeoff rather than a settled choice: when a query must synthesize evidence spread across an entire document, loading the whole text can beat retrieving fragments of it (Anthropic, 2023), whereas retrieval wins when the relevant knowledge is a small, locatable slice of a corpus far larger than any window.
 
@@ -198,6 +245,7 @@ The summary trades recall for brevity; its quality determines how much informati
 
 \item \textbf{Reference, not inclusion.} Give the agent a pointer to a file and the ability to read it, rather than injecting the file's contents.
 This works when the agent can selectively read only the sections it needs.
+It is what a researcher already does with a four-hundred-page instrument manual: the agent is told the file exists and given a tool that searches it, and it reads the two pages on the calibration routine only when a calibration question arises.
 \end{enumerate}
 
 \section{Automated Context Management}
@@ -217,6 +265,20 @@ Hooks can inject context by:
 \item Summarizing which files have changed since the last session.
 \end{itemize}
 
+A \emph{trigger event} is simply a point in the agent's loop at which the surrounding tool agrees to run a command you supply, and nothing about the hook itself is intelligent: it is an ordinary command whose printed output is pasted into the context.
+That is exactly why hooks are dependable, and why they belong to context engineering rather than to prompting: they do not ask the model to remember something, they put it in front of the model.
+
+\begin{example}
+A session-start hook that prints three lines of project status.
+Whatever the commands write to the screen is placed into the agent's context before it reads your first request:
+\begin{lstlisting}[language=bash]
+git log -1 --oneline          # the most recent recorded change
+git status --short            # files edited but not yet recorded
+tail -n 3 results/latest.txt  # the last evaluation numbers
+\end{lstlisting}
+The agent therefore opens every session already knowing what moved since the previous one, with no one retyping it and no chance of the researcher misremembering.
+\end{example}
+
 \subsection{Instruction File Hierarchy}
 
 The instruction file hierarchy discussed in Section~\ref{section:InstructionFiles} is itself a form of automated context management: the \code{CLAUDE.md} at the root of the project is loaded automatically at the start of every session.
@@ -226,13 +288,18 @@ A well-maintained \code{CLAUDE.md} means the agent starts every session knowing 
 
 Where hooks and instruction files inject context with project-specific scripts, the \emph{Model Context Protocol} (MCP)\index{Model Context Protocol} standardizes the mechanism (Anthropic, 2024).
 MCP is an open client--server protocol: a \emph{server} exposes tools, resources, and prompts through a typed interface, and any MCP-aware \emph{client} (an agentic CLI, an editor, a chat application) can attach to it and offer its capabilities to the model.
+For a reader without a software background, that vocabulary carries no mystery.
+A \emph{protocol} is an agreed format two programs use to talk; a \emph{server} is a small program that waits for requests and answers them; a \emph{client} is whatever makes the requests.
+A \emph{typed interface} means each offered tool declares its name, the arguments it accepts, and what it returns, so the model can be told what exists without anyone hard-coding that list into the agent.
 Its value is composability.
 A single database server, documentation server, or issue-tracker server, written once, works across every client that speaks the protocol, rather than being re-implemented as a bespoke hook per project.
+Concretely, a lab that wraps its sample database behind one MCP server can reach it from a terminal agent, an editor, and a chat interface without writing the wrapper three times.
 In the vocabulary of this chapter, MCP is automated context management with a standard interface: it is the protocol-level counterpart to the \code{CLAUDE.md} hierarchy, supplying tools and retrievable resources on demand where the instruction file supplies static conventions.
 
 \begin{remark}
 MCP's convenience carries a context cost the finite-window view predicts.
 Loading every attached server's tool definitions into the window up front spends the attention budget before any work begins, and it does not scale to hundreds of tools.
+A tool's \emph{schema} is its full argument specification, which runs to hundreds of tokens once every parameter, type, and description is written out, so a few dozen attached tools can consume a meaningful share of the window before the first request is read.
 The emerging mitigation, as of 2026, is \emph{progressive disclosure}\index{Progressive disclosure}: expose each tool's metadata cheaply and load its full schema only when a task calls for it, so the window carries the definitions in use rather than the entire catalogue (Anthropic, 2025).
 \end{remark}
 
@@ -240,12 +307,15 @@ The emerging mitigation, as of 2026, is \emph{progressive disclosure}\index{Prog
 
 Much of an agent's context is stable across calls: the system prompt, the instruction files, and any large reference document injected for the task.
 \emph{Prompt caching}\index{Prompt caching} lets the API layer store this stable prefix so that later calls in the same loop pay only for the new tokens, rather than reprocessing the whole prefix each time.
+The \emph{API layer} here is the service that receives each request and runs the model on it, so the caching happens on the far side of the network rather than inside your agent, and a \emph{prefix} is just an initial segment of the token sequence: everything up to the first token that differs from last time.
 For a single request the saving is modest.
 For an evolutionary run that fires hundreds of mutation calls against the same domain corpus and system prompt (Chapter~\ref{chapter:EvolutionaryFrameworks}), caching is often the single largest cost lever, and it ties the context-engineering discipline of this chapter directly to the cost-aware search of Section~\ref{section:CostAwareSearch}.
 
 Because the cache reuses an unchanged \emph{prefix}, the order of the window is not incidental: everything before the first change stays cached, and everything after it must be reprocessed.
 The discipline that follows is to arrange context from most stable to most volatile: system prompt and tool definitions first, then the domain corpus and few-shot examples, and only then the per-call content that changes every mutation (the current candidate, the latest turn).
 An evolutionary loop that keeps this shared prefix byte-identical across mutations pays the full context cost once and only the marginal cost thereafter; one that reshuffles the prefix each round defeats the cache and pays in full every time.
+Byte-identical is a strict condition and easy to break without noticing: stamping the current time into the header, listing files in whatever order the file system returns them, or letting a tool print results in a nondeterministic order each changes the prefix and forces the whole thing to be reprocessed.
+A run whose cost quietly fails to fall after the first call is usually announcing one of these.
 
 \subsection{Agentic Context Engineering}
 \label{subsection:AgenticContextEng}
@@ -265,13 +335,27 @@ The first is bounded by the window and by your own reading; the second is bounde
 
 What makes a file system conducive to this is ordinary structure, not special infrastructure.
 A useful research corpus is \emph{legible}, stored as plain text, markdown, or \LaTeX{} source rather than opaque PDF, so that \code{grep}, \code{sed}, and \code{ack} work on it directly; it is indexed by a \emph{catalog} the agent reads first, a single file mapping each identifier to a one-line description; and it is fronted by per-source \emph{synopses}, cheap token-light summaries the agent scans before opening any full paper.
+The three tools named there are decades old and worth knowing by name: \code{grep} searches files for a pattern and prints the matching lines, \code{sed} rewrites text by rule as it streams past, and \code{ack} is a search tool tuned for large source trees.
+All three are exact, cost nothing to run, and are useless against a PDF, which is the practical reason the legibility requirement comes first.
 The catalog and synopses apply \emph{progressive disclosure}, met above for tools, to a corpus of a thousand papers: the agent spends a few tokens to survey the whole library and spends its window only on the handful it decides to read in full.
+
+\begin{example}
+The catalog is deliberately cheap: one line per source, giving an identifier, a title, and the claim that would make you open it.
+\begin{lstlisting}
+# CATALOG.md
+arXiv-2307.03172 | Lost in the Middle | long-context recall sags in the middle
+arXiv-2201.11903 | Chain-of-Thought   | intermediate steps aid multi-step tasks
+\end{lstlisting}
+A thousand such lines cost a few thousand tokens, less than one full paper, and they are what lets the agent decide which two papers are worth opening.
+The corpus on disk may be a hundred times larger than the window; the catalog is what makes that size usable rather than merely present.
+\end{example}
 
 The capability this structure buys is \emph{reverse} search.
 Forward search is easy and rarely the problem: given an arXiv identifier, the catalog and its synopsis say what the paper is about.
 The valuable direction is the reverse, from a question to the sources that bear on it: which of the thousand papers help answer \emph{this} one?
 A legible, catalogued corpus lets an agent work the way a researcher would, grep for the terms, read the synopses of the hits, follow citations, refine, and read a few in full, a multi-pass search whose every step is exact and inspectable.
 Embedding a corpus into vectors and retrieving by approximate nearest neighbor is the other standard answer, developed in Chapter~\ref{chapter:Retrieval}; the point to carry here is that approximate similarity is not always the right tool.
+To \emph{embed} a text is to map it to a vector of numbers so that passages about similar things land near one another, and \emph{approximate nearest neighbor} search then returns the stored vectors closest to a query's vector, quickly and without comparing against every one.
 A vector store returns what is near in embedding space, which can miss the exactly-relevant source and cannot be examined step by step, so for problems where precision or a legible trail matters, an agent searching a well-structured file system with ordinary tools is a first-class alternative, and often the better one.
 
 The premise of the whole move is \emph{trust}.
@@ -287,6 +371,8 @@ The answer is the same as for any other engineering choice: measure it.
 \begin{enumerate}
 \item \textbf{Ablation.} Remove one element of the context (a retrieved document, a few-shot example, a section of the system prompt) and measure whether performance on a held-out task set changes.
 If removing it makes no difference, it is not contributing.
+The move is the familiar one from any experimental discipline, a knockout, a dropped regressor, a deleted term: hold everything else fixed, take one piece away, and see whether the outcome moves.
+The \emph{held-out task set} is a collection of tasks whose correct answers you know but which were not consulted while the context was being tuned, so that a gain measured on it is not merely a gain at fitting your own examples.
 
 \item \textbf{Prompt sensitivity.} Run the same task with several small variations of the instruction and observe the variance in output.
 High variance indicates the model is sensitive to phrasing, which in turn indicates the instruction is under-specified.

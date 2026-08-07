@@ -45,6 +45,29 @@ Starting from $\Population_0$, the loop produces generations $\Population_1, \Po
 \end{equation}
 \end{definition}
 
+In words, the tuple names the five things that must be supplied before any evolution can run, and nothing else.
+$\Artifacts$ says what kind of object is being evolved (here, an algebraic expression such as \code{x0 * exp(-x1)}).
+$\Fitness$ says how good one such object is, as a single number a machine can compute without asking anyone's opinion.
+$\Mutate$ says how to make a new object out of an existing one.
+$\Select$ says which objects survive a round.
+$\Population_0$ says where the search starts.
+A biologist will recognize the vocabulary immediately: $\Artifacts$ is the space of possible genotypes, $\Fitness$ is the environment that scores them, $\Mutate$ is the source of heritable variation, and $\Select$ is the pressure deciding which individuals get to reproduce.
+The analogy is close enough to be load-bearing throughout this chapter, with one difference worth naming up front: the variation operator here is not random, it is a language model carrying priors about which variations are worth trying at all (Section~\ref{section:MutationOperators}).
+
+The recurrence uses $\Select$ twice, and the two uses do different jobs.
+The inner $\Select(\Population_t)$ chooses the \emph{parents}, the survivors that will be mutated; the outer $\Select$ prunes the enlarged pool back down to a next generation of fixed size.
+Reading Eq.~\eqref{equation:EvolutionaryLoop} from the inside out therefore traces one round in four moves: choose parents, mutate each parent once, pool parents together with their offspring, keep the best of that pool.
+
+\begin{example}
+The tuple becomes concrete as soon as it is filled in.
+For the symbolic-regression runs of this chapter, $\Artifacts$ is the set of algebraic expressions built from the variables \code{x0, x1, x2}, numeric constants, and a fixed operator set ($+$, $-$, $\times$, $\div$, \code{exp}, \code{log}, \code{sqrt}), capped at some node budget so expressions cannot grow without limit.
+$\Fitness$ is the composite score $\Score = \mathrm{MSE} + \lambda C$ returned by the evaluation harness of Chapter~\ref{chapter:Evaluation}.
+$\Mutate$ is one call to a language model with the prompt of Section~\ref{section:MutationOperators}, returning one edited expression.
+$\Select$ keeps the eight lowest-scoring candidates.
+$\Population_0$ is the twenty expressions a first proposer pass produced before any evolution began.
+Nothing in that list is exotic, and every entry is a knob: changing the operator set, the score, the prompt, the survivor count, or the seeding pass changes the search, which is why the capstone is mostly a sequence of deliberate choices about these five slots.
+\end{example}
+
 The key insight from~\eqref{equation:EvolutionaryLoop} is that the next generation is drawn from the union of (a) the survivors of the current generation (the \emph{elite}), and (b) mutations of those survivors.
 Good structure is not discarded, it is carried forward and explored around.
 Figure~\ref{figure:EvolutionaryLoop} draws the loop, with \emph{Mutate} shown as a node distinct from \emph{Generate}: mutation is the single operator absent from the generate--evaluate--select loop of Chapter~\ref{chapter:Orchestration}, and it is what makes the candidates depend on the survivors.
@@ -85,9 +108,15 @@ Classical \emph{genetic programming}\index{Genetic programming} (GP) represents 
 \item \textbf{Point mutation}: replace an operator or terminal at a randomly chosen node.
 \item \textbf{Crossover}: swap subtrees between two parent expressions.
 \end{itemize}
+The three operations only mean something once the representation is in view.
+An expression is stored not as a string of characters but as a tree whose internal nodes are operators and whose leaves are variables or numeric constants: \code{x0 * exp(-x1)} is a tree with $\times$ at the root, the leaf \code{x0} hanging off one side, and the small subtree \code{exp(-x1)} hanging off the other.
+A \emph{subtree} is any node together with everything beneath it, so \code{exp(-x1)}, \code{-x1}, and the bare leaf \code{x0} are all subtrees of that expression, and each operator above is a way of swapping such pieces in and out.
+On that tree, a subtree mutation might replace \code{exp(-x1)} with a freshly generated \code{x1 + x2}, giving \code{x0 * (x1 + x2)}; a point mutation might change the root $\times$ to $+$, giving \code{x0 + exp(-x1)}; and a crossover with a second parent \code{x2 / (1 + x1)} might graft that parent's \code{1 + x1} in place of \code{exp(-x1)}, giving \code{x0 * (1 + x1)}.
 These operations are \emph{blind} as \emph{variation}: the mutation and crossover operators propose changes without regard to whether the change improves fitness, and direction enters only later, through selection.
 Classical practice is not monolithic: genetic-programming variants, symbolic-regression packages, and program synthesis differ, and some add typed or guided operators; but undirected variation is the shared baseline the next section improves on.
 GP is effective when the search space is smooth enough that random perturbations frequently produce useful variation.
+Smooth here means that a small edit usually causes a small change in score, so a run can improve by accumulating small wins.
+Expression spaces are only partly smooth in that sense: flipping one operator can turn a curve that decays into one that diverges, and the score jumps by orders of magnitude for a change of a single node.
 
 \subsection{LLM as Mutation Operator}
 
@@ -110,7 +139,10 @@ Propose one mutation of the current expression that might better
 capture this behavior. Return the expression as a Python string
 using variables x0, x1, x2.
 \end{lstlisting}
+Three ingredients in that prompt are doing the work, and none of them is available to a blind tree edit: the current expression \emph{together with its score}, so the proposer knows what it has to beat; a short reading of what the data appears to be doing; and a retrieved domain note that names a mechanism.
 The LLM might return \code{"x0 * exp(-x1 / x2)"} — a motivated variation informed by domain knowledge that a blind mutation would find only by chance.
+The edit is small (one division inserted) but it is not arbitrary: the Arrhenius note says the decay rate should carry a temperature in the denominator of the exponent, and \code{x2} is the column that plausibly plays that role.
+A subtree mutation could produce the same expression, but only by drawing \code{x1 / x2} at random out of the space of things it might have drawn.
 \end{example}
 
 This is the advantage that separates LLM-guided evolution from classical genetic programming, including mature libraries such as PySR, the GP-based symbolic-regression baseline on the course ladder (Table~\ref{table:BaselineLadder}), whose variation operators remain essentially blind tree edits.
@@ -126,6 +158,9 @@ The mutator's context should include:
 \item Retrieved domain knowledge relevant to the data (possibly leveraging the retrieval system of Chapter~\ref{chapter:Retrieval}).
 \item The population's diversity; if all survivors are variations of the same form, the mutator should be told to explore a different region.
 \end{enumerate}
+The second and fourth items are the ones most often left out, and both cost real budget when they are.
+Without a record of what has already failed, the mutator will cheerfully re-propose an expression that was scored and rejected three generations ago, paying again to learn the same fact.
+Without a diversity summary, it has no way to know that all eight survivors are minor variations on one form; a single line in the prompt reporting that fact is often enough to push the next proposal into a different region.
 This is the convergence of the two spines: \emph{evaluation becomes fitness} (Spine~1) and \emph{context engineering drives the mutator} (Spine~2).
 Figure~\ref{figure:TwoSpinesConverge} shows the two threads entering the loop at the two nodes they govern: the evaluation harness \emph{becomes} the fitness that scores each candidate, and context engineering \emph{drives} the mutator that proposes the next one.
 
@@ -158,6 +193,8 @@ That reuse --- one harness, one score, two roles --- is what ``evaluation become
 \emph{Elitism}\index{Elitism} is the practice of carrying the top-$k$ candidates from one generation to the next, regardless of what mutations are generated.
 Without elitism, a mutation round can accidentally reduce the best score in the population, a random regression.
 With elitism, the best score is monotonically non-increasing across generations.
+In plain terms, the running best can improve or stay flat but can never get worse, because the incumbent champion is copied into the next generation untouched and can only be displaced by a candidate that actually beat it.
+The guarantee is cheap and worth having for a practical reason as much as a theoretical one: it makes the leaderboard curve readable, since a flat stretch is then genuine stagnation rather than a good candidate that fell out of the population by accident.
 
 \subsection{Selection Strategies}
 
@@ -167,16 +204,21 @@ Two selection strategies are commonly used.
 \item \textbf{Tournament selection.}\index{Tournament selection}
 Draw $s$ candidates at random from the population; return the best among them.
 The parameter $s$ (the tournament size) controls selection pressure: a large $s$ selects the best more aggressively; a small $s$ preserves more diversity.
+With a population of twenty and $s = 3$, a middling candidate wins its tournament every so often, simply because the two it was drawn against happened to be worse, and that is the point: tournament selection keeps material alive that a strict ranking would have thrown away.
 
 \item \textbf{Top-$k$ selection.}\index{Top-$k$ selection}
 Rank all candidates by fitness and retain the top $k$.
 This is the simplest strategy and is the default in the course.
+It is also deterministic, which makes a run easier to reproduce and to debug, at the price of the diversity that tournament randomness buys.
 \end{enumerate}
 
 \subsection{Population Collapse}
 
 \emph{Population collapse}\index{Population collapse} occurs when the population converges to a single candidate (or a cluster of nearly identical candidates), eliminating diversity.
 Diversity is the fuel of evolution: without variation, the mutation operator has nothing to vary on, and the search stagnates at a local optimum.
+Collapse has a recognizable signature once you know to look for it.
+The best score stops moving, and the survivor list printed each generation reads as several cosmetic rewrites of one formula: \code{x0 * exp(-x1)}, \code{1.0 * x0 * exp(-x1)}, \code{x0 / exp(x1)}, and so on.
+Mutating any member of such a list lands back in the same neighborhood, so the run keeps paying for evaluations that cannot teach it anything it does not already know.
 
 \begin{remark}
 Population collapse is one of the most common failure modes in early implementations.
@@ -188,6 +230,9 @@ If the leaderboard score of the evolutionary run does not improve over the GES l
 
 The fitness function is the evaluation harness.
 In the evolutionary setting, the harness is the target of a persistent, tireless optimizer; and every weakness in the harness is an attack surface.
+The difference in kind is worth stating plainly.
+A researcher running a handful of fits by hand will never notice that the harness quietly drops rows where the expression returns \code{NaN} before averaging the squared errors; an optimizer running ten thousand candidates will find that hole within a few generations and settle into it, because an expression that fails on the two hardest validation points now scores better than one that is merely accurate everywhere.
+Nothing about that is malice, and the fix is not to ask the search to behave: the fix is to close the hole, because the search is doing exactly what the score told it to do.
 
 \begin{remark}
 The attack surface widens sharply when the fitness evaluation itself runs in a tool-enabled environment.
@@ -198,6 +243,8 @@ The defenses are the ones the leakage discussion of Chapter~\ref{chapter:Evaluat
 \subsection{Multi-Objective Fitness}
 
 The course harness uses the composite score $\Score = \mathrm{MSE} + \lambda \cdot C$ defined in~\eqref{equation:CompositeScore}.
+The composite folds two things a researcher genuinely cares about into the one number a search can minimize: $\mathrm{MSE}$ measures how well the expression reproduces held-out data, the complexity $C$ counts the nodes in its tree, and $\lambda$ sets the exchange rate between them.
+At $\lambda = 0.0002$, adding one node to an expression must buy an MSE improvement of at least $0.0002$ to be worth it, so $\lambda$ is best read as the price of a node rather than as an abstract regularization weight.
 In the evolutionary setting, a well-designed $\lambda$ prevents the optimizer from discovering that a trivially complex, trivially fitted expression scores as well as a genuinely discovered one.
 
 For long evolutionary runs, the optimizer often finds unexpected ways to minimize this score.
@@ -212,8 +259,12 @@ The parsimony term must scale to prevent this.
 \subsection{Fitness Landscapes and Local Optima}
 
 The \emph{fitness landscape}\index{Fitness landscape} is the surface of fitness values over the space of artifacts.
+The metaphor is worth taking literally for a moment: picture every candidate expression as a point on a map, with two expressions adjacent when one mutation separates them, and the elevation at each point given by its score.
+Because this course minimizes, the search is walking \emph{downhill}, and a \emph{basin} is a valley of that landscape: a region from which every downhill step leads to the same low point.
 A local optimum is a point where all nearby mutations produce worse fitness, even though a distant point might be better.
 The evolutionary algorithm can become trapped at local optima if selection pressure is too high (population collapse) or mutation step size is too small (unable to escape the basin).
+A concrete trap in symbolic regression: a run that has locked onto a polynomial form keeps improving its score for many generations by adding one term at a time, while the process that actually generated the data is an exponential that no sequence of small polynomial edits ever reaches.
+The run looks healthy on the leaderboard, and it is nonetheless in the wrong valley.
 
 Strategies for avoiding local optima:
 \begin{itemize}
@@ -248,6 +299,9 @@ for generation in range(100):
         for island in islands:
             island.inject(best_per_island)
 \end{lstlisting}
+Two details in that sketch carry the design.
+Each island is constructed with a different seed, so the four populations start in different regions of the landscape instead of being four copies of the same run.
+And migration happens every ten generations, not every generation: migrate too often and the islands merge back into one population, which is the situation the model exists to prevent, while migrating too rarely spends parallel compute on four populations that have each stalled in their own valley.
 \end{example}
 
 \subsection{Explore vs.\ Exploit}
@@ -258,6 +312,7 @@ The \emph{explore–exploit tradeoff}\index{Explore--exploit tradeoff} is the fu
 \item \textbf{Explore}: generate new candidates far from the current population to discover new regions.
 \end{itemize}
 Too much exploitation leads to premature convergence; too much exploration wastes evaluation budget on low-quality candidates.
+The tension is familiar well outside search: an experimentalist who only ever refines the assay that already works will never find the better assay, while one who only ever tries new assays never gets a clean measurement out of any of them.
 
 A practical heuristic: maintain a diverse population (island model or explicit diversity penalty), use a proposer that mixes small mutations (exploit) with occasional large jumps (explore), and increase the exploration rate if the best score has not improved for several consecutive generations.
 
@@ -270,6 +325,8 @@ The agentic evolutionary framework taught in this course has a direct intellectu
 
 \emph{FunSearch}\index{FunSearch} (Romera-Paredes et al., DeepMind; \emph{Nature}, 2024, online 2023) is an LLM-guided evolutionary search over \emph{programs} (Python functions), scored by an automatic evaluator.
 The system evolved improved constructions for combinatorics problems (finding larger cap sets in $\mathbb{F}_3^8$) and better heuristics for online bin packing.
+A \emph{cap set} in that space is a collection of points containing no three that lie on a line, and the long-standing question is how large such a collection can be; the point for a reader outside combinatorics is only that the answer is a discrete object a short program can construct and a short script can check, which is exactly the shape a fitness function needs.
+Bin packing is the everyday counterpart: items arrive one at a time and must be placed into bins without knowing what comes next, and the evolved artifact is the rule deciding where each item goes.
 
 The template introduced by FunSearch is:
 \begin{itemize}
@@ -284,6 +341,7 @@ This is precisely the structure implemented in the capstone.
 
 \emph{AlphaEvolve}\index{AlphaEvolve} (DeepMind, 2025) scales the FunSearch template to evolve full algorithms using Gemini models.
 Results include improved matrix-multiplication procedures (beating the Strassen algorithm in certain settings) and real scheduling gains in data-center resource allocation.
+Strassen's algorithm is the classical trick for multiplying two matrices using fewer multiplications than the textbook definition requires, and shaving further multiplications off it has been a target for decades; a system that improves on it, even in restricted settings, is competing on a problem where human effort has been concentrated for a long time.
 AlphaEvolve demonstrates that the approach scales: with sufficiently capable models and evaluators, the method finds results competitive with specialized mathematical research.
 
 \subsection{OpenEvolve}
@@ -304,6 +362,9 @@ It is more agentic-research than evolutionary-search in structure, and is includ
 
 \emph{Symbolic regression}\index{Symbolic regression} (SR) is the task of discovering a mathematical expression $\hat{m}$ that describes the relationship between a set of features $X$ and a target $y$.
 Unlike conventional regression, the functional form of $\hat{m}$ is not fixed in advance; the search must explore a large, discrete space of possible expressions.
+The contrast is worth making concrete.
+Fitting $y = \beta_0 + \beta_1 x_1 + \beta_2 x_2$ estimates three numbers with the shape of the model handed to you in advance; symbolic regression asks for the shape as well, so the answer can come back as $y = x_0 e^{-x_1 / x_2}$ without anyone having thought to propose a ratio inside an exponential.
+That freedom is what makes the space discrete and enormous: the number of syntactically valid expressions grows faster than exponentially in the node budget, so exhaustive enumeration is off the table even for expressions a human would call short, and every method in this chapter is a different way of not enumerating.
 
 \begin{definition}
 \label{definition:SymbolicRegression}
@@ -314,6 +375,12 @@ Given a dataset $\mathcal{D} = \{(x_i, y_i)\}_{i=1}^{N}$ and a space of expressi
 where $\Score$ is the composite score of~\eqref{equation:CompositeScore} and $\mathcal{D}_{\mathrm{val}}$ is the validation (fitness) split of the harness (Definition~\ref{definition:EvalHarness}); the discovered $\hat{m}^*$ is then reported once against the untouched final-test split.
 \end{definition}
 
+In words: search the space of expressions, return the one that scores best on the validation split, then report that single winner once against a test split no candidate was ever scored on.
+The two splits do different jobs, and blurring them is the most common way an impressive-looking discovery evaporates.
+The validation split is consumed by the search, so its score is optimistic by construction: thousands of candidates were filtered through it, and the winner is partly a winner because of the particular noise in those rows.
+The untouched test split is the only honest estimate of how the discovered model behaves on data that had no hand in shaping it, which is why it is looked at once, at the end, and never used to choose between candidates.
+This is the same discipline as pre-registering an analysis, transposed to a search that runs thousands of times.
+
 A note on convention: the course \emph{minimizes} throughout, so the composite score is a \emph{loss} (lower is better); we nonetheless call the same quantity \emph{fitness} where it drives selection, so ``worse fitness'' means a higher score.
 Where evolutionary computation would have fitness increase with quality, read the usage here as selecting for lower loss.
 
@@ -321,6 +388,7 @@ SR is the teaching vehicle for the course because it is:
 \begin{enumerate}
 \item \textbf{Automatically evaluable.} The fitness is a number computed without human judgment.
 \item \textbf{Domain-portable.} A biologist can discover enzyme kinetics; a physicist can discover force laws; an economist can discover demand curves.
+Each of those is the same run with a different data file: the biologist's columns are substrate concentration and reaction velocity, and a winning expression may be the Michaelis--Menten form $v = V_{\max} S / (K_m + S)$; the physicist's columns are separation and measured force; the economist's are price, income, and quantity demanded.
 The domain changes; the framework does not.
 \item \textbf{Interpretable.} The output is a symbolic expression, not a neural network.
 The researcher can read and critique the discovered model.
@@ -368,6 +436,10 @@ The \emph{cost-adjusted fitness} of an artifact $a$ is
 where $\mathrm{cost}(a)$ is the \emph{marginal} cost (in dollars of API usage) of producing and evaluating $a$, and $\alpha > 0$ converts that cost to the scale of the fitness score.
 \end{definition}
 
+In words, an artifact is charged for what it cost to obtain, in the same units as its score, so a candidate is kept only when its quality justifies its price.
+Suppose $\alpha$ is set so that one dollar of API usage is worth $0.001$ of score.
+A variant that improves the composite score by $0.0005$ but took ten dollars of proposer calls to find is then charged $0.01$ and ranks as a loss rather than a gain, while the same improvement obtained for a few cents survives comfortably.
+
 Using the \emph{marginal} cost $\mathrm{cost}(a)$, rather than a run's total cost, is what makes the adjustment discriminating: a cost shared equally by every artifact would shift all fitnesses by the same constant and could not reorder candidates within a run.
 With $\mathrm{cost}(a)$, two candidates of equal $\Fitness$ are separated in favor of the one that was cheaper to obtain — the mutation drawn from a cheaper proposer model, or the expression that reached its score in fewer evaluation calls.
 This connects the capstone to the multi-model benchmarking of Chapter~\ref{chapter:Orchestration}: a cheaper proposer that achieves comparable mutations is preferred by cost-adjusted fitness, even when its per-mutation quality is slightly lower.
@@ -389,6 +461,14 @@ The chapters of these notes form one argument.
 A researcher who can operate a rig, build a loop, engineer context, evaluate honestly, and orchestrate reliably has already assembled every component of an evolutionary search.
 The mutation operator of this chapter is the one part that was missing, and it reuses the proposer, the harness, and the orchestration that came before.
 The capstone is therefore not a new topic; it is these components, finally pointed at your own research problem, and the artifact they evolve is a model of your own data.
+
+Pointing it at your own problem is, concretely, a matter of answering the five questions the tuple of Definition~\ref{definition:EvolutionaryLoop} asks.
+What is the artifact you want the search to produce: an expression, a model specification, an experimental protocol, a controller, a design?
+What scores one artifact automatically, with no one in the loop, and where does the data that scores it come from?
+What counts as a small, meaning-preserving edit to an artifact, and what context does a proposer need in order to make a good one?
+Which survivors get to be parents, and how many?
+And where does the first population come from?
+A problem for which the second question has no honest answer is not yet ready for this machinery, and reaching that verdict early is itself worth the exercise: it says the next piece of work is building the measurement, not the search.
 
 \section*{Further Reading}
 
