@@ -1,3 +1,9 @@
+---
+videos:
+  - title: Orchestration
+    url: https://youtu.be/Ctf1BL9vfwU
+---
+
 # orchestration — scratch
 
 > Sidecar for `orchestration.tex`. Not part of the LaTeX build.

@@ -1,3 +1,9 @@
+---
+videos:
+  - title: Evolutionary Frameworks
+    url: https://youtu.be/2yIudqkJb6U
+---
+
 # evolutionary_frameworks — scratch
 
 > Sidecar for `evolutionary_frameworks.tex`. Not part of the LaTeX build.
