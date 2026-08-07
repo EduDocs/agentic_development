@@ -12,7 +12,7 @@ None of this domain-specific knowledge can be assumed to be reliably present in 
 Rather than relying on the model to remember a fact, the loop retrieves the fact from a curated corpus and places it directly in the window.
 
 In the course, retrieval is not a secondary feature; it has a real job.
-The reference corpus holds domain units, functional forms, and dimensional constraints that dictates which model proposals are physically plausible.
+The reference corpus holds domain units, functional forms, and dimensional constraints that constrain which model proposals are physically plausible.
 The challenge is to demonstrate that retrieval moves the leaderboard: a grounded agent should propose better candidates because its proposals are constrained by domain knowledge.
 
 \section{The Retrieval Problem}
@@ -56,7 +56,7 @@ An \emph{embedding model} is a function $\phi: V^* \to \RealNumbers^d$ trained s
 \mathrm{sim}(\phi(p_1), \phi(p_2)) > \mathrm{sim}(\phi(p_1), \phi(p_3)) ,
 \end{equation}
 where $\mathrm{sim}$ is a similarity function, typically cosine similarity.
-The property is statistical rather than universal: typically, finite-dimensional embedding cannot order \emph{every} triple correctly; retrieval quality depends on how often the inequality holds for the passages that matter.
+The property is statistical rather than universal: no finite-dimensional embedding orders \emph{every} triple correctly, and retrieval quality depends on how often the inequality holds for the passages that matter.
 \end{definition}
 
 \subsection{Cosine Similarity}
@@ -158,9 +158,9 @@ These reductions compose, as Figure~\ref{figure:RetrievalStaircase} shows, which
 \draw[fill=blue!15]   (3.3,0)  rectangle (5.1,2.4);
 \draw[fill=green!20]  (6.1,0)  rectangle (7.9,1.8);
 \draw[fill=yellow!20] (8.9,0)  rectangle (10.7,1.2);
-\node[font=\scriptsize] at (4.2,2.75) {$\approx-\tfrac13$};
-\node[font=\scriptsize] at (7.0,2.15) {$\approx-\tfrac12$};
-\node[font=\scriptsize] at (9.8,1.55) {$\approx-\tfrac23$};
+\node[font=\scriptsize] at (4.2,2.75) {$\downarrow \tfrac{1}{3}$};
+\node[font=\scriptsize] at (7.0,2.15) {$\downarrow \tfrac{1}{2}$};
+\node[font=\scriptsize] at (9.8,1.55) {$\downarrow \tfrac{2}{3}$};
 \node[font=\scriptsize, align=center] at (1.4,-0.5) {baseline};
 \node[font=\scriptsize, align=center] at (4.2,-0.5) {$+$ contextual\\embeddings};
 \node[font=\scriptsize, align=center] at (7.0,-0.5) {$+$ contextual\\keyword};
@@ -211,7 +211,7 @@ A \emph{retrieval-augmented} agent extends the basic loop with a retrieval step 
 \begin{tikzpicture}[
     node distance=1cm,
     box/.style={conceptbox, minimum width=2.2cm, minimum height=1.0cm},
-    store/.style={conceptbox, fill=gray!8,
+    store/.style={conceptbox, dashed, fill=gray!8,
                   minimum width=3.0cm, minimum height=1.0cm},
     arr/.style={conceptflow}
 ]
@@ -220,17 +220,17 @@ A \emph{retrieval-augmented} agent extends the basic loop with a retrieval step 
 \node[box, fill=green!20,  right=of qe]     (idx)   {vector index\\search};
 \node[box, fill=green!20,  right=of idx]    (topk)  {top-$k$\\passages};
 \node[box, fill=yellow!20, right=of topk]   (model) {model reads\\augmented context};
-\node[store, above=of idx]            (corpus) {corpus $\mathcal{K}$ (sealed)\\chunk $+$ embed};
+\node[store, above=of idx]            (corpus) {corpus $\mathcal{K}$ (sealed)\\chunk $+$ embed, offline};
 
 \draw[arr] (q)    -- (qe);
 \draw[arr] (qe)   -- node[above,font=\scriptsize]{$\phi(q)$} (idx);
 \draw[arr] (idx)  -- node[above,font=\scriptsize]{$k$-NN}    (topk);
 \draw[arr] (topk) -- node[above,font=\scriptsize]{inject}    (model);
-\draw[arr,<->] (corpus) -- (idx);
+\draw[arr] (corpus) -- (idx);
 \end{tikzpicture}
 \caption{The retrieval-augmented generation pipeline.
 At query time, the query is embedded, matched against the vector index by $k$-nearest-neighbor search, and its top-$k$ passages are injected into the context the model reads.
-The corpus $\mathcal{K}$ is chunked and embedded once, offline, and sealed thereafter; exactly the discipline of Section~\ref{section:VectorSearch}.
+The corpus $\mathcal{K}$ is chunked and embedded once, offline (dashed), and sealed thereafter; exactly the discipline of Section~\ref{section:VectorSearch}.
 Retrieval quality is set at the index-search step: an index that returns irrelevant passages spends context budget for no gain, and one that returns misleading passages actively steers the proposal wrong.}
 \label{figure:RAGPipeline}
 \end{center}
@@ -297,7 +297,7 @@ In this case, the ungrounded agent performs better than the grounded one because
 \end{example}
 
 \begin{remark}
-Grounding helps when the retrieved prior is aligned and hurts when it is misaligned, and which case is better cannot be assumed in advance.
+Grounding helps when the retrieved prior is aligned and hurts when it is misaligned, and which case obtains cannot be assumed in advance.
 The grounded versus ungrounded ablation required in this course, run on at least two datasets, exists precisely to quantify this tradeoff rather than presume it.
 A dataset where grounding helps and a dataset where it hurts, analyzed together, build the researcher's intuition for when retrieval adds value.
 \end{remark}
