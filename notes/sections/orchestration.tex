@@ -44,7 +44,7 @@ Note also that \code{min} is the correct selector only because the score here is
 \subsection{Parallel Execution}
 
 Some operations are independent: multiple agents can propose candidates simultaneously, or a critic can score candidates in parallel with new proposals being generated.
-\emph{Parallel execution}\index{Parallel execution} reduces wall-clock time by running independent operations concurrently.
+\emph{Parallel execution}\index{Parallel!execution} reduces wall-clock time by running independent operations concurrently.
 The saving is largest exactly where research pipelines spend their time: if one proposer call waits ninety seconds for the provider to answer, four such calls in sequence cost six minutes and four at once cost about ninety seconds, because the waiting overlaps.
 
 \begin{example}
@@ -231,7 +231,7 @@ Every model call can return an error; every tool can produce an unexpected resul
 \subsection{Retries with Backoff}
 
 The operations worth protecting here are the ones that leave the process.
-A proposer round is an \emph{API call}\index{API call} to a model provider over the network, and a critic that checks a candidate against a database or a web service issues an \emph{MCP query}\index{MCP} to a server running behind the protocol of Chapter~\ref{chapter:ContextEngineering}.
+A proposer round is an \emph{API call}\index{API!call} to a model provider over the network, and a critic that checks a candidate against a database or a web service issues an \emph{MCP query}\index{MCP} to a server running behind the protocol of Chapter~\ref{chapter:ContextEngineering}.
 Both cross a boundary the pipeline does not control, so both can fail for reasons that have nothing to do with whether the request was well formed: the provider is momentarily rate limiting the account, a server is overloaded, a connection drops mid-response.
 A \emph{retry}\index{Retry} re-attempts such a failed operation after a waiting period.
 \emph{Exponential backoff}\index{Exponential backoff} increases the waiting period after each successive failure, reducing the load on the server that produced the error.

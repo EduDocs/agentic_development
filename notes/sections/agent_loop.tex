@@ -149,7 +149,7 @@ The model never executes anything itself; it asks, and the loop decides whether 
 \begin{remark}
 A single turn need not carry a single tool call.
 When a task fans out into independent sub-tasks, such as fitting five candidate expressions or querying three data sources, a frontier model can emit several tool calls in one response, and the loop executes them concurrently, appends all the results as a batch, and re-invokes the model once (Anthropic, 2025).
-This \emph{parallel tool calling}\index{Parallel tool calling} is the idiomatic way to run the fan-out patterns of Chapter~\ref{chapter:Orchestration}: the round trips collapse from one per call to one per batch, and the model reasons over the whole set of results together.
+This \emph{parallel tool calling}\index{Parallel!tool calling} is the idiomatic way to run the fan-out patterns of Chapter~\ref{chapter:Orchestration}: the round trips collapse from one per call to one per batch, and the model reasons over the whole set of results together.
 The loop's obligations are unchanged, each result is still validated at its own tool boundary, but its accounting becomes per batch rather than per call.
 \end{remark}
 

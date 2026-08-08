@@ -2,7 +2,7 @@
 \label{chapter:Evaluation}
 % EVOLVE-BLOCK-START
 
-A research agent that cannot be evaluated should not be trusted.\index{Evaluation harness}
+A research agent that cannot be evaluated should not be trusted.\index{Evaluation!harness}
 Evaluation is not a post-hoc check performed after a system is built; it forms a foundation on which comparisons, improvement claims, and eventually evolutionary searches rest.
 This chapter develops the theory and practice of the evaluation harness, the reusable module that scores an agent's output against ground truth.
 The word \emph{harness} is borrowed from software testing: it names the fixed apparatus an artifact is strapped into, so that what changes between two runs is the artifact and never the measurement.
@@ -14,7 +14,7 @@ Build validation harnesses cleanly; they will be useful throughout the course.
 \section{The Evaluation Principle}
 \label{section:EvaluationPrinciple}
 
-An \emph{evaluation harness}\index{Evaluation harness} can be abstracted as a function that takes a candidate artifact and a reference dataset and returns a numerical score.
+An \emph{evaluation harness}\index{Evaluation!harness} can be abstracted as a function that takes a candidate artifact and a reference dataset and returns a numerical score.
 \begin{definition}
 \label{definition:EvalHarness}
 An \emph{evaluation harness} is a tuple $(\mathcal{D}, \Score)$ where
@@ -202,7 +202,7 @@ Read that way it plainly carries units, so a $\lambda$ tuned on a target measure
 \section{Evaluation Hacking}
 \label{section:EvalHacking}
 
-\emph{Evaluation hacking}\index{Evaluation hacking} (also known as \emph{Goodhart's Law}\index{Goodhart's Law} in the context of learned systems) is the phenomenon in which a system optimizes the \emph{proxy} (the score) rather than the \emph{goal} (genuine discovery of a correct model).
+\emph{Evaluation hacking}\index{Evaluation!hacking} (also known as \emph{Goodhart's Law}\index{Goodhart's Law} in the context of learned systems) is the phenomenon in which a system optimizes the \emph{proxy} (the score) rather than the \emph{goal} (genuine discovery of a correct model).
 Wherever a score is computed automatically and an optimizer is pointed at it, evaluation hacking will occur if there is any gap between the score and the goal.
 \emph{Optimizer} here is deliberately broad: any process that repeatedly proposes artifacts and keeps the ones that score well, whether an evolutionary search, a language model asked to improve on its last attempt, or a diligent researcher with a fast harness and a free afternoon.
 None of them has to intend anything; selection on a proxy is enough.

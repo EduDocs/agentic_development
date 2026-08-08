@@ -2,7 +2,7 @@
 \label{chapter:ContextEngineering}
 % EVOLVE-BLOCK-START
 
-A large language model is, at each invocation, a function of its context.\index{Context engineering}
+A large language model is, at each invocation, a function of its context.\index{Context!engineering}
 Its instructions, history, domain knowledge, and the results of previous tool calls are all encoded in the same token sequence the model reads.
 The model has no persistent state outside this sequence: what it does not read, it does not know.
 Two terms in that claim are worth pinning down before any formalism arrives.
@@ -12,14 +12,14 @@ An agent that appears to remember your project's conventions from yesterday is r
 This constraint makes \emph{context engineering}, the deliberate construction of what enters the context window, the primary lever available to the agent builder.
 
 This chapter distinguishes two related but distinct disciplines.
-\emph{Prompt engineering}\index{Prompt engineering} concerns the wording and structure of instructions, especially at the level of a single message or request.
+\emph{Prompt engineering}\index{Prompt!engineering} concerns the wording and structure of instructions, especially at the level of a single message or request.
 \emph{Context engineering} is broader: it concerns the entire contents of the context window across a multi-step interaction, and the strategies for managing that window as the conversation evolves.
 Section~\ref{section:LLMContextFunction} develops the view of the model as a function of its context; Section~\ref{section:PromptEngineering} treats prompt engineering at the level of a single request; Section~\ref{section:ContextEngineeringDetail} scales up to managing the whole window across a multi-step interaction; Section~\ref{section:AutomatedContext} covers the mechanisms that assemble context automatically; and Section~\ref{section:ContextQuality} asks how to tell whether a given context is any good.
 
 \section{The LLM as a Context-Conditioned Function}
 \label{section:LLMContextFunction}
 
-Let $V$ denote the model's \emph{token vocabulary}\index{Token vocabulary}: the finite set of tokens it reads and emits, each with its own embedding vector.
+Let $V$ denote the model's \emph{token vocabulary}\index{Token!vocabulary}: the finite set of tokens it reads and emits, each with its own embedding vector.
 Let $V^*$ denote the space of all finite token sequences over $V$, and let $\mathcal{A}$ denote the space of possible actions (tool calls plus text responses).
 The star is the standard notation for ``any finite sequence of these symbols, of any length,'' so $V^*$ is the space of every conversation, file, and tool output that could ever be handed to the model.
 The breadth of $\mathcal{A}$ is deliberate: writing a paragraph and calling a tool (running a script, reading a file, querying a database) are both elements of it, because the model produces both the same way, by emitting tokens.
@@ -50,7 +50,7 @@ Inspecting what the model was actually given is faster than rewording the reques
 
 \subsection{The Context Window}
 
-The \emph{context window}\index{Context window} is the finite-length sequence that $M$ receives at a single invocation.
+The \emph{context window}\index{Context!window} is the finite-length sequence that $M$ receives at a single invocation.
 Window sizes for frontier models in 2025–2026 range from roughly 100,000 to 1,000,000 tokens.
 This is large but not unlimited: a dense academic paper runs roughly 8{,}000--15{,}000 tokens and a book-length monograph 150{,}000--500{,}000, while a large codebase can exceed any window.
 These figures are best read as a point on a fast-moving trajectory rather than a fixed ceiling: the first 100,000-token window was itself a frontier result in 2023, an order-of-magnitude jump over the few thousand tokens available shortly before (Anthropic, 2023), and the limit has kept climbing since.
@@ -76,7 +76,7 @@ The practical rule follows directly from the curve's shape: place load-bearing i
 The lost-in-the-middle effect implies that simply extending the context window does not proportionally extend the effective working memory of the model.
 Early framings of large windows treated raw capacity as a near-substitute for careful selection, the 2023 case for a 100,000-token window emphasized feeding in whole documents and letting the model synthesize across them (Anthropic, 2023), but the effect characterized shortly afterward (Liu et al., 2024) showed that capacity and effective working memory are not the same thing.
 Structuring the context so that the most important information appears near the beginning or end, or citing it explicitly in the instruction, is more reliable than relying on a long window to make everything equally accessible.
-A common framing gives this an intuitive (not a rigorous) reading: because transformer attention weighs every token against every other, the metaphor goes, the same attention is ``spread more thinly'' as tokens are added, so recall of any single fact tends to fall as the token count rises, an effect Anthropic (2025) calls \emph{context rot}\index{Context rot} and frames as a finite ``attention budget.''
+A common framing gives this an intuitive (not a rigorous) reading: because transformer attention weighs every token against every other, the metaphor goes, the same attention is ``spread more thinly'' as tokens are added, so recall of any single fact tends to fall as the token count rises, an effect Anthropic (2025) calls \emph{context rot}\index{Context!rot} and frames as a finite ``attention budget.''
 Treat this as a heuristic: attention is computed per head, per layer, and per query; a model can learn to concentrate it sharply where it matters, so longer context degrades retrieval empirically without any fixed per-token budget being literally exhausted.
 Keep the two costs separate: the architectural one, that standard attention's compute and memory grow quadratically with length, is exact; the behavioral one, that longer contexts can distract the model and reduce effective retrieval, is empirical and is what the ``budget'' language names.
 On this view the lost-in-the-middle curve is the visible signature of a budget stretched too thin, which is why adding raw capacity does not buy proportional working memory.
@@ -99,7 +99,7 @@ That spending buys nothing if every sample is the same sample, so a nonzero temp
 \section{Prompt Engineering}
 \label{section:PromptEngineering}
 
-\emph{Prompt engineering}\index{Prompt engineering} is the practice of writing instructions that reliably elicit the desired model behavior.
+\emph{Prompt engineering}\index{Prompt!engineering} is the practice of writing instructions that reliably elicit the desired model behavior.
 It is best understood as a form of specification: the prompt specifies what the model should do, just as source code specifies what a program should do, and clarity matters for the same reasons.
 
 Its place in the workflow, though, has shifted.
@@ -181,7 +181,7 @@ In practice a researcher rarely writes this layer as raw text: it is realized by
 This content is static across sessions but should be reviewed and updated when the project's needs change.
 Two pieces of that description deserve unpacking for a reader new to the tooling.
 A \emph{repository} is a project folder once it is placed under version control (Chapter~\ref{chapter:AgenticRig}), and its \emph{root} is the top-level directory holding the code, data, and notes.
-An \emph{agentic CLI}\index{Agentic CLI} is the command-line program that runs the agent loop inside that directory; on startup it reads \code{CLAUDE.md} from the root and places its contents ahead of the conversation, which makes this layer something a researcher edits in an ordinary text editor rather than something buried in code.
+An \emph{agentic CLI}\index{Agentic!CLI} is the command-line program that runs the agent loop inside that directory; on startup it reads \code{CLAUDE.md} from the root and places its contents ahead of the conversation, which makes this layer something a researcher edits in an ordinary text editor rather than something buried in code.
 
 \item \textbf{Task description.} The specific goal of the current session, provided at the start of the conversation.
 This is where the researcher specifies what to accomplish today.
@@ -293,7 +293,7 @@ The emerging mitigation, as of 2026, is \emph{progressive disclosure}\index{Prog
 \subsection{Prompt Caching}
 
 Much of an agent's context is stable across calls: the system prompt, the instruction files, and any large reference document injected for the task.
-\emph{Prompt caching}\index{Prompt caching} lets the API layer store this stable prefix so that later calls in the same loop pay only for the new tokens, rather than reprocessing the whole prefix each time.
+\emph{Prompt caching}\index{Prompt!caching} lets the API layer store this stable prefix so that later calls in the same loop pay only for the new tokens, rather than reprocessing the whole prefix each time.
 The \emph{API layer} here is the service that receives each request and runs the model on it, so the caching happens on the far side of the network rather than inside your agent, and a \emph{prefix} is just an initial segment of the token sequence: everything up to the first token that differs from last time.
 For a single request the saving is modest.
 For an evolutionary run that fires hundreds of mutation calls against the same domain corpus and system prompt (Chapter~\ref{chapter:EvolutionaryFrameworks}), caching is often the single largest cost lever, and it ties the context-engineering discipline of this chapter directly to the cost-aware search of Section~\ref{section:CostAwareSearch}.

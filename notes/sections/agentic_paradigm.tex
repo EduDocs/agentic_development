@@ -73,7 +73,7 @@ Designing the right tool set for a task and selecting a model are two of the ear
 
 \subsection{Context}
 
-The \emph{context window}\index{Context window} is the finite-length sequence of tokens the model reads at each invocation.
+The \emph{context window}\index{Context!window} is the finite-length sequence of tokens the model reads at each invocation.
 A \emph{token}\index{Token} is the unit in which the model reads and writes, roughly a common word or a fragment of one; as a rule of thumb English prose runs about three tokens to four words, so a window of two hundred thousand tokens holds a few hundred pages of text.
 Everything the agent knows at a given step (its instructions, its history, domain knowledge, tool results) must fit within this window.
 Unless managed explicitly, context is not persistent: what the model does not hold in its context window, it does not know.
