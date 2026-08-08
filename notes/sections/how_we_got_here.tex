@@ -146,14 +146,15 @@ The progression did not stop at tool use.
 A recent step folds reasoning back inside the model: \emph{reasoning models}\index{Reasoning model} are trained to carry out extended chains of thought internally before they answer, rather than being prompted to reason step by step, and models are increasingly \emph{multimodal}, taking images and other data alongside text.
 The practical consequences, including a latent reasoning trace that cannot be read as an audit log and a thinking budget in place of a prompt scaffold, are treated in Chapter~\ref{chapter:AgentLoop}.
 Both consequences are concrete rather than abstract: the internal deliberation is optimized to help the model reach an answer, not to be read by a person, so it is a poor record of why the model did what it did; and what replaces the prompt scaffold is a coarser control, a dial setting how much deliberation to spend before answering.
-The progression this chapter traces is therefore still under way, but its shape is unchanged: each step extends what the system can reliably do on its own.
 
-Two moments turned this gradual research into a public event.
+Each step so far has been described from the inside, as one more limitation removed.
+From outside the research community, the same sequence registered as two events.
 In November~2022, the release of ChatGPT put an instruction-tuned model in front of anyone with a browser and sent a shock wave well beyond the research community, showcasing the language model as a general-purpose advisor.
 Three years later, in December~2025, agentic coding crossed a practical threshold: on narrow, well-specified programming tasks whose success can be checked automatically, a frontier model such as Anthropic's Opus~4.6 approached the reliability of a junior software engineer or data scientist, turning much routine low-level coding into something a researcher directs rather than writes by hand, freeing attention for the parts of the work that call for judgment.
 The qualifier carries weight: reliability falls off as tasks widen, as the specification thins, or as success stops being cheaply verifiable, so the threshold is best read as one crossed within a regime rather than across programming as a whole.
 \emph{Cheaply verifiable} is the load-bearing phrase, and it means only this: some check settles the matter without a person reading the work (a test suite that passes, a simulation that reproduces a known result, a residual that drops), so an agent can iterate against it unattended, whereas without such a check someone must inspect every attempt.
 Neither was a new idea so much as a new level of a capability the sequence above had been building toward.
+The progression is therefore still under way, and its shape is unchanged: each step extends what the system can reliably do on its own.
 Still, a legible, incremental progression is often felt from outside as a sudden arrival.
 
 \section{The Progression Was Not Random}

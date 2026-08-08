@@ -164,7 +164,7 @@ A reliable orchestration that can run unattended for hours is a prerequisite for
 \paragraph{Evolve.}
 Evolution is orchestration plus a mutation operator and a fitness function.
 A system that generates candidates, evaluates them, and selects the best is an evolutionary algorithm whether or not it is called that.
-The key insight developed at the capstone is that the evaluation harness built in Challenge~2, reused through Challenges 3 and 4, \emph{is} the fitness function of the evolutionary search.
+The insight this rung turns on is that the evaluation harness introduced at the \emph{Build} rung, and carried through every rung since, \emph{is} the fitness function of the evolutionary search.
 The practitioner has been building toward evolution without necessarily knowing it.
 It is worth noting where the randomness that drives an evolutionary search naturally comes from.
 A language model's output is a \emph{probability distribution} over next tokens, and sampling from it is, at its core, a mechanism for exploration: two runs of the same prompt can take different paths.
@@ -180,7 +180,7 @@ They are called \emph{spines} because every unit hangs from them.
 
 You cannot trust an agent you cannot score, and you cannot evolve an artifact you cannot score automatically.
 Because the model generates by plausible continuation rather than lookup, its output is fluent whether or not it is correct, which is precisely why trust must come from an external score rather than from the confidence of the text itself.
-Evaluation is therefore introduced when a researcher first builds an agent (Challenge~2) and reused in every subsequent unit.
+Evaluation is therefore introduced when a researcher first builds an agent and reused in every subsequent unit.
 The key moment comes at the capstone pivot: the evaluation harness, which has been used to \emph{compare methods}, is now used to \emph{drive search}.
 Nothing about the harness changes; its role changes.
 One caveat travels with this promotion: a fixed evaluation loses discriminating power as capability rises (a capability-relative echo of Goodhart's law that returns as benchmark saturation in Chapter~\ref{chapter:Evaluation}), so the fitness function is best treated as an evolving artifact to be refreshed, not a fixed target.
@@ -225,7 +225,7 @@ Those unix tools are decades old and deliberately unglamorous: \code{grep} repor
 The instruction files are equally plain, ordinary text kept at a project's root and read at the start of a session, so that standing conventions need not be restated each time.
 Chapters~\ref{chapter:AgenticRig} and~\ref{chapter:ContextEngineering} take up these subtleties; here it is enough to feel the richness, that the lever has moved from wording a prompt to shaping the environment an agent builds its own context from.
 
-This thread begins with prompt engineering and agentic context management, deepens in Challenge~3 as retrieval-augmented grounding, and reaches its culmination in the evolutionary capstone: the LLM mutation operator is most effective when its context contains the lineage of what has been tried, the domain priors, and the current population's best candidates.
+This thread begins with prompt engineering and agentic context management, deepens into retrieval-augmented grounding in Chapter~\ref{chapter:Retrieval}, and reaches its culmination in the evolutionary capstone: the LLM mutation operator is most effective when its context contains the lineage of what has been tried, the domain priors, and the current population's best candidates.
 Evolution is context engineering in a loop.
 
 \section{Why Now}
