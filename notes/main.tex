@@ -12,6 +12,21 @@
 % varqu selects the straight-quote glyph variants (the default is curly,
 % which silently corrupts quotes in every code listing).
 \usepackage[varqu]{inconsolata}
+% Inconsolata ships no italic. Inside an amsthm "plain" body (Example, Remark,
+% ...) the environment's italic shape reaches anything typewriter, so both an
+% inline \texttt and a lstlisting there request T1/zi4/m/it, which does not
+% exist; LaTeX substituted the upright shape and warned nine times a build.
+% basicstyle=\upshape does NOT prevent it: a listing in an italic body still
+% asks for the italic shape during setup (verified on a minimal document), so
+% this has to be fixed at the font level rather than per construct. ssub is the
+% silent form of the substitution LaTeX was already performing.
+% The \AtBeginDocument and the throwaway \selectfont are load-order plumbing:
+% t1zi4.fd is read lazily on first use, so declaring the shape in the preamble
+% fails with "Font family `T1+zi4' unknown".
+\AtBeginDocument{%
+  {\fontfamily{zi4}\selectfont}%
+  \DeclareFontShape{T1}{zi4}{m}{it}{<->ssub*zi4/m/n}{}%
+}
 % Helvetica as \sffamily: the rig figures under figures/ set their labels in
 % \sffamily with widths tuned to Helvetica (their standalone previews load
 % helvet); CM Sans is wider and makes those labels wrap and collide. The body
@@ -73,7 +88,13 @@
 \newcommand{\Loss}{\mathcal{L}}
 
 %%  Inline code
-\newcommand{\code}[1]{\texttt{#1}}
+% \textup for the same reason \lstset sets \upshape below: \texttt changes only
+% the font *family*, so inside an amsthm "plain" body the environment's italic
+% shape survives and inline code comes out slanted. With Inconsolata that is
+% currently moot (it has no italic, see the substitution above), so this changes
+% nothing today; it is here so that swapping in a mono font that *does* carry an
+% italic cannot silently start slanting every inline code span in a Remark.
+\newcommand{\code}[1]{\textup{\texttt{#1}}}
 
 %%  Spacing
 \renewcommand{\baselinestretch}{1.25}
