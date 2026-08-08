@@ -8,12 +8,30 @@ styles live in [`figures/_concept-style.tex`](../figures/_concept-style.tex).
 
 ## Scope
 
-- **Applies to:** conceptual / relational diagrams (block nodes joined by arrows):
-  loops, spectrums, ladders, pipelines, proposer-critic, data-flow.
-- **Does not apply to:** the product mock-ups under `figures/` (the three rig
-  figures share their own separate visual language, in
-  [`figures/_rig-style.tex`](../figures/_rig-style.tex)), or data/plot figures
-  (`pgfplots`), which have their own conventions.
+Every figure in the book falls into one of four kinds, and only the first is
+governed by the parameters below.
+
+| Kind | Shared language | Examples |
+|---|---|---|
+| **Conceptual / relational** — block nodes joined by arrows: loops, spectrums, ladders, pipelines, data flow | `_concept-style.tex`, and the rest of this guide | `agent-loop`, `rag-pipeline`, `evolutionary-loop` |
+| **Product mock-ups** — labelled pictures of real software | `_rig-style.tex` (its own palette and glyph set) | `vscode-layout`, `claudecode-app-layout`, `shell-as-tool-gateway` |
+| **Hand-drawn plots** — quantities drawn as bars or curves in raw TikZ | none | `retrieval-staircase`, `lost-in-the-middle` |
+| **Architecture diagrams** — a specific published architecture, redrawn | none | `transformer` |
+
+The last two kinds have no shared style file, and that is deliberate: their
+geometry is dictated by what they depict, so `conceptbox` and `conceptflow` do
+not fit them.
+
+What they still owe the book is the **tint**: fill at `!15`, so a plot sitting
+opposite a block diagram does not read as a louder object. The *semantics* of the
+palette below are a conceptual-figure convention and do not carry over, because in
+these kinds a hue separates sublayers or series rather than naming a role.
+`figure:Transformer` is the case to know: it fills entirely at `!15` and four of
+its hues happen to land on their palette meanings (violet for the encoder and
+decoder stacks, orange for the attention layers, green for the output head, gray
+for the token histogram), but its `yellow!15` marks *add & normalize*, which is
+not evaluation data. That is a tolerated local meaning inside one redrawn
+architecture, not a licence to redefine a hue in a conceptual diagram.
 
 ## The house parameters
 
@@ -47,9 +65,28 @@ Reuse the same hue for the same role across figures:
 - `green!15` — output / act / the accepted result
 - `gray!15` — neutral / infrastructure / data
 - `violet!15` — the agent / model role (matches the rig figures' agent hue family)
+- `yellow!15` — evaluation data: the validation / fitness split, the one the search
+  is allowed to query repeatedly (`figure:Leakage`)
 
 Mixing `!15` and `!20` across figures is the kind of drift this guide exists to
 prevent: pick `!15` and stay there.
+
+"Same hue for the same role" binds across figures, not just within one. When two
+figures share a node, they share its colour: Fitness, Select and Mutate carry the
+same hues in `figure:EvolutionaryLoop` and `figure:TwoSpinesConverge`. That
+constraint is load-bearing, and it is what decides the hue when a node could
+plausibly take more than one. The initial population in `figure:EvolutionaryLoop`
+is a starting state and would otherwise be blue, but blue is already Mutate in
+both figures, so it takes `gray!15` as a set of artifacts rather than a step.
+
+### Tint ramps are allowed; darker fills are not
+
+The rule is *never darker than `!15`*, which leaves lighter tints of one hue free
+for a deliberate ramp. `figure:AgenticChain` fades `green!3` through `green!15`
+into its *Agents* node to stand for a landscape still forming. Use this sparingly
+and only to say "these are grades of one thing": if two nodes are genuinely
+different roles, give them different hues instead. A ramp between two nodes the
+figure exists to *contrast* works against the figure.
 
 ## Placement conventions
 
