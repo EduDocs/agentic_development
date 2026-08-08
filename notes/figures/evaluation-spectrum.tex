@@ -8,15 +8,15 @@
     collapse/.style={->, >=stealth', thick, densely dashed, gray},
 ]
 % shared input
-\node[conceptbox, fill=yellow!20] (cand) at (0,0) {Candidate};
+\node[conceptbox, fill=blue!15] (cand) at (0,0) {Candidate};
 
 % the two scoring mechanisms
 \node[conceptbox, fill=gray!15,   minimum width=3.6cm] (orac) at (4.6, 1.7) {Oracle\\{\scriptsize formula $\cdot$ test $\cdot$ check}};
 \node[conceptbox, fill=violet!15, minimum width=3.6cm] (crit) at (4.6,-1.7) {Critic\\{\scriptsize capable model $+$ rubric}};
 
 % the two scores
-\node[conceptbox, fill=green!20] (so) at (9.0, 1.7) {score};
-\node[conceptbox, fill=green!20] (sc) at (9.0,-1.7) {score};
+\node[conceptbox, fill=green!15] (so) at (9.0, 1.7) {score};
+\node[conceptbox, fill=green!15] (sc) at (9.0,-1.7) {score};
 
 % candidate branches to both mechanisms; each yields a score
 \draw[conceptflow] (cand.north) |- (orac.west);

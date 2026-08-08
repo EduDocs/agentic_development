@@ -6,11 +6,11 @@
     sub/.style={conceptbox, minimum width=2.7cm, minimum height=0.9cm, font=\scriptsize},
     arr/.style={conceptflow}
 ]
-\node[box, fill=orange!20] (orch) at (0,0) {Orchestrator};
-\node[sub, fill=blue!12] (s1) at (4.7,1.7)  {sub-agent\\\emph{own context}};
-\node[sub, fill=blue!12] (s2) at (4.7,0)    {sub-agent\\\emph{own context}};
-\node[sub, fill=blue!12] (s3) at (4.7,-1.7) {sub-agent\\\emph{own context}};
-\node[box, fill=green!20] (syn) at (9.4,0) {Synthesis};
+\node[box, fill=orange!15] (orch) at (0,0) {Orchestrator};
+\node[sub, fill=blue!15] (s1) at (4.7,1.7)  {sub-agent\\\emph{own context}};
+\node[sub, fill=blue!15] (s2) at (4.7,0)    {sub-agent\\\emph{own context}};
+\node[sub, fill=blue!15] (s3) at (4.7,-1.7) {sub-agent\\\emph{own context}};
+\node[box, fill=green!15] (syn) at (9.4,0) {Synthesis};
 \draw[arr] (orch) -- (s1);
 \draw[arr] (orch) -- (s2) node[midway, above, font=\scriptsize]{task};
 \draw[arr] (orch) -- (s3);

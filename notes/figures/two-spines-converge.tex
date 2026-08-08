@@ -5,14 +5,14 @@
     spine/.style={->, >=stealth', thick, densely dashed},
 ]
 % --- the two spine sources (left) ---
-\node[conceptbox, fill=green!20] (harness) at (0, 2.0)  {Evaluation\\Harness};
+\node[conceptbox, fill=green!15] (harness) at (0, 2.0)  {Evaluation\\Harness};
 \node[conceptbox, fill=blue!15]  (context) at (0,-2.0)  {Context\\Engineering};
 \node[conceptlabel, above=1pt of harness] {Spine 1 (Chapter~\ref{chapter:Evaluation})};
 \node[conceptlabel, below=1pt of context] {Spine 2 (Chapters~\ref{chapter:ContextEngineering}, \ref{chapter:Retrieval})};
 
 % --- the evolutionary loop (right): a triangle Fitness -> Select -> Mutate ---
-\node[conceptbox, fill=green!20]  (fit) at (5.6, 2.0)  {Fitness};
-\node[conceptbox, fill=orange!20] (sel) at (8.0, 0.0)  {Select};
+\node[conceptbox, fill=green!15]  (fit) at (5.6, 2.0)  {Fitness};
+\node[conceptbox, fill=orange!15] (sel) at (8.0, 0.0)  {Select};
 \node[conceptbox, fill=blue!15]   (mut) at (5.6,-2.0)  {Mutate};
 
 % internal loop arrows

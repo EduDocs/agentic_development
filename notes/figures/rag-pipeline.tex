@@ -4,15 +4,15 @@
 \begin{tikzpicture}[
     node distance=1cm,
     box/.style={conceptbox, minimum width=2.2cm, minimum height=1.0cm},
-    store/.style={conceptbox, dashed, fill=gray!8,
+    store/.style={conceptbox, dashed, fill=gray!15,
                   minimum width=3.0cm, minimum height=1.0cm},
     arr/.style={conceptflow}
 ]
 \node[box, fill=blue!15]                   (q)     {query $q$};
-\node[box, fill=blue!8,    below=of q]      (qe)    {embed\\$\phi(q)$};
-\node[box, fill=green!20,  right=of qe]     (idx)   {vector index\\search};
-\node[box, fill=green!20,  right=of idx]    (topk)  {top-$k$\\passages};
-\node[box, fill=yellow!20, right=of topk]   (model) {model reads\\augmented context};
+\node[box, fill=orange!15, below=of q]      (qe)    {embed\\$\phi(q)$};
+\node[box, fill=green!15,  right=of qe]     (idx)   {vector index\\search};
+\node[box, fill=green!15,  right=of idx]    (topk)  {top-$k$\\passages};
+\node[box, fill=violet!15, right=of topk]   (model) {model reads\\augmented context};
 \node[store, above=of idx]            (corpus) {corpus $\mathcal{K}$ (sealed)\\chunk $+$ embed, offline};
 
 \draw[arr] (q)    -- (qe);
