@@ -11,7 +11,8 @@ styles live in [`figures/_concept-style.tex`](../figures/_concept-style.tex).
 - **Applies to:** conceptual / relational diagrams (block nodes joined by arrows):
   loops, spectrums, ladders, pipelines, proposer-critic, data-flow.
 - **Does not apply to:** the product mock-ups under `figures/` (the three rig
-  figures share their own separate visual language), or data/plot figures
+  figures share their own separate visual language, in
+  [`figures/_rig-style.tex`](../figures/_rig-style.tex)), or data/plot figures
   (`pgfplots`), which have their own conventions.
 
 ## The house parameters
@@ -83,9 +84,9 @@ Two conventions follow from the rule, and both are checkable at a glance:
 
 - **Name the file after the label**, kebab-cased: `figure:RAGPipeline` lives in
   `figures/rag-pipeline.tex`, `figure:AgentLoop` in `figures/agent-loop.tex`.
-- **`figures/*.tex` means one figure per file.** The single exception is
-  `_concept-style.tex`, whose leading underscore marks it as a shared include
-  rather than a figure.
+- **`figures/*.tex` means one figure per file.** The only exceptions are the two
+  shared includes, `_concept-style.tex` and `_rig-style.tex`; the leading
+  underscore is what marks a file as an include rather than a figure.
 
 An earlier version of this guide said only that "significant" figures need their own
 file and that small inline decorations could stay inline. That line was unenforceable:
