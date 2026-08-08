@@ -1,5 +1,5 @@
 %% agent-loop.tex — the perceive-reason-act loop (Chapter 2). House conceptual style.
-\input{figures/concept-style}
+\input{figures/_concept-style}
 \begin{tikzpicture}[node distance=1.8cm and 2.2cm]
 \node[conceptbox, fill=blue!15]                 (obs)    {Observe};
 \node[conceptbox, fill=orange!15, right=of obs]    (reason) {Reason};
@@ -8,4 +8,4 @@
 \draw[conceptflow] (reason) -- (act)    node[midway, above, conceptlabel] {action};
 \draw[conceptflow] (act) to[out=270, in=270, looseness=0.6]
       node[above, conceptlabel] {tool result / new state} (obs);
-\end{tikzpicture}
+\end{tikzpicture}%

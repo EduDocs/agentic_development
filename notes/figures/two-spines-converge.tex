@@ -1,6 +1,6 @@
 %% two-spines-converge.tex — the book's conceptual climax (Chapter 10):
 %% the two spines enter the evolutionary loop. House conceptual style.
-\input{figures/concept-style}
+\input{figures/_concept-style}
 \begin{tikzpicture}[
     spine/.style={->, >=stealth', thick, densely dashed},
 ]
@@ -23,4 +23,4 @@
 % --- the two spines feeding the loop ---
 \draw[spine] (harness) -- node[conceptlabel, above] {becomes} (fit);
 \draw[spine] (context) -- node[conceptlabel, below] {drives}   (mut);
-\end{tikzpicture}
+\end{tikzpicture}%

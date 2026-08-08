@@ -175,22 +175,7 @@ These reductions compose, as Figure~\ref{figure:RetrievalStaircase} shows, which
 
 \begin{figure}[htb!]
 \begin{center}
-\begin{tikzpicture}[arr/.style={->, >=stealth', thick}]
-\draw[arr] (-0.3,0) -- (-0.3,4.1) node[above, font=\scriptsize] {failure rate};
-\draw[arr] (-0.3,0) -- (11.4,0) node[right, font=\scriptsize] {stages added};
-\draw[dashed] (-0.3,3.6) -- (10.9,3.6) node[right, font=\scriptsize] {baseline};
-\draw[fill=gray!15]   (0.5,0)  rectangle (2.3,3.6);
-\draw[fill=blue!15]   (3.3,0)  rectangle (5.1,2.4);
-\draw[fill=green!20]  (6.1,0)  rectangle (7.9,1.8);
-\draw[fill=yellow!20] (8.9,0)  rectangle (10.7,1.2);
-\node[font=\scriptsize] at (4.2,2.75) {$\downarrow \tfrac{1}{3}$};
-\node[font=\scriptsize] at (7.0,2.15) {$\downarrow \tfrac{1}{2}$};
-\node[font=\scriptsize] at (9.8,1.55) {$\downarrow \tfrac{2}{3}$};
-\node[font=\scriptsize, align=center] at (1.4,-0.5) {baseline};
-\node[font=\scriptsize, align=center] at (4.2,-0.5) {$+$ contextual\\embeddings};
-\node[font=\scriptsize, align=center] at (7.0,-0.5) {$+$ contextual\\keyword};
-\node[font=\scriptsize, align=center] at (9.8,-0.5) {$+$ rerank};
-\end{tikzpicture}
+\input{figures/retrieval-staircase}
 \caption{Retrieval failure rate (the fraction of queries whose relevant passage is missing from the top~$k$) falling in stackable increments as techniques are layered, on the source's benchmark (Anthropic, 2024): contextual embeddings alone cut baseline failures by roughly a third, adding contextual keyword matching reaches roughly a half, and a reranking second stage reaches roughly two-thirds.
 The takeaway is not the exact numbers, which are benchmark-specific and will shift, but the shape: each stage lowers the same measurable quantity, so retrieval quality is evaluated and improved the way Chapter~\ref{chapter:Evaluation} treats any score, not judged by feel.}
 \label{figure:RetrievalStaircase}
@@ -235,27 +220,7 @@ A \emph{retrieval-augmented} agent extends the basic loop with a retrieval step 
 
 \begin{figure}[htb!]
 \begin{center}
-\input{figures/concept-style}
-\begin{tikzpicture}[
-    node distance=1cm,
-    box/.style={conceptbox, minimum width=2.2cm, minimum height=1.0cm},
-    store/.style={conceptbox, dashed, fill=gray!8,
-                  minimum width=3.0cm, minimum height=1.0cm},
-    arr/.style={conceptflow}
-]
-\node[box, fill=blue!15]                   (q)     {query $q$};
-\node[box, fill=blue!8,    below=of q]      (qe)    {embed\\$\phi(q)$};
-\node[box, fill=green!20,  right=of qe]     (idx)   {vector index\\search};
-\node[box, fill=green!20,  right=of idx]    (topk)  {top-$k$\\passages};
-\node[box, fill=yellow!20, right=of topk]   (model) {model reads\\augmented context};
-\node[store, above=of idx]            (corpus) {corpus $\mathcal{K}$ (sealed)\\chunk $+$ embed, offline};
-
-\draw[arr] (q)    -- (qe);
-\draw[arr] (qe)   -- node[above,font=\scriptsize]{$\phi(q)$} (idx);
-\draw[arr] (idx)  -- node[above,font=\scriptsize]{$k$-NN}    (topk);
-\draw[arr] (topk) -- node[above,font=\scriptsize]{inject}    (model);
-\draw[arr] (corpus) -- (idx);
-\end{tikzpicture}
+\input{figures/rag-pipeline}
 \caption{The retrieval-augmented generation pipeline.
 At query time, the query is embedded, matched against the vector index by $k$-nearest-neighbor search, and its top-$k$ passages are injected into the context the model reads.
 The corpus $\mathcal{K}$ is chunked and embedded once, offline (dashed), and sealed thereafter; exactly the discipline of Section~\ref{section:VectorSearch}.

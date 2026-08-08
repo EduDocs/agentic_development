@@ -1,0 +1,19 @@
+%% evolutionary-loop.tex: the agentic evolutionary loop (Chapter 10).
+%% House conceptual style; Mutate is drawn as a node distinct from Generate, since it
+%% is the one operator absent from the generate-evaluate-select loop of Chapter 9.
+\input{figures/_concept-style}
+\begin{tikzpicture}
+% One-time seed on the left; the steady-state cycle runs clockwise on the right.
+\node[conceptbox, fill=yellow!20, minimum width=3.4cm] (pop) at (0, 2.0) {Initial population $\Population_0$};
+\node[conceptbox, fill=blue!8]    (gen) at (0,    0)    {Generate};
+\node[conceptbox, fill=green!20]  (fit) at (5.2,  0)    {Evaluate\\(Fitness)};
+\node[conceptbox, fill=orange!20] (sel) at (10.4, 0)    {Select};
+\node[conceptbox, fill=blue!15]   (mut) at (5.2, -2.2)  {Mutate};
+
+\draw[conceptflow] (pop) -- node[conceptlabel, midway, right]{seed}    (gen);
+\draw[conceptflow] (gen) -- node[conceptlabel, midway, above]{initial} (fit);
+\draw[conceptflow] (fit) -- node[conceptlabel, midway, above]{scored}  (sel);
+\draw[conceptflow] (sel.south) -- (sel.south |- mut.east)
+    -- node[conceptlabel, midway, below]{survivors $\Population_{t+1}$} (mut.east);
+\draw[conceptflow] (mut) -- node[conceptlabel, midway, right]{candidates} (fit);
+\end{tikzpicture}%

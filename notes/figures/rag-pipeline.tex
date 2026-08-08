@@ -1,0 +1,23 @@
+%% rag-pipeline.tex: the retrieval-augmented generation pipeline (Chapter 8).
+%% House conceptual style; the offline, sealed corpus is drawn as a dashed `store'.
+\input{figures/_concept-style}
+\begin{tikzpicture}[
+    node distance=1cm,
+    box/.style={conceptbox, minimum width=2.2cm, minimum height=1.0cm},
+    store/.style={conceptbox, dashed, fill=gray!8,
+                  minimum width=3.0cm, minimum height=1.0cm},
+    arr/.style={conceptflow}
+]
+\node[box, fill=blue!15]                   (q)     {query $q$};
+\node[box, fill=blue!8,    below=of q]      (qe)    {embed\\$\phi(q)$};
+\node[box, fill=green!20,  right=of qe]     (idx)   {vector index\\search};
+\node[box, fill=green!20,  right=of idx]    (topk)  {top-$k$\\passages};
+\node[box, fill=yellow!20, right=of topk]   (model) {model reads\\augmented context};
+\node[store, above=of idx]            (corpus) {corpus $\mathcal{K}$ (sealed)\\chunk $+$ embed, offline};
+
+\draw[arr] (q)    -- (qe);
+\draw[arr] (qe)   -- node[above,font=\scriptsize]{$\phi(q)$} (idx);
+\draw[arr] (idx)  -- node[above,font=\scriptsize]{$k$-NN}    (topk);
+\draw[arr] (topk) -- node[above,font=\scriptsize]{inject}    (model);
+\draw[arr] (corpus) -- (idx);
+\end{tikzpicture}%

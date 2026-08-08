@@ -1,4 +1,6 @@
-%% concept-style.tex — shared TikZ styles for the course's CONCEPTUAL block diagrams.
+%% _concept-style.tex: shared TikZ styles for the course's CONCEPTUAL block diagrams.
+%% The leading underscore marks this as the one file in figures/ that is not a
+%% figure; every other figures/*.tex holds exactly one figure body.
 %%
 %% \input this at the top of every conceptual figure (before \begin{tikzpicture})
 %% so each such diagram speaks one visual language: rounded "block" nodes, stealth
@@ -17,4 +19,4 @@
   conceptflow/.style={->, >=stealth', thick},
   % an edge/annotation label.
   conceptlabel/.style={font=\scriptsize, align=center},
-}
+}%

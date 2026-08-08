@@ -1,0 +1,20 @@
+%% orchestrator-worker.tex: the orchestrator-worker pattern (Chapter 9).
+%% House conceptual style; each worker is a `sub' node annotated with its own context.
+\input{figures/_concept-style}
+\begin{tikzpicture}[
+    box/.style={conceptbox, minimum width=2.3cm, minimum height=1.0cm},
+    sub/.style={conceptbox, minimum width=2.7cm, minimum height=0.9cm, font=\scriptsize},
+    arr/.style={conceptflow}
+]
+\node[box, fill=orange!20] (orch) at (0,0) {Orchestrator};
+\node[sub, fill=blue!12] (s1) at (4.7,1.7)  {sub-agent\\\emph{own context}};
+\node[sub, fill=blue!12] (s2) at (4.7,0)    {sub-agent\\\emph{own context}};
+\node[sub, fill=blue!12] (s3) at (4.7,-1.7) {sub-agent\\\emph{own context}};
+\node[box, fill=green!20] (syn) at (9.4,0) {Synthesis};
+\draw[arr] (orch) -- (s1);
+\draw[arr] (orch) -- (s2) node[midway, above, font=\scriptsize]{task};
+\draw[arr] (orch) -- (s3);
+\draw[arr] (s1) -- (syn);
+\draw[arr] (s2) -- (syn) node[midway, above, font=\scriptsize]{result};
+\draw[arr] (s3) -- (syn);
+\end{tikzpicture}%

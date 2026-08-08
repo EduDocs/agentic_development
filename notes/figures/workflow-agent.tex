@@ -1,6 +1,6 @@
 %% workflow-agent.tex — the workflow/agent distinction (Chapter 2). House conceptual style.
 %% Two block nodes on a determinism-to-autonomy spectrum, each with its distinctions listed below.
-\input{figures/concept-style}
+\input{figures/_concept-style}
 \begin{tikzpicture}
 % the spectrum the two sit on
 \draw[conceptflow, <->] (-2.1,1.2) -- (8,1.2);
@@ -14,4 +14,4 @@
   {steps fixed in code\\control flow known in advance\\predictable and cheaper\\chaining, routing, parallelization};
 \node[conceptlabel, text width=4.4cm, anchor=north] at (6,-0.75)
   {model chooses next step at run time\\loops until task is completed\\flexible and open-ended\\higher cost, more room for error};
-\end{tikzpicture}
+\end{tikzpicture}%

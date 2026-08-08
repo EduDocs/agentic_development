@@ -168,54 +168,7 @@ Table~\ref{table:AgenticTimeline} lists the sequence; Figure~\ref{figure:Agentic
 
 \begin{figure}[t]
 \centering
-\begin{tikzpicture}[
-  font=\footnotesize, line width=1pt, >=stealth',
-    box/.style={draw, rounded corners=3pt, minimum width=2.4cm, minimum height=0.8cm,
-                align=center, font=\small, fill=gray!12},
-    hbox/.style={draw, rounded corners=3pt, minimum width=2.4cm, minimum height=0.8cm,
-                align=center, font=\small, fill=white},
-    lim/.style={font=\scriptsize, text=black!55, align=left},
-    yr/.style={font=\scriptsize, text=black!55},
-]
-\node[hbox] (h1) at (1.5,4.125) {};
-\node[hbox] (h2) at (1.25,3.625) {};
-\node[hbox] (h3) at (1,3.125) {};
-\node[hbox] (h4) at (0.75,2.625) {};
-\node[hbox] (h5) at (0.5,2.125) {};
-\node[lim] at (1.5,5) {History};
-\node[box] (n1) at (6,6.25) {word2vec};
-\node[box] (n2) at (6,5) {seq2seq};
-\node[box] (n3) at (6,3.75) {transformer};
-\node[box] (n4) at (6,2.5) {pre-training};
-\node[box] (n5) at (6,1.25) {GPT-3};
-\node[box] (n6) at (6,0) {RAG};
-\draw[->] (n1) -- (n2);
-\draw[->] (n2) -- (n3);
-\draw[->] (n3) -- (n4);
-\draw[->] (n4) -- (n5);
-\draw[->] (n5) -- (n6);
-\node[lim,anchor=west] at (7.4,5.625) {isolated\\words};
-\node[lim,anchor=west] at (7.4,4.375) {fixed-vector\\bottleneck};
-\node[lim,anchor=west] at (7.4,3.125) {no transfer\\across tasks};
-\node[lim,anchor=west] at (7.4,1.875) {task-specific\\training};
-\node[lim,anchor=west] at (7.4,0.625) {frozen\\knowledge};
-\node[yr,anchor=east] at (4.6,6.25) {2013};
-\node[yr,anchor=east] at (4.6,5) {2014};
-\node[yr,anchor=east] at (4.6,3.75) {2017};
-\node[yr,anchor=east] at (4.6,2.5) {2018};
-\node[yr,anchor=east] at (4.6,1.25) {2020};
-\node[yr,anchor=east] at (4.6,0) {2020};
-\node[yr] at (11,6.25) {2022+};
-\node[box, fill=blue!15] (a0) at (11,5.375) {tuning};
-\node[box, fill=blue!15] (a1) at (11.5,4.125) {CoT};
-\node[box, fill=blue!15] (a2) at (12,2.875) {ReAct};
-\node (f6) at (11.75,1.4375) {$\vdots$};
-\node[box, fill=green!3] (a3) at (11,0) {};
-\node[box, fill=green!6] (a4) at (11.25,0) {};
-\node[box, fill=green!9] (a5) at (11.5,0) {};
-\node[box, fill=green!12] (a6) at (11.75,0) {};
-\node[box, fill=green!15] (a7) at (12,0) {Agents};
-\end{tikzpicture}
+\input{figures/agentic-chain}
 \caption{The lineage as a causal chain.
 Each box is a milestone, with its year to the left; each arrow is labelled with the limitation of the step on its left that the step on its right removed.
 The point is not the list of names but the dependency between them: representing isolated words made mapping whole sequences the next problem, whose fixed-vector bottleneck made attention the next, and so on until models that can act, agents.

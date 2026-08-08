@@ -161,28 +161,7 @@ In a ReAct agent, the model alternates between \emph{thought} steps (natural-lan
 
 \begin{figure}[htb!]
 \begin{center}
-\begin{tikzpicture}[
-    node distance=1.5cm,
-    stepbox/.style={draw, rounded corners=3pt, minimum width=3.2cm,
-                 minimum height=0.75cm, align=center, font=\small},
-    arr/.style={->, >=stealth', thick},
-    ctx/.style={draw, dashed, rounded corners=2pt, fill=gray!8,
-                minimum width=6.8cm, minimum height=0.55cm,
-                align=center, font=\scriptsize}
-]
-\node[stepbox, fill=yellow!25]   (t1) {Thought};
-\node[stepbox, fill=blue!20,  right=1.6cm of t1] (a1) {Action (tool call)};
-\node[ctx,  below=0.7cm of a1] (ob) {Observation (tool result)};
-\node[stepbox, fill=yellow!25, below=0.7cm of ob] (t2) {Thought};
-\node[stepbox, fill=green!20,  right=1.6cm of t2] (fin) {Final Answer};
-
-\draw[arr] (t1) -- (a1);
-\draw[arr] (a1) -- (ob);
-\draw[arr] (ob) -- (t2);
-\draw[arr] (t2) -- (fin);
-\draw[arr] (t2.west) -| (t1.south)
-    node[pos=0.35, below, font=\scriptsize] {more calls};
-\end{tikzpicture}
+\input{figures/react}
 \caption{The ReAct pattern.
 The model alternates between \emph{thought} (explicit reasoning) and \emph{action} (a tool call or final answer).
 Each tool result becomes an observation that informs the next thought.

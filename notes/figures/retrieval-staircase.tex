@@ -1,0 +1,20 @@
+%% retrieval-staircase.tex: retrieval failure rate falling in stackable increments
+%% as techniques are layered (Chapter 8).
+%% A data figure, not a block diagram: hand-drawn bars against a baseline rule, so
+%% the house conceptual styles do not apply.
+\begin{tikzpicture}[arr/.style={->, >=stealth', thick}]
+\draw[arr] (-0.3,0) -- (-0.3,4.1) node[above, font=\scriptsize] {failure rate};
+\draw[arr] (-0.3,0) -- (11.4,0) node[right, font=\scriptsize] {stages added};
+\draw[dashed] (-0.3,3.6) -- (10.9,3.6) node[right, font=\scriptsize] {baseline};
+\draw[fill=gray!15]   (0.5,0)  rectangle (2.3,3.6);
+\draw[fill=blue!15]   (3.3,0)  rectangle (5.1,2.4);
+\draw[fill=green!20]  (6.1,0)  rectangle (7.9,1.8);
+\draw[fill=yellow!20] (8.9,0)  rectangle (10.7,1.2);
+\node[font=\scriptsize] at (4.2,2.75) {$\downarrow \tfrac{1}{3}$};
+\node[font=\scriptsize] at (7.0,2.15) {$\downarrow \tfrac{1}{2}$};
+\node[font=\scriptsize] at (9.8,1.55) {$\downarrow \tfrac{2}{3}$};
+\node[font=\scriptsize, align=center] at (1.4,-0.5) {baseline};
+\node[font=\scriptsize, align=center] at (4.2,-0.5) {$+$ contextual\\embeddings};
+\node[font=\scriptsize, align=center] at (7.0,-0.5) {$+$ contextual\\keyword};
+\node[font=\scriptsize, align=center] at (9.8,-0.5) {$+$ rerank};
+\end{tikzpicture}%

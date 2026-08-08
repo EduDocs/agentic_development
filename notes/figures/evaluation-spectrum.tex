@@ -3,7 +3,7 @@
 %% formula/test) and a judgment CRITIC (bottom: a capable model + rubric) both map
 %% the same candidate to a score; a dashed "no formula" arrow shows the top lane
 %% collapsing into the bottom one where no oracle exists (the critic IS the evaluator).
-\input{figures/concept-style}
+\input{figures/_concept-style}
 \begin{tikzpicture}[
     collapse/.style={->, >=stealth', thick, densely dashed, gray},
 ]
@@ -32,4 +32,4 @@
   {\textbf{verifiable}: objective, cheap, unambiguous\\ {\scriptsize sphere packing $\cdot$ code $\cdot$ MSE}};
 \node[conceptlabel, anchor=north, text width=5cm] at (4.6,-2.55)
   {\textbf{judgment}: contextual, biased, gameable\\ {\scriptsize proof $\cdot$ prose $\cdot$ an idea}};
-\end{tikzpicture}
+\end{tikzpicture}%

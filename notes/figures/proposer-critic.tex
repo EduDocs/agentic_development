@@ -1,0 +1,19 @@
+%% proposer-critic.tex: the proposer-critic-evaluator architecture (Chapter 9).
+%% House conceptual style.
+\input{figures/_concept-style}
+\begin{tikzpicture}[
+    node distance=1.5cm and 1.8cm,
+    box/.style={conceptbox},
+    arr/.style={conceptflow}
+]
+\node[box, fill=blue!15]                 (prop) at (0,0) {Proposer};
+\node[box, fill=orange!15, right=of prop] (crit) {Critic};
+\node[box, fill=green!15,  right=of crit] (eval) {Evaluator};
+\node[box, fill=gray!15,   below=of eval] (sel)  {Selector};
+
+\draw[arr] (prop) -- node[midway, above, conceptlabel]{candidates} (crit);
+\draw[arr] (crit) -- node[midway, above, conceptlabel]{survivors}  (eval);
+\draw[arr] (eval) -- node[midway, right, conceptlabel]{scores}     (sel);
+\draw[arr] (sel.west) -- node[midway, above, conceptlabel]{iterate / report}
+    (prop.south |- sel.west) -- (prop.south);
+\end{tikzpicture}%

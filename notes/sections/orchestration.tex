@@ -94,23 +94,7 @@ Its goal is precision: filtering out candidates that are obviously wrong.
 
 \begin{figure}[htb!]
 \begin{center}
-\input{figures/concept-style}
-\begin{tikzpicture}[
-    node distance=1.5cm and 1.8cm,
-    box/.style={conceptbox},
-    arr/.style={conceptflow}
-]
-\node[box, fill=blue!15]                 (prop) at (0,0) {Proposer};
-\node[box, fill=orange!15, right=of prop] (crit) {Critic};
-\node[box, fill=green!15,  right=of crit] (eval) {Evaluator};
-\node[box, fill=gray!15,   below=of eval] (sel)  {Selector};
-
-\draw[arr] (prop) -- node[midway, above, conceptlabel]{candidates} (crit);
-\draw[arr] (crit) -- node[midway, above, conceptlabel]{survivors}  (eval);
-\draw[arr] (eval) -- node[midway, right, conceptlabel]{scores}     (sel);
-\draw[arr] (sel.west) -- node[midway, above, conceptlabel]{iterate / report}
-    (prop.south |- sel.west) -- (prop.south);
-\end{tikzpicture}
+\input{figures/proposer-critic}
 \caption{The proposer--critic--evaluator architecture.
 The proposer generates candidates, the critic filters out obvious errors, the evaluator scores the survivors, and the selector feeds the best back to the proposer for the next round.}
 \label{figure:ProposerCritic}
@@ -175,24 +159,7 @@ When parallel agents must \emph{write} (not just analyze) they also need isolate
 
 \begin{figure}[htb!]
 \begin{center}
-\input{figures/concept-style}
-\begin{tikzpicture}[
-    box/.style={conceptbox, minimum width=2.3cm, minimum height=1.0cm},
-    sub/.style={conceptbox, minimum width=2.7cm, minimum height=0.9cm, font=\scriptsize},
-    arr/.style={conceptflow}
-]
-\node[box, fill=orange!20] (orch) at (0,0) {Orchestrator};
-\node[sub, fill=blue!12] (s1) at (4.7,1.7)  {sub-agent\\\emph{own context}};
-\node[sub, fill=blue!12] (s2) at (4.7,0)    {sub-agent\\\emph{own context}};
-\node[sub, fill=blue!12] (s3) at (4.7,-1.7) {sub-agent\\\emph{own context}};
-\node[box, fill=green!20] (syn) at (9.4,0) {Synthesis};
-\draw[arr] (orch) -- (s1);
-\draw[arr] (orch) -- (s2) node[midway, above, font=\scriptsize]{task};
-\draw[arr] (orch) -- (s3);
-\draw[arr] (s1) -- (syn);
-\draw[arr] (s2) -- (syn) node[midway, above, font=\scriptsize]{result};
-\draw[arr] (s3) -- (syn);
-\end{tikzpicture}
+\input{figures/orchestrator-worker}
 \caption{The orchestrator--worker pattern (Anthropic, 2025).
 A lead agent decomposes a task and spawns worker sub-agents that run in parallel, each with its own context window, then synthesizes their results.
 Because each worker's context is isolated, the orchestrator's window is not flooded with intermediate detail and independent sub-questions are explored at once, at the cost of roughly an order of magnitude more tokens than a single agent.

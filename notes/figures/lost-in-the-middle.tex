@@ -1,0 +1,17 @@
+%% lost-in-the-middle.tex: uneven use of the context window (Chapter 4).
+%% A plot figure, not a block diagram: an effective-use curve above a segmented bar
+%% standing for the window, so the house conceptual styles do not apply.
+\begin{tikzpicture}[font=\small]
+% effective-use curve (U-shape) above the window bar
+\draw[->, >=stealth'] (0,1.0) -- (0,2.9) node[rotate=90, anchor=south east, font=\scriptsize, yshift=2pt]{effective use};
+\draw[thick] (0.15,2.55) .. controls (3.8,1.15) and (7.6,1.15) .. (11.25,2.55);
+\node[font=\scriptsize, anchor=south] at (0.7,2.55)   {primacy};
+\node[font=\scriptsize, anchor=south] at (10.7,2.55)  {recency};
+\node[font=\scriptsize, anchor=north] at (5.7,1.45)   {lost in the middle};
+% the context window as a segmented bar
+\draw[fill=blue!15]   (0,0)    rectangle (2.2,0.7);  \node at (1.1,0.35)  {\scriptsize system prompt};
+\draw[fill=green!20]  (2.2,0)  rectangle (4.3,0.7);  \node at (3.25,0.35) {\scriptsize instructions};
+\draw[fill=gray!15]   (4.3,0)  rectangle (8.6,0.7);  \node at (6.45,0.35) {\scriptsize documents, tool results};
+\draw[fill=orange!20] (8.6,0)  rectangle (11.4,0.7); \node at (10.0,0.35) {\scriptsize recent turns, query};
+\node[anchor=north, font=\scriptsize] at (5.7,-0.15) {position in the context window $\longrightarrow$};
+\end{tikzpicture}%
