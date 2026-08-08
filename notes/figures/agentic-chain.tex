@@ -1,15 +1,15 @@
-%% agentic-chain.tex: the lineage as a causal chain (Chapter 1).
+%% agentic-chain.tex: the lineage as a causal chain (Chapter 1). House conceptual style.
 %% Milestones down the centre with their years to the left and, to the right, the
 %% limitation each step removed; stacked cards on the left stand for the prehistory
 %% the chapter does not retrace, faded nodes on the right for the landscape now forming.
+%% The milestones are gray (the neutral trunk of the lineage) and the agentic additions
+%% blue; the green ramp into `Agents' is a fade, every step lighter than !15.
+\input{figures/_concept-style}
 \begin{tikzpicture}[
-  font=\footnotesize, line width=1pt, >=stealth',
-    box/.style={draw, rounded corners=3pt, minimum width=2.4cm, minimum height=0.8cm,
-                align=center, font=\small, fill=gray!12},
-    hbox/.style={draw, rounded corners=3pt, minimum width=2.4cm, minimum height=0.8cm,
-                align=center, font=\small, fill=white},
-    lim/.style={font=\scriptsize, text=black!55, align=left},
-    yr/.style={font=\scriptsize, text=black!55},
+    box/.style={conceptbox, fill=gray!15},
+    hbox/.style={conceptbox, fill=white},
+    lim/.style={conceptlabel, align=left, text=black!55},
+    yr/.style={conceptlabel, text=black!55},
 ]
 \node[hbox] (h1) at (1.5,4.125) {};
 \node[hbox] (h2) at (1.25,3.625) {};
@@ -23,11 +23,11 @@
 \node[box] (n4) at (6,2.5) {pre-training};
 \node[box] (n5) at (6,1.25) {GPT-3};
 \node[box] (n6) at (6,0) {RAG};
-\draw[->] (n1) -- (n2);
-\draw[->] (n2) -- (n3);
-\draw[->] (n3) -- (n4);
-\draw[->] (n4) -- (n5);
-\draw[->] (n5) -- (n6);
+\draw[conceptflow] (n1) -- (n2);
+\draw[conceptflow] (n2) -- (n3);
+\draw[conceptflow] (n3) -- (n4);
+\draw[conceptflow] (n4) -- (n5);
+\draw[conceptflow] (n5) -- (n6);
 \node[lim,anchor=west] at (7.4,5.625) {isolated\\words};
 \node[lim,anchor=west] at (7.4,4.375) {fixed-vector\\bottleneck};
 \node[lim,anchor=west] at (7.4,3.125) {no transfer\\across tasks};
