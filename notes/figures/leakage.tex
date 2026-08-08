@@ -23,7 +23,13 @@
 \draw[arr] (agent) -- node[above, font=\scriptsize]{$a$} (fit);
 \draw[arr] (fit) to[bend left=45] node[below, font=\scriptsize]{queried many times} (agent);
 \draw[arr] (fit) -- node[above, font=\scriptsize]{winner $a^\star$} (final);
+% The cross marks the crossing at the arc's midpoint and the label hangs below
+% the cross, not below the path: the curve rises away on both sides of that
+% point, so anything dropped there clears it. Placing both at `midway, below'
+% put the label on top of the cross and across the dashes. Same arrangement as
+% the SanctionedFlow scene of the chapter's video (ageation/scenes).
 \draw[leak] (test.east) to[out=-45, in=-60, looseness=1.25]
-                      node[midway, font=\scriptsize, below]{leakage (forbidden)}
-                      node[pos=0.5, font=\large]{$\times$} (agent.south);
+                      node[pos=0.62, font=\large, inner sep=0.5pt, fill=white] {$\times$}
+                      node[pos=0.62, below=11pt, font=\scriptsize] {leakage (forbidden)}
+                      (agent.south);
 \end{tikzpicture}%
