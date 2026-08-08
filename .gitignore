@@ -86,10 +86,13 @@ _site/
 site-src/*
 !site-src/index.md
 !site-src/stylesheets/
-# Notes site: pages, styles, and the built book PDF are all tracked and ship
-# with a push. Only the concept-map data is ignored — CI regenerates it from
-# PROGRESSION.md on every deploy (`just notes-data` locally).
+# Notes site: the pages and styles are tracked. Two things are not, and both
+# are regenerated rather than stored: the concept-map data (CI runs
+# `notes_site_data.py` on every deploy) and the book PDF, which lives as an
+# asset on the rolling `notes-pdf` release (`just publish-notes-pdf`). A local
+# copy of the PDF may appear here from `just notes-serve`; it stays untracked.
 notes/site/data/
+notes/site/agentic-development-notes.pdf
 *.aux
 *.toc
 *.out

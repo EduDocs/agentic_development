@@ -11,8 +11,10 @@ name: Deploy course site
 # broken link or a missing nav file fails the run rather than shipping a broken
 # site: that is the "test" in build/test/deploy.
 #
-# The book PDF is built locally (`just notes-pdf`) and COMMITTED under
-# notes/site/, so a push carries the current build. Nothing here runs LaTeX.
+# The book PDF is built locally (`just publish-notes-pdf`) and published as an
+# asset on the rolling `notes-pdf` release. It is never stored in git; this
+# workflow pulls the asset. So the slow, fragile LaTeX build stays on your
+# machine, the PDF never enters history, and deploys stay fast.
 #
 # One-time setup in the repo's GitHub settings:
 #   Settings -> Pages -> Build and deployment -> Source: "GitHub Actions".
@@ -39,10 +41,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out the repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v7
 
+      # v7 targets Node 24; v5 targeted the deprecated Node 20 and was being
+      # force-migrated by the runner with a warning on every build.
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v7
         with:
           python-version: "3.x"
 
@@ -74,13 +78,21 @@ jobs:
         run: python3 scripts/notes_site_data.py
 
       # Assemble the deployment: the notes own the root, the course lives under
-      # /course/. The book PDF is committed in notes/site/ and comes along with
-      # the first copy.
+      # /course/.
       - name: Assemble _site (notes at root, course under /course/)
         run: |
           mkdir -p _site/course
           cp -R notes/site/. _site/
           cp -R site/.       _site/course/
+
+      # The book PDF is built locally (`just publish-notes-pdf`), which uploads
+      # it as an asset on the rolling `notes-pdf` release. It is never stored in
+      # git, so the slow LaTeX build stays off CI and the binary stays out of
+      # history; this step just pulls the asset into the site root.
+      - name: Fetch the notes PDF from the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release download notes-pdf --pattern agentic-development-notes.pdf --dir _site --clobber
 
       # mkdocs --strict only gates the course subtree; guard the assembly too,
       # so a broken root cannot ship just because the course built cleanly.
@@ -90,8 +102,7 @@ jobs:
           test -f _site/map.html
           test -f _site/data/graph.json
           test -f _site/course/index.html
-          test -f _site/agentic-development-notes.pdf || \
-            echo "::warning::notes PDF missing — run 'just notes-pdf' and commit it"
+          test -f _site/agentic-development-notes.pdf
 
       - name: Upload the Pages artifact
         uses: actions/upload-pages-artifact@v5

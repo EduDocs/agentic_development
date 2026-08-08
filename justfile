@@ -66,22 +66,36 @@ site: site-links
 
 # ── Notes site (landing page + concept map + book PDF) ─────────────────────
 # Lives in notes/site/ so a future split of notes/ into its own repo takes the
-# site with it. The pages and the PDF are committed; the concept-map data is
-# generated. Deployed at the site ROOT, with the course under /course/.
+# site with it. The pages are committed; the concept-map data is generated and
+# the book PDF lives on a release, never in git. Deployed at the site ROOT,
+# with the course under /course/.
+
+NOTES_PDF := "agentic-development-notes.pdf"
 
 # Regenerate the concept map's data from PROGRESSION.md and the sidecars
 notes-data:
     python3 scripts/notes_site_data.py
 
-# Rebuild the book and refresh the committed PDF the notes site serves
-# (run whenever the manuscript changes, then commit and push)
-notes-pdf:
+# The PDF is never committed to git: releases live outside the tree, so the slow
+# LaTeX build stays on your machine, the binary never enters history, and deploys
+# stay fast. The deploy workflow pulls this asset.
+# Requires a one-time `gh auth login`, and a one-time release creation:
+#   gh release create notes-pdf notes/build/agentic-development-notes.pdf \
+#       -t "Notes PDF" -n "Latest build of the course notes."
+# After that, this recipe rebuilds and overwrites the asset.
+#
+# Build the book and publish it to the rolling `notes-pdf` release
+publish-notes-pdf:
     just --justfile notes/justfile --working-directory notes build
-    cp notes/build/main.pdf notes/site/agentic-development-notes.pdf
-    @echo "Updated notes/site/agentic-development-notes.pdf — commit it to publish."
+    cp notes/build/main.pdf notes/build/{{NOTES_PDF}}
+    gh release upload notes-pdf notes/build/{{NOTES_PDF}} --clobber
+    @echo "Published {{NOTES_PDF}} to the 'notes-pdf' release."
 
 # Preview the NOTES alone at http://localhost:8001
 notes-serve: notes-data
+    # The PDF is not in the repo. If you have built the book locally, serve that
+    # copy so the link resolves in preview; otherwise the link 404s here.
+    -cp notes/build/main.pdf notes/site/{{NOTES_PDF}}
     @echo "Notes site at http://localhost:8001 (the Course link 404s here; use 'just web')"
     python3 -m http.server 8001 --directory notes/site
 
@@ -92,6 +106,8 @@ web: site-links notes-data
     {{VENV}}/bin/mkdocs build --strict
     cp -R notes/site/. _site/
     cp -R site/.       _site/course/
+    # In CI this comes from the release; locally, use a build if you have one.
+    -cp notes/build/main.pdf _site/{{NOTES_PDF}}
     @echo "Assembled site at http://localhost:8000  (course at /course/)"
     python3 -m http.server 8000 --directory _site
 
