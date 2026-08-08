@@ -91,6 +91,14 @@ case "$cmd" in
         else
             rm -f build/main.bbl
         fi
+        # Same shape as the bibtex branch above: index only when the first pass
+        # wrote a .idx. Without it \printindex finds no .ind and silently emits
+        # nothing, so an indexed manuscript ships with no index at all.
+        if [ -f build/main.idx ]; then
+            ( cd build && makeindex -q main.idx >/dev/null 2>&1 ) || true
+        else
+            rm -f build/main.ind
+        fi
         "${pdflatex[@]}" >/dev/null 2>&1 || true
         "${pdflatex[@]}" >/dev/null 2>&1
         echo "built $PROJECT/build/main.pdf" ;;

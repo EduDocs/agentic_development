@@ -2,6 +2,7 @@
 outdir     := "build"
 latex      := "pdflatex"
 bibtex     := "bibtex"
+makeindex  := "makeindex"
 latexflags := "-interaction=nonstopmode"
 main       := "main"
 open_cmd   := "open"
@@ -14,9 +15,14 @@ default:
 compose:
     python3 compose.py
 
-# Full build: pdflatex -> bibtex (only if cited) -> pdflatex -> pdflatex
+# Full build: pdflatex -> bibtex (only if cited) -> makeindex (only if indexed)
+#             -> pdflatex -> pdflatex
 # Runs bibtex only when something is actually \cite'd — otherwise bibtex emits a
 # degenerate empty thebibliography that breaks pdflatex (mirrors evaluate._compile).
+# Runs makeindex only when the first pass actually wrote a .idx, i.e. when the
+# document has \makeindex plus at least one \index entry. Without this step a
+# manuscript that indexes gets no index at all: \printindex finds no .ind and
+# prints nothing, silently, while the log says only "No file main.ind."
 build:
     #!/usr/bin/env bash
     set -e
@@ -34,6 +40,11 @@ build:
         ( cd {{outdir}} && BIBINPUTS=..:../templates: BSTINPUTS=..:../templates: {{bibtex}} {{main}} ) || true
     else
         rm -f {{outdir}}/{{main}}.bbl
+    fi
+    if [ -f "{{outdir}}/{{main}}.idx" ]; then
+        ( cd {{outdir}} && {{makeindex}} -q {{main}}.idx ) || true
+    else
+        rm -f {{outdir}}/{{main}}.ind
     fi
     {{latex}} {{latexflags}} -output-directory={{outdir}} {{main}}.tex
     {{latex}} {{latexflags}} -output-directory={{outdir}} {{main}}.tex
