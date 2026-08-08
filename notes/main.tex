@@ -1,81 +1,17 @@
+%% main.tex: what is specific to *this* book.
+%%
+%% The machinery (packages, fonts, theorem environments, listings style) lives
+%% in templates/preamble.tex. What stays here is the class, this book's
+%% notation, its identity, and its structure: the things you would have to
+%% rewrite to make a different book.
+
 \documentclass[12pt,openany]{book}
 
-%%  Dimensions and URL
-\usepackage[margin=1in]{geometry}
-\usepackage[hyperindex,colorlinks,linkcolor=blue!60!black,urlcolor=blue!60!black]{hyperref}
-
-\usepackage[T1]{fontenc}
-% Inconsolata replaces Computer Modern Typewriter as \ttfamily everywhere
-% (not just in listings): cleaner glyphs, better 0/O and 1/l/I
-% distinguishability, and a proper straight quote glyph — the standard
-% modern choice for LaTeX code listings.
-% varqu selects the straight-quote glyph variants (the default is curly,
-% which silently corrupts quotes in every code listing).
-\usepackage[varqu]{inconsolata}
-% Inconsolata ships no italic. Inside an amsthm "plain" body (Example, Remark,
-% ...) the environment's italic shape reaches anything typewriter, so both an
-% inline \texttt and a lstlisting there request T1/zi4/m/it, which does not
-% exist; LaTeX substituted the upright shape and warned nine times a build.
-% basicstyle=\upshape does NOT prevent it: a listing in an italic body still
-% asks for the italic shape during setup (verified on a minimal document), so
-% this has to be fixed at the font level rather than per construct. ssub is the
-% silent form of the substitution LaTeX was already performing.
-% The \AtBeginDocument and the throwaway \selectfont are load-order plumbing:
-% t1zi4.fd is read lazily on first use, so declaring the shape in the preamble
-% fails with "Font family `T1+zi4' unknown".
-\AtBeginDocument{%
-  {\fontfamily{zi4}\selectfont}%
-  \DeclareFontShape{T1}{zi4}{m}{it}{<->ssub*zi4/m/n}{}%
-}
-% Helvetica as \sffamily: the rig figures under figures/ set their labels in
-% \sffamily with widths tuned to Helvetica (their standalone previews load
-% helvet); CM Sans is wider and makes those labels wrap and collide. The body
-% text never uses \sffamily, so this only affects the figures.
-\usepackage[scaled]{helvet}
-\usepackage{amsmath,amssymb,amsthm}
-\usepackage{booktabs}
-\usepackage{makeidx}
-\usepackage{listings}
-% Without upquote, a straight " inside a listing/verbatim renders as a
-% backslash-like mark instead of a plain quote — upquote patches that
-% (standard fix; see e.g. the listings/verbatim FAQ on "why do my quotes
-% look wrong").
-\usepackage{upquote}
-\usepackage{xcolor}
-
-\usepackage{tikz}
-% The extra libraries (arrows.meta, calc, shapes.*, decorations.pathreplacing)
-% are required by the rig figures under figures/, which emit bare tikzpictures
-% when \input here (their standalone preamble is skipped in book mode).
-\usetikzlibrary{arrows,arrows.meta,shadows,shapes,shapes.geometric,shapes.misc,%
-                positioning,fit,backgrounds,calc,decorations.pathreplacing}
-% The rig figures' label widths were metric-tuned at the standalone class's
-% 10pt base; in this 12pt book the size ladder (\small, \scriptsize, ...)
-% resolves larger against the figures' fixed coordinates and labels collide.
-% \rigfigurefonts restores the 10pt-class ladder locally — use it only inside
-% the box that wraps a figures/ \input.
-\makeatletter
-\newcommand{\rigfigurefonts}{%
-  \renewcommand\normalsize{\@setfontsize\normalsize\@xpt{12}}%
-  \renewcommand\small{\@setfontsize\small\@ixpt{11}}%
-  \renewcommand\footnotesize{\@setfontsize\footnotesize\@viiipt{9.5}}%
-  \renewcommand\scriptsize{\@setfontsize\scriptsize\@viipt{8}}%
-  \renewcommand\tiny{\@setfontsize\tiny\@vpt{6}}%
-  \normalsize}
-\makeatother
-\usepackage{pgfplots}
-\pgfplotsset{compat=1.18}
-\pgfplotsset{width=3in}
-\pgfplotsset{every axis plot/.append style={very thick}}
-
-\newtheorem{theorem}{Theorem}[chapter]
-\newtheorem{proposition}[theorem]{Proposition}
-\newtheorem{definition}[theorem]{Definition}
-\newtheorem{example}[theorem]{Example}
-\newtheorem{remark}[theorem]{Remark}
-\newtheorem{principle}[theorem]{Principle}
+\input{templates/preamble}
 
 %%  Notation
+% This book's symbols, used across sections/. Machinery lives in the preamble;
+% these are content, so they stay where an author will look for them.
 \newcommand{\Artifacts}{\mathcal{A}}
 \newcommand{\Population}{\mathcal{P}}
 \newcommand{\Fitness}{f}
@@ -87,93 +23,26 @@
 \newcommand{\Eval}{\mathrm{eval}}
 \newcommand{\Loss}{\mathcal{L}}
 
-%%  Inline code
-% \textup for the same reason \lstset sets \upshape below: \texttt changes only
-% the font *family*, so inside an amsthm "plain" body the environment's italic
-% shape survives and inline code comes out slanted. With Inconsolata that is
-% currently moot (it has no italic, see the substitution above), so this changes
-% nothing today; it is here so that swapping in a mono font that *does* carry an
-% italic cannot silently start slanting every inline code span in a Remark.
-\newcommand{\code}[1]{\textup{\texttt{#1}}}
-
-%%  Spacing
-\renewcommand{\baselinestretch}{1.25}
-
-%%  Code listings style
-% listings ships no built-in TOML or diff lexer; minimal definitions so
-% \begin{lstlisting}[language=toml|diff] resolves instead of erroring.
-\lstdefinelanguage{toml}{
-  morecomment=[l]{\#},
-  morestring=[b]",
-  morestring=[b]',
-  sensitive=false,
-}
-\lstdefinelanguage{diff}{
-  morecomment=[f]{@@},
-  morecomment=[f]{+},
-  morecomment=[f]{-},
-}
-\lstdefinelanguage{json}{
-  morestring=[b]",
-  sensitive=false,
-}
-\lstdefinelanguage{markdown}{
-  sensitive=false,
-}
-% Code listings span the full text width (flush with the prose block on both
-% sides) and reserve a left gutter *inside* the frame for the line numbers, so
-% the numbers never straddle the frame rule.
-\lstset{
-  % \upshape: without it, a listing inside an amsthm "plain"-style block
-  % (Example, Theorem, ...) inherits that environment's italic body shape,
-  % rendering the code slanted — and distorting the quote glyphs further.
-  basicstyle=\ttfamily\upshape\small,
-  breaklines=true,
-  % listings' default columns=fixed forces every glyph into an equal-width
-  % cell independent of the font's real metrics, which is what produces the
-  % oddly letter-spaced look ("g i t   i n i t"); fullflexible uses the
-  % font's own widths instead. keepspaces preserves the deliberate multiple
-  % spaces used to align trailing "# comment" annotations.
-  columns=fullflexible,
-  keepspaces=true,
-  % the upquote package only reaches listings when this option is set;
-  % without it, straight quotes in code render as curly typographic quotes.
-  upquote=true,
-  showstringspaces=false,
-  tabsize=4,
-  breakautoindent=true,
-  frame=single,
-  % full text-width frame; xleftmargin == framexleftmargin puts the left frame
-  % rule exactly at the text margin while opening a gutter that holds the line
-  % numbers inside the frame instead of on the rule.
-  xleftmargin=2.7em,
-  framexleftmargin=2.7em,
-  framexrightmargin=5pt,
-  framextopmargin=4pt,
-  framexbottommargin=4pt,
-  backgroundcolor=\color{gray!8},
-  keywordstyle=\color{blue!70!black},
-  commentstyle=\color{gray!70},
-  stringstyle=\color{green!55!black},
-  numbers=left,
-  numberstyle=\tiny\color{gray},
-  numbersep=1.2em,
-  % listings' tokenizer is not UTF-8-aware by default; teach it the
-  % typographic punctuation that appears in code comments (em/en dash,
-  % curly quotes) rather than requiring every listing to avoid them.
-  literate=
-    {—}{{-{}-{}-}}1
-    {–}{{-{}-}}1
-    {’}{{\textquoteright}}1
-    {‘}{{\textquoteleft}}1
-    {”}{{\textquotedblright}}1
-    {“}{{\textquotedblleft}}1,
-}
-
-\makeindex
+%%  Identity
 \renewcommand{\today}{Fall 2026}
 
+% PDF document properties, distinct from the title page: these are what a
+% browser tab, a reader's Properties panel, and an indexer report. pdflang is
+% the accessibility-relevant one, since without it a screen reader has to guess
+% the pronunciation rules.
+\hypersetup{
+  pdftitle={Agentic Development and Discovery: Empowering Researchers in Compute-Adjacent Fields},
+  pdfauthor={J.-F. Chamberland},
+  pdfsubject={Course notes on agentic development and agentic evolutionary frameworks for research},
+  pdfkeywords={agentic development, evolutionary frameworks, symbolic regression,
+               evaluation harness, context engineering, retrieval, orchestration,
+               research methods, graduate course},
+  pdflang={en},
+}
+
 \begin{document}
+
+\input{templates/header}
 
 \author{}
 \title{
@@ -207,5 +76,7 @@
 \include{sections/cowork_reference}
 
 \printindex
+
+\input{templates/footer}
 
 \end{document}

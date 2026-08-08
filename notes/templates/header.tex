@@ -1,7 +1,17 @@
-% header.tex — Document class and preamble
-% For draft mode: \documentclass[journal,draftcls,onecolumn,twoside]{IEEEtran}
-\documentclass[journal,onecolumn]{IEEEtran}
-
-\input{templates/preamble}
-
-\begin{document}
+%% header.tex: the opening hook, \input immediately after \begin{document}.
+%%
+%% Deliberately empty. It exists so that anything which must run at the very top
+%% of the document body has a declared home instead of being wedged into
+%% main.tex: a draft watermark, a review banner, an embargo notice, an errata
+%% pointer for a reissued printing.
+%%
+%% In the engine's scaffolded layout this file carries the \documentclass, the
+%% \input of the preamble, and \begin{document} itself. These notes were adopted
+%% rather than scaffolded (ADR 0004), and the class and its options are a
+%% property of this book, so they stay visible at the top of main.tex and this
+%% file keeps only the opening-hook half of the job.
+%%
+%% The trailing % on the last line is the house rule for every \input'ed file:
+%% without it the file's final line ending emits a stray space. See
+%% resources/STYLE-figures.md.
+%

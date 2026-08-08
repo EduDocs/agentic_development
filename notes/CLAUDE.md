@@ -42,8 +42,10 @@ The manuscript is a set of section **pairs** under `sections/`:
   sketches, promising directions, and a decision log. Never `\input`; invisible
   to the build.
 
-`templates/` (document class, preamble, macros) and `references.bib` are shared
-infrastructure. Write prose to the **house style guide**: `resources/STYLE.md`
+`templates/` (the preamble, the shared macros, and the header/footer hooks) and
+`references.bib` are shared infrastructure. The `\documentclass` is *not* there:
+it stays at the top of `main.tex`, with this book's notation and its chapter
+list, since those are what you would rewrite to make a different book. Write prose to the **house style guide**: `resources/STYLE.md`
 in this project if present, else the engine's copy (the path in `.nel-engine`
 plus `/resources/STYLE.md`); the engine's `resources/exemplars/` holds gold
 section pairs — read one before writing your first. `./nel resources` lists

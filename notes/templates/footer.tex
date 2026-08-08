@@ -1,6 +1,17 @@
-% footer.tex — Bibliography and document end
-
-\bibliographystyle{IEEEbib}
-\bibliography{references}
-
-\end{document}
+%% footer.tex: the closing hook, \input immediately before \end{document}.
+%%
+%% Deliberately empty. It exists so that anything which must close the document
+%% has a declared home: a colophon, an acknowledgements block, a printing
+%% history, a licence statement.
+%%
+%% In the engine's scaffolded layout this file carries \bibliographystyle,
+%% \bibliography and \end{document}. The bibliography is absent here by
+%% decision, not by oversight: these notes cite author-year inline and close
+%% each chapter with an annotated Further Reading list, so nothing is \cite'd
+%% and the build skips bibtex entirely (resources/STYLE.md, "Citations"). If
+%% that decision is ever reversed, this is where the bibliography goes.
+%%
+%% The trailing % on the last line is the house rule for every \input'ed file:
+%% without it the file's final line ending emits a stray space. See
+%% resources/STYLE-figures.md.
+%
