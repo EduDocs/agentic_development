@@ -30,7 +30,7 @@ cmd="${1:-}"; shift || true
 # Commands that drive the engine need its Python present. Fail clearly if the
 # resolved engine is wrong/missing rather than erroring cryptically downstream.
 case "$cmd" in
-    step|evaluate|compose|archive|doctor|db-archive)
+    step|evaluate|verify|compose|archive|doctor|db-archive)
         if [[ ! -f "$ENGINE/compose.py" ]]; then
             echo "nel: engine not found at '$ENGINE' (no compose.py)." >&2
             echo "      Set NEL_ENGINE=/path/to/engine, or run 'python3 <engine>/scaffold.py update $PROJECT'." >&2
@@ -49,7 +49,7 @@ esac
 # `resources` are deliberately still allowed — doctor is what tells you this is
 # not a project, and resources lists the engine's own knowledge layer.
 case "$cmd" in
-    step|evaluate|compose|build|archive|db-archive)
+    step|evaluate|verify|compose|build|archive|db-archive)
         if [[ ! -f "$PROJECT/nel.toml" && ! -f "$PROJECT/project.toml" ]]; then
             echo "nel: '$PROJECT' is not a nel project (no nel.toml) — refusing '$cmd'." >&2
             echo "      This looks like the engine repo, which has no manuscript by design." >&2
@@ -62,6 +62,13 @@ esac
 case "$cmd" in
     step)       exec python3 "$ENGINE/step.py" "$@" --project "$PROJECT" ;;
     evaluate)   exec python3 "$ENGINE/evaluate.py" --project "$PROJECT" ;;
+    verify)
+        # Proof mode's fast inner loop (ADR 0013): run ONLY the project's
+        # declared [evaluation.verifier] command and print its verdict as one
+        # JSON line. No compose, no compile, no panel, nothing recorded — cheap
+        # enough to run after every substantive edit, so `step` is spent on
+        # drafts rather than on a construction that does not even check.
+        exec python3 "$ENGINE/evaluate.py" --verify --project "$PROJECT" ;;
     compose)    exec python3 "$ENGINE/compose.py" --project "$PROJECT" ;;
     archive)    exec python3 "$ENGINE/db/archive.py" --project "$PROJECT" "$@" ;;
     doctor)     exec python3 "$ENGINE/doctor.py" --project "$PROJECT" "$@" ;;
@@ -150,6 +157,6 @@ case "$cmd" in
         "${pdflatex[@]}" >/dev/null 2>&1
         echo "built $PROJECT/$BUILD_DIR/main.pdf" ;;
     *)
-        echo "usage: ./nel {step <rationale> --approach <name> [--register tex|md|both] | evaluate | compose | archive <best|show|history|status|pending|...> | db-archive [--by <id>] | build | resources [--path <name>] | doctor [--compile] [--fix] [--strict]}" >&2
+        echo "usage: ./nel {step <rationale> --approach <name> [--register tex|md|both] | evaluate | verify | compose | archive <top|show|history|status|pending|...> | db-archive [--by <id>] | build | resources [--path <name>] | doctor [--compile] [--fix] [--strict]}" >&2
         exit 2 ;;
 esac
