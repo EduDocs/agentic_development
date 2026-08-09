@@ -143,6 +143,13 @@ On each iteration, do exactly the following:
      addressed or consciously declined. A closed claim with rough prose is not
      done — polish until the panel goes quiet — but a closed claim plus a quiet
      panel is, regardless of how much budget remains.
+   - **proof mode only** — the verifier reports `"verdict": "refuted"`: a
+     counterexample proves the claim as stated is **false**. That is a
+     definitive closure in the negative direction, not a failed attempt. Record
+     the counterexample and what it reveals in the sidecar **inside the spine
+     block** (a refutation is a settled negative result), state it plainly in
+     your final status, and stop. Revising the claim is a problem-definition
+     change — the human's decision, never yours.
    - the feedback has stopped telling you anything new: the last two panels
      raised no finding you have not already addressed or consciously declined.
      Say so in your final status and stop; burning the remaining budget on
@@ -177,25 +184,45 @@ bookkeeping; the **feedback text is the point**. Respond to it specifically.
 If `nel.toml` has an `[evaluation.verifier]` table, this paper carries a
 **checkable claim** — a construction, a bound, an identity — and the project
 ships a deterministic check for it (a script, a CAS call, a proof-assistant
-build). That verifier is run inside every evaluation: exit 0 means **the claim
-closes**, its output is prepended to your feedback, and the reviewers see its
-verdict. `./nel step`'s status line gains `"closed": true|false` — that
-predicate, not the score, is the fact the run is driving toward (ADR 0013).
+build). That verifier runs inside every evaluation and its **verdict is
+three-valued** (ADR 0016): `closes` (exit 0 — proved), `open` (the attempt did
+not establish the claim), or `refuted` (the report carries a `REFUTED` line —
+a counterexample proves the claim false; a definitive negative closure, not a
+failure). Its output is prepended to your feedback, the reviewers see it, and
+`./nel step`'s status line gains `"closed"` and `"verdict"` — the predicate,
+not the score, is the fact the run is driving toward (ADR 0013).
 
 Work differently in this mode:
 
 - **Iterate on the claim through `./nel verify`.** It runs *only* the verifier —
   no compile, no panel, nothing recorded — and prints
-  `{"closed": ..., "exit": ..., "report": ...}` in well under a second for a
-  script-based check. Use it after every substantive edit to the construction or
-  argument. Spend `./nel step` when the manuscript around the claim has moved,
-  not to ask the verifier a question `./nel verify` answers for free.
+  `{"closed": ..., "verdict": ..., "exit": ..., "report": ...}` in well under a
+  second for a script-based check. Use it after every substantive edit to the
+  construction or argument. Spend `./nel step` when the manuscript around the
+  claim has moved, not to ask the verifier a question `./nel verify` answers
+  for free.
+- **Keep the negative ledger.** Failed attempts are information, not waste:
+  when an approach dies — the verifier stays open after a genuine attempt, or
+  you consciously abandon an angle — distill *what was tried and why it broke*
+  into the sidecar: **inside the spine block** if settled ("technique T cannot
+  close the bound because Z"; every refutation counterexample), in the private
+  scratch if tentative. Feedback files scroll away; the sidecar compounds.
+  This is where a future iteration — or the human reading the design log —
+  learns not to re-derive a dead end.
 - **Read the verifier report before the panel prose.** While the claim is open,
   the report says *what failed* — that is your next edit, and reviewer style
-  notes can wait. `stage: "verifier-gate"` (a project that sets `gate = true`)
-  means exactly this: the draft was rejected before the panel read it.
+  notes can wait.
+- **`gate = true` is spend control, not quality control.** It saves panel calls
+  on unclosed drafts at a named cost: the panel never produces a qualitative
+  post-mortem of the failure — the verifier says *what* failed, only the panel
+  can say *why* and whether the direction is salvageable. Either way the
+  attempt is **recorded in the archive with its verifier report** — gates
+  withhold the checkpoint and the panel, never the record. For mathematical
+  work, prefer `gate = false` (the default).
 - **The stop condition is the predicate** (see step 5): closed claim + quiet
-  panel. `max_attempts` remains the outer bound.
+  panel — or a **refutation**, which ends the run immediately after its
+  counterexample is recorded in the spine. `max_attempts` remains the outer
+  bound.
 - **Never touch the verifier.** Its manifest entry and the script/toolchain it
   names are the problem definition, exactly like the rubrics — and both are
   hashed into `evaluator_version`, so editing them visibly forks the evaluation
@@ -210,10 +237,13 @@ Work differently in this mode:
 
 The failure mode of an unattended run is proposing variants of one idea until
 the budget is gone. Before each proposal, check `by-approach/*.md` and
-`./nel archive history` for angles you have already spent. If the last two
-attempts were the same kind of move and the feedback did not shift, that line of
-revision is exhausted — say so in your rationale and pivot to a different one
-from `.nel/prompts/strategies.txt`.
+`./nel archive history` for angles you have already spent — and, in proof
+mode, the sidecar's **negative ledger** (see "Proof mode"): an approach the
+ledger records as dead, with a reason, is not retried without a new idea that
+answers that reason. If the last two attempts were the same kind of move and
+the feedback did not shift, that line of revision is exhausted — say so in
+your rationale, record it in the ledger, and pivot to a different one from
+`.nel/prompts/strategies.txt`.
 
 `./nel archive top` and `./nel archive show <attempt_id>` let you re-read an
 earlier draft that scored well and its feedback. Adapting an idea from a past
