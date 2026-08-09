@@ -204,7 +204,7 @@ for step in range(MAX_STEPS):
 
     messages.append({"role": "user", "content": results})
 
-raise StepBudgetExceeded(step)     # no answer within budget: fail loudly
+raise StepBudgetExceeded(MAX_STEPS) # no answer within budget: fail loudly
 \end{lstlisting}
 \end{example}
 
@@ -393,8 +393,6 @@ Treating the thinking budget as an explicit parameter, rather than a fixed prope
 \end{remark}
 
 \section*{Further Reading}
-
-\emph{The engineering-blog and product references below are Fall~2026 snapshots of a fast-moving surface; titles and locations may have since changed.}
 
 \begin{small}
 \begin{enumerate}

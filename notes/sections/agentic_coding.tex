@@ -127,6 +127,19 @@ Three separate instructions (e.g., loader, then tests, then documentation) each 
 
 A \emph{diff}\index{Diff} is a compact representation of the changes between two versions of a file: lines added are prefixed with~\code{+}; lines removed with~\code{-}.
 Reading diffs before committing is a cornerstone habit in agentic coding.
+Every diff shares the same small anatomy (Figure~\ref{figure:DiffAnatomy}), worth learning once so the specimens below read at a glance.
+
+\begin{figure}[htb!]
+\begin{center}
+\input{figures/agentic-coding-diff}
+\caption{The anatomy of a unified diff.
+The first two lines name the file as it was (\code{a/}) and as it is now (\code{b/}).
+The line beginning \code{@@} is the \emph{hunk header}: it locates the excerpt in the file and names the enclosing function.
+A leading space marks an unchanged \emph{context} line, printed only so the change has a visible neighbourhood; a leading \code{-} marks a removed line and a leading \code{+} an added one.
+Every diff a reader will ever see shares this layout, so the markers in the first column are the whole reading frame.}
+\label{figure:DiffAnatomy}
+\end{center}
+\end{figure}
 
 \begin{example}
 A minimal diff showing the addition of a CSV branch to a loader:
@@ -292,8 +305,6 @@ Six months later, the author will be grateful for it, and so will anyone auditin
 \end{example}
 
 \section*{Further Reading}
-
-\emph{The engineering-blog and product references below are Fall~2026 snapshots of a fast-moving surface; titles and locations may have since changed.}
 
 \begin{small}
 \begin{enumerate}

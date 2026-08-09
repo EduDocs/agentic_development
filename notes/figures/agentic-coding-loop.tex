@@ -1,0 +1,24 @@
+%% agentic-coding-loop.tex: the agentic coding cycle (Chapter 5).
+%% House conceptual style. The palette echoes the evolutionary loop of Chapter 10
+%% (violet execute, green read, orange commit) so the two cycles read as kin. The
+%% verification oracle hangs off Execute as a run--fail--fix feedback arc (the
+%% grounded loop that lets Execute converge); Read is annotated as the human
+%% ownership checkpoint, the one step that cannot be delegated.
+\input{figures/_concept-style}
+\begin{tikzpicture}
+% Four-node cycle, clockwise from top-left; the oracle is a satellite of Execute.
+\node[conceptbox, fill=blue!15]   (specify) at (0, 2)   {Specify};
+\node[conceptbox, fill=violet!15] (exec)    at (5, 2)   {Execute};
+\node[conceptbox, fill=green!15]  (read)    at (5, 0)   {Read};
+\node[conceptbox, fill=orange!15] (commit)  at (0, 0)   {Commit\\or revise};
+\node[conceptbox, fill=gray!15, minimum width=3.0cm] (oracle) at (10.8, 2)
+    {Verification oracle\\\scriptsize interpreter, tests};
+
+\draw[conceptflow] (specify) -- node[conceptlabel, midway, above]{instruction} (exec);
+\draw[conceptflow] (exec) -- node[conceptlabel, midway, right]{diff} (read);
+\draw[conceptflow] (read) -- node[conceptlabel, midway, below]{understood} (commit);
+\draw[conceptflow] (commit) -- node[conceptlabel, midway, left]{revise / next change} (specify);
+\draw[conceptflow, <->] (exec) -- node[conceptlabel, midway, above]{run / fail / fix} (oracle);
+
+\node[conceptlabel] at (5, -0.75) {\emph{ownership checkpoint}};
+\end{tikzpicture}%

@@ -6,7 +6,7 @@ A large language model is, at each invocation, a function of its context.\index{
 Its instructions, history, domain knowledge, and the results of previous tool calls are all encoded in the same token sequence the model reads.
 The model has no persistent state outside this sequence: what it does not read, it does not know.
 Two terms in that claim are worth pinning down before any formalism arrives.
-A \emph{token} is the unit the model actually reads: a sub-word fragment, roughly three quarters of an English word on average, so a page of prose is a few hundred tokens and a full research article a few thousand.
+A \emph{token} is the unit the model actually reads: a sub-word fragment, roughly three quarters of an English word on average, so a page of prose is a few hundred tokens and a full research article roughly ten thousand.
 And ``no persistent state'' is meant literally: when a session ends, nothing the agent learned survives except what was written to a file, and the next session begins by reading that file back in as ordinary text.
 An agent that appears to remember your project's conventions from yesterday is reading them off disk, not recalling them.
 This constraint makes \emph{context engineering}, the deliberate construction of what enters the context window, the primary lever available to the agent builder.
@@ -72,15 +72,12 @@ The practical rule follows directly from the curve's shape: place load-bearing i
 \end{center}
 \end{figure}
 
-\begin{remark}
-The lost-in-the-middle effect implies that simply extending the context window does not proportionally extend the effective working memory of the model.
-Early framings of large windows treated raw capacity as a near-substitute for careful selection, the 2023 case for a 100,000-token window emphasized feeding in whole documents and letting the model synthesize across them (Anthropic, 2023), but the effect characterized shortly afterward (Liu et al., 2024) showed that capacity and effective working memory are not the same thing.
-Structuring the context so that the most important information appears near the beginning or end, or citing it explicitly in the instruction, is more reliable than relying on a long window to make everything equally accessible.
-A common framing gives this an intuitive (not a rigorous) reading: because transformer attention weighs every token against every other, the metaphor goes, the same attention is ``spread more thinly'' as tokens are added, so recall of any single fact tends to fall as the token count rises, an effect Anthropic (2025) calls \emph{context rot}\index{Context!rot} and frames as a finite ``attention budget.''
-Treat this as a heuristic: attention is computed per head, per layer, and per query; a model can learn to concentrate it sharply where it matters, so longer context degrades retrieval empirically without any fixed per-token budget being literally exhausted.
-Keep the two costs separate: the architectural one, that standard attention's compute and memory grow quadratically with length, is exact; the behavioral one, that longer contexts can distract the model and reduce effective retrieval, is empirical and is what the ``budget'' language names.
-On this view the lost-in-the-middle curve is the visible signature of a budget stretched too thin, which is why adding raw capacity does not buy proportional working memory.
-\end{remark}
+The lesson generalizes past any single study: extending the context window does not proportionally extend the model's effective working memory.
+Early framings treated raw capacity as a near-substitute for careful selection, the 2023 case for a 100,000-token window emphasized feeding in whole documents and letting the model synthesize across them (Anthropic, 2023), but capacity and effective working memory turned out not to be the same thing (Liu et al., 2024).
+It helps to keep two costs separate.
+The architectural cost is exact: standard attention's compute and memory grow quadratically with context length.
+The behavioral cost is empirical: longer contexts can distract the model and reduce effective retrieval, the effect Anthropic (2025) names with the heuristic language of a finite ``attention budget'' and \emph{context rot}\index{Context!rot}.
+Read the budget as a heuristic rather than a theorem: no fixed per-token quota is literally exhausted, yet retrieval still degrades with length, and the lost-in-the-middle curve is its visible signature.
 
 \subsection{Temperature and Sampling}
 
@@ -369,8 +366,6 @@ A grounded agent beats an ungrounded agent, or it does not; the harness decides.
 \end{enumerate}
 
 \section*{Further Reading}
-
-\emph{The engineering-blog and product references below are Fall~2026 snapshots of a fast-moving surface; titles and locations may have since changed.}
 
 \begin{small}
 \begin{enumerate}
