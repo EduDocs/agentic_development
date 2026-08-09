@@ -140,7 +140,7 @@ Your job is to check this claim against the actual data. Run the
 following check and report whether the claim is true or false:
 
   import numpy as np
-  X, y = load_dataset('data/tier1_growth.npz')
+  X, y = load_dataset('data/growth.npz')
   print(np.min(X), np.any(X <= 0))
 \end{lstlisting}
 The verifier can catch mistakes the proposer made silently, e.g., the possibility that some feature values are zero or negative.

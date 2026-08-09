@@ -247,8 +247,8 @@ In the evolutionary setting, a well-designed $\lambda$ prevents the optimizer fr
 For long evolutionary runs, the optimizer often finds unexpected ways to minimize this score.
 Common exploits:
 \begin{enumerate}
-\item An expression of zero complexity: a constant fitted to the training data.
-If $\mathrm{MSE}$ is computed on the validation split, a global constant performs worse than a simple model on diverse points; but if $\lambda$ is too large relative to the MSE gap, the complexity reduction can dominate.
+\item A fitted constant, the cheapest expression the space contains at complexity~1 under the node-count rule of Section~\ref{subsection:Parsimony}.
+If $\mathrm{MSE}$ is computed on the validation split, a global constant performs worse than a simple model on diverse points; but if $\lambda$ is too large relative to the MSE gap, the complexity saving can still dominate.
 \item Expressions that overfit the validation split via extreme complexity: $10^6$-order polynomials.
 The parsimony term must scale to prevent this.
 \end{enumerate}
@@ -345,7 +345,7 @@ AlphaEvolve demonstrates that the approach scales: with sufficiently capable mod
 
 \emph{OpenEvolve}\index{OpenEvolve} is an open-source reimplementation of the AlphaEvolve approach.
 It is the primary reference implementation for the capstone: a hackable codebase that exposes the mutation operator, fitness function, and population management as modifiable components.
-The studio session at the pivot walks through OpenEvolve on a Tier-1 symbolic regression dataset, tracing each component to its corresponding concept in these notes.
+It is the most useful thing to read next: every component of Definition~\ref{definition:EvolutionaryLoop} appears in it under a recognizable name, so a researcher who has followed this chapter can open the repository and trace mutation operator, fitness function, and population management onto the tuple rather than reverse-engineering an unfamiliar architecture.
 
 \subsection{The AI Scientist (Optional)}
 
@@ -394,26 +394,27 @@ The researcher can read and critique the discovered model.
 
 \subsection{The Baseline Ladder}
 
-The course maintains a \emph{baseline ladder}\index{Baseline ladder}: a sequence of methods of increasing sophistication against which each researcher's system is compared.
-Beating the each rung is not required; being comparable to it, on a well-designed harness, is.
+A \emph{baseline ladder}\index{Baseline ladder} is a sequence of methods of increasing sophistication against which a discovery system is compared.
+Beating every rung is not required; being comparable to it, on a well-designed harness, is.
+The ladder matters most at its bottom: a system that cannot beat linear regression on a dataset is not a discovery system yet, however sophisticated its machinery, and the cheapest way to find that out is to run the cheap rung first.
 
 \begin{table}[htb!]
 \begin{center}
 \begin{tabular}{lll}
 \toprule
-\textbf{Rung} & \textbf{Method} & \textbf{Challenge} \\
+\textbf{Rung} & \textbf{Method} & \textbf{Where it is built} \\
 \midrule
-1 & Linear regression & Challenge~1 \\
-2 & Research pipeline (LLM proposals) & Challenge~2 \\
-2b & PySR (classical GP-based SR) & Challenge~2 benchmark \\
-3 & Retrieval-grounded pipeline & Challenge~3 \\
-4 & Orchestrated multi-proposer & Challenge~4 \\
-5 & Evolutionary framework & Capstone \\
+1 & Linear regression & standard tooling; no agent \\
+2 & Proposer pipeline (model proposals) & Ch.~\ref{chapter:AgentLoop} \\
+2b & PySR (classical GP-based SR) & external library; no agent \\
+3 & Retrieval-grounded pipeline & Ch.~\ref{chapter:Retrieval} \\
+4 & Orchestrated multi-proposer & Ch.~\ref{chapter:Orchestration} \\
+5 & Evolutionary framework & this chapter \\
 \bottomrule
 \end{tabular}
-\caption{The baseline ladder for the course.
-Each rung represents a more capable method; the leaderboard shows all entries simultaneously.
-A stronger method is expected to score lower (better) than weaker methods on the same dataset.}
+\caption{The baseline ladder.
+Each rung is a more capable method than the one below it, and the third column names where in these notes it is assembled; rungs 1 and 2b are conventional methods that use no agent at all, which is what makes them honest comparators.
+All rungs are scored by the same harness on the same dataset, so a stronger method is expected to score lower (better) than a weaker one.}
 \label{table:BaselineLadder}
 \end{center}
 \end{table}
@@ -476,10 +477,9 @@ A problem for which the second question has no honest answer is not yet ready fo
 \item Lu, C., et al., ``The AI Scientist: Towards Fully Automated Open-Ended Scientific Discovery,'' Sakana AI, 2024 (arXiv:2408.06292) — a related but distinct end-to-end research-automation workflow, referenced in this chapter's lineage discussion.
 \item Shinn, N., et al., ``Reflexion: Language Agents with Verbal Reinforcement Learning,'' \emph{NeurIPS}, 2023 (arXiv:2303.11366) — an evaluation signal turned into \emph{linguistic} feedback for the next attempt. Reflexion accumulates that feedback across repeated attempts at one task; the mutation operator here compares across a population of independent candidates --- related but distinct uses of language as a feedback signal.
 \item Yao, S., et al., ``Tree of Thoughts: Deliberate Problem Solving with Large Language Models,'' \emph{NeurIPS}, 2023 (arXiv:2305.10601) — search over intermediate reasoning steps \emph{within} a single model's deliberation; the internal-search foil to this chapter's external, population-based search.
-\item OpenEvolve repository — open-source AlphaEvolve implementation; see \code{benchmarks/README.md} for the course-specific setup.
+\item OpenEvolve repository — open-source AlphaEvolve implementation; the hackable reference codebase in which the components of Definition~\ref{definition:EvolutionaryLoop} can be read off directly.
 \item Koza, J. R., \emph{Genetic Programming}, MIT Press, 1992 — the classical reference for GP and symbolic regression; Chapter~6 covers the baseline methods against which the course agents compete.
 \item Schmidt, M., and Lipson, H., ``Distilling Free-Form Natural Laws from Experimental Data,'' \emph{Science}, 2009 (DOI:10.1126/science.1165893) — the origin of modern SR; PySR's scientific lineage traces here.
-\item \texttt{projects/capstone/evolution-pivot.md} in the course repository — the pivot lecture notes, including the OpenEvolve studio walkthrough.
 \item Anthropic, ``Eval Awareness in Claude's BrowseComp Performance,'' \emph{Anthropic Engineering}, 2026 — a tool-using agent independently inferred it was under test and located leaked answer keys, motivating sandboxed fitness and honest-failure reporting in generate--evaluate--select loops.
 \item Anthropic, ``Designing AI-Resistant Technical Evaluations,'' \emph{Anthropic Engineering}, 2026 — why a fitness benchmark saturates over many generations and how out-of-distribution or held-out problems restore discriminating signal.
 \end{enumerate}

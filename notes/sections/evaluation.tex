@@ -164,6 +164,7 @@ MSE penalizes large errors quadratically and is differentiable, which makes it a
 When MSE is on the leaderboard, the researcher reports the lower value as the better one.
 
 \subsection{Parsimony}
+\label{subsection:Parsimony}
 
 A model that perfectly fits the data it was given by memorizing it is not a discovery.
 \emph{Parsimony}\index{Parsimony}, the preference for simpler models among those of comparable predictive quality, guards against this failure mode.
@@ -190,14 +191,15 @@ A common form is
 \end{equation}
 where $C(\hat{m})$ is the complexity of $\hat{m}$ and $\lambda > 0$ is a parsimony weight.
 Lower scores are better; this is the course-wide sign convention, so every quantity the search optimizes, whether it is called a score, a loss, or a fitness, is one to \emph{minimize}.
-The weight $\lambda$ encodes the tradeoff between accuracy and simplicity; the course benchmarks specify its value so that all participants use the same harness.
+The weight $\lambda$ encodes the tradeoff between accuracy and simplicity, and it must be fixed and published alongside the harness, since two researchers using different $\lambda$ produce scores that cannot be compared.
+The worked examples throughout these notes use $\lambda = 0.0002$ on a normalized MSE, which is the value carried into the evolutionary runs of Chapter~\ref{chapter:EvolutionaryFrameworks}; the remark below says what it means and when it must be recalibrated.
 
 \begin{remark}
 The parsimony weight $\lambda$ is a design choice, not a universal constant.
 Too small a $\lambda$ and the optimizer ignores complexity; too large and it ignores accuracy.
 The appropriate value depends on the scale of MSE (which changes with the dataset) and the expected complexity of the target expression.
-For the course benchmarks, $\lambda$ is calibrated so that a model twice as complex must reduce MSE by a meaningful amount to be preferred.
-It helps to read $\lambda$ as a price rather than a knob: it is the amount of MSE a researcher is willing to pay for one additional node.
+A workable $\lambda$ is one calibrated so that a candidate twice as complex must reduce MSE by a meaningful amount to be preferred.
+It helps to read $\lambda$ as a price rather than a knob: it is the amount of MSE a researcher is willing to pay for one additional node, so $\lambda = 0.0002$ says that a node is worth adding only if it buys at least that much accuracy.
 Read that way it plainly carries units, so a $\lambda$ tuned on a target measured in millimeters is off by six orders of magnitude for the same target measured in meters; normalizing MSE (dividing by the variance of $y$, say) before combining is what lets one fixed $\lambda$ transfer across datasets.
 \end{remark}
 
@@ -230,7 +232,7 @@ Common attack surfaces in a model discovery harness:
 An optimizer can therefore hide capacity in constants: $\sin(c \cdot x)$ has only a handful of nodes, yet by tuning the single fitted constant $c$ it can fit arbitrarily many oscillations, so node count rates it ``simpler'' than a polynomial with the same number of free parameters.
 Counting fitted parameters, not just nodes, closes the loophole.
 \item \textbf{High-degree polynomial fitting.} A sufficiently high-degree polynomial can achieve near-zero MSE on any finite dataset — including the test set, if the harness leaks.
-\item \textbf{Memorizing data via complexity.} An artifact that memorizes the training data as a piecewise-constant function with $n$ pieces drives its \emph{training} error to zero at complexity $O(n)$; and if the harness leaks (Principle~\ref{principle:TestSplitInviolable}), the same trick reaches the sealed split and can still post a low composite score when $\lambda$ is too small.
+\item \textbf{Memorizing data via complexity.} An artifact that memorizes the training data as a piecewise-constant function with $n$ pieces drives its \emph{training} error to zero at a cost of $O(n)$ nodes, the unit this chapter counts complexity in; and if the harness leaks (Principle~\ref{principle:TestSplitInviolable}), the same trick reaches the sealed split and can still post a low composite score when $\lambda$ is too small.
 \end{enumerate}
 
 \begin{example}
@@ -334,7 +336,6 @@ The most informative signal is often the least portable, and that is not a defec
 
 \begin{small}
 \begin{enumerate}
-\item \texttt{benchmarks/README.md} in the course repository — the specification of the shared harness, including the parsimony weight and the leaderboard format.
 \item Kapoor, S., and Narayanan, A., ``Leakage and the Reproducibility Crisis in Machine Learning,'' \emph{PLOS ONE}, 2023 — an empirical survey of leakage in published ML results.
 \item Zheng, L., et al., ``Judging LLM-as-a-Judge with MT-Bench and Chatbot Arena,'' \emph{NeurIPS}, 2023 (arXiv:2306.05685) — the reference study on using a strong model as an evaluator, including its biases and calibration.
 \item Sculley, D., Snoek, J., Wiltschko, A., and Rahimi, A., ``Winner's Curse? On Pace, Progress, and Empirical Rigor,'' \emph{ICLR Workshop}, 2018 — a widely cited call for evaluation discipline and honest empirical comparison in machine learning.
