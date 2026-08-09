@@ -18,9 +18,9 @@ agentic_paradigm, agentic_rig,
 context_engineering, agentic_coding, agent_loop, evaluation, retrieval,
 orchestration, evolutionary_frameworks) are the evolving artifact. This
 project was **adopted** from a pre-existing hand-written manuscript (ADR 0004
-in the engine repo), so every `sections/<name>.md` sidecar started as an empty
-stub — there is no pre-existing spine to read; you are originating it as you
-go, chapter by chapter.
+in the engine repo), so every `sections/<name>.concepts.md` sidecar started as
+an empty stub — there is no pre-existing spine to read; you are originating it
+as you go, chapter by chapter.
 
 Your goal is to **raise each chapter's quality and pedagogical clarity** as
 judged by a panel of expert-persona reviewers (see "Evaluation" below) —

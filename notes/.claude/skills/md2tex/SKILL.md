@@ -1,11 +1,15 @@
 ---
 name: md2tex
-description: Realize settled concepts from a section's Markdown sidecar (sections/<name>.md) into its shipped LaTeX prose (sections/<name>.tex). Use when the sidecar's ideas have harmonized and the user asks to "md2tex", "propagate the sidecar to the tex", "realize these concepts in the section", "write up the sidecar", or "push the .md into the .tex". This is concept propagation, NOT a mechanical md->tex conversion: it pulls only from the sidecar's settled conceptual spine, ignores its scratch/open-questions/rationale, and writes house-style LaTeX prose (one sentence per line, ~ ties; see format-tex). Surgical and additive — proposes targeted edits to the .tex, protects existing wording, and confirms a shown diff before writing. Runs a git-aware age check and warns if the .md looks older than the .tex (you may want /tex2md instead). One section pair per run; pass --all to sweep every pair and report drift. See PROGRESSION.md.
+description: Realize settled concepts from a section's Markdown sidecar (sections/<name>.concepts.md; legacy <name>.md honored) into its shipped LaTeX prose (sections/<name>.tex). Use when the sidecar's ideas have harmonized and the user asks to "md2tex", "propagate the sidecar to the tex", "realize these concepts in the section", "write up the sidecar", or "push the .md into the .tex". This is concept propagation, NOT a mechanical md->tex conversion: it pulls only from the sidecar's settled conceptual spine, ignores its scratch/open-questions/rationale, and writes house-style LaTeX prose (one sentence per line, ~ ties; see format-tex). Surgical and additive — proposes targeted edits to the .tex, protects existing wording, and confirms a shown diff before writing. Runs a git-aware age check and warns if the .md looks older than the .tex (you may want /tex2md instead). One section pair per run; pass --all to sweep every pair and report drift. See PROGRESSION.md.
 ---
 
 # md2tex — Realize Sidecar Concepts into Shipped Prose
 
-Propagate the **settled concepts** of a section's Markdown sidecar (`sections/<name>.md`) into
+> **Sidecar naming (ADR 0015).** The canonical sidecar is `sections/<name>.concepts.md`
+> (typed: subject.register.format); a bare `sections/<name>.md` is the legacy spelling —
+> resolve whichever exists (never both). Sidecar mentions below mean either spelling.
+
+Propagate the **settled concepts** of a section's Markdown sidecar (`sections/<name>.concepts.md`) into
 its LaTeX prose (`sections/<name>.tex`). This is the **early-to-mid lifecycle** move: the
 sidecar is ahead, its ideas have harmonized, and you want them realized as publishable prose.
 
@@ -35,7 +39,7 @@ content the sidecar hasn't settled, or to reformat the `.tex` (that is `format-t
 ## Workflow
 
 1. **Resolve the pair.** From the section name or the active/opened file, locate
-   `sections/<name>.tex` and `sections/<name>.md`. If the `.md` is missing, stop and point to
+   `sections/<name>.tex` and `sections/<name>.concepts.md`. If the sidecar is missing, stop and point to
    `PROGRESSION.md` (offer to scaffold a sidecar from the skeleton). With `--all`, iterate every
    `sections/*.{tex,md}` pair: report each pair's drift and age, then drill in on confirmation.
 2. **Git-aware age / direction check.** Determine which file changed more recently using:

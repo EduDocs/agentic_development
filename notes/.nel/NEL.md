@@ -34,9 +34,12 @@ The manuscript is a set of section **pairs** under `sections/`:
 
 - `sections/<name>.tex` — the shipped, polished prose (the only thing the PDF
   sees), assembled by `main.tex` via `\input`.
-- `sections/<name>.md` — the *sidecar*: scratch, the conceptual spine, theorem
-  sketches, promising directions, and a decision log. Never `\input`; invisible
-  to the build.
+- `sections/<name>.concepts.md` — the *sidecar*: scratch, the conceptual
+  spine, theorem sketches, promising directions, and a decision log. Never
+  `\input`; invisible to the build. (The name is typed —
+  subject.register.format — so sibling registers can appear later; a bare
+  `<name>.md` is the legacy spelling and still works. "The `.md`" below means
+  the sidecar, whichever spelling this project uses.)
 
 `templates/` (document class, preamble, macros) and `references.bib` are shared
 infrastructure. Write prose to the **house style guide**: get its effective path

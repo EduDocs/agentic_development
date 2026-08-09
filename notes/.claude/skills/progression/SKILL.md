@@ -38,7 +38,8 @@ or to reformat (that is `format-md`).
 
 1. **Determine the structure.** Read `main.tex` for the `\input{sections/<name>}` sequence —
    that is the canonical reading order and the set of in-scope sections (each `<name>.tex` pairs
-   with `<name>.md`). Then check `PROGRESSION.md` for an optional **progression map** (a
+   with `<name>.concepts.md` — or the legacy `<name>.md` spelling; resolve whichever
+   exists, never both; ADR 0015). Then check `PROGRESSION.md` for an optional **progression map** (a
    `parent -> child` edge list); if present, use it as the dependency tree/DAG, else treat the
    sections as a linear chain in `\input` order. Note any section whose `.tex` is not `\input`
    (parked / out of scope) and any `.tex` missing its `.md` (a hole in the audit — offer to
@@ -56,7 +57,7 @@ or to reformat (that is `format-md`).
    redundancy (the same setup repeated).
 4. **Report.** Open with the **inferred structure** (the order/tree the audit used) so the user
    can sanity-check it, then the findings grouped by dimension and severity, each pinned to
-   `sections/<name>.md` and the related upstream/downstream section. Use the format in CHECKS.md.
+   the sidecar (`sections/<name>.concepts.md`) and the related upstream/downstream section. Use the format in CHECKS.md.
 5. **Offer surgical fixes.** After the report, offer ask-first, additive sidecar edits — add a
    missing setup bullet, add a forward-pointer, harmonize a term, move a setup earlier. One
    change at a time, show the diff, confirm. A coherence defect is often a judgment call about

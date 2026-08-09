@@ -1,12 +1,13 @@
 ---
 name: tex2md
-description: Distill concept changes made in a section's shipped LaTeX prose (sections/<name>.tex) back into its Markdown sidecar (sections/<name>.md), keeping the design log honest. Use late in the lifecycle, when the argument was sharpened directly in the .tex and the user asks to "tex2md", "propagate the tex back to the sidecar", "update the sidecar from the section", "sync the .md to the .tex", or "feed the prose changes back". This is concept propagation, NOT a mechanical tex->md conversion: it captures only conceptual changes (new/reordered/dropped claims, sharpened framing), updates the sidecar's spine and decision log, closes resolved open questions, and NEVER pastes polished prose verbatim into the .md. Writes in the sidecar's markdown voice (SEMBR; see format-md). Surgical and additive — proposes targeted edits to the .md, protects its scratch/open-questions/rationale, and confirms a shown diff before writing. Runs a git-aware age check and warns if the .tex looks older than the .md (you may want /md2tex instead). One section pair per run; pass --all to sweep every pair and report drift. See PROGRESSION.md.
+description: Distill concept changes made in a section's shipped LaTeX prose (sections/<name>.tex) back into its Markdown sidecar (sections/<name>.concepts.md; legacy <name>.md honored), keeping the design log honest. Use late in the lifecycle, when the argument was sharpened directly in the .tex and the user asks to "tex2md", "propagate the tex back to the sidecar", "update the sidecar from the section", "sync the .md to the .tex", or "feed the prose changes back". This is concept propagation, NOT a mechanical tex->md conversion: it captures only conceptual changes (new/reordered/dropped claims, sharpened framing), updates the sidecar's spine and decision log, closes resolved open questions, and NEVER pastes polished prose verbatim into the .md. Writes in the sidecar's markdown voice (SEMBR; see format-md). Surgical and additive — proposes targeted edits to the .md, protects its scratch/open-questions/rationale, and confirms a shown diff before writing. Runs a git-aware age check and warns if the .tex looks older than the .md (you may want /md2tex instead). One section pair per run; pass --all to sweep every pair and report drift. See PROGRESSION.md.
 ---
 
 # tex2md — Feed Prose Concepts Back into the Sidecar
 
 Propagate **conceptual changes** made in a section's LaTeX prose (`sections/<name>.tex`) back
-into its Markdown sidecar (`sections/<name>.md`). This is the **late-lifecycle** move: the
+into its Markdown sidecar (`sections/<name>.concepts.md`; a bare `<name>.md` is the legacy
+spelling — resolve whichever exists, never both; ADR 0015). This is the **late-lifecycle** move: the
 `.tex` now leads, the argument was pushed directly in the prose, and the sidecar's design log
 needs to catch up so it stays a truthful record.
 
@@ -31,7 +32,7 @@ Do **not** use it to copy prose verbatim into the sidecar, to mirror the `.tex` 
 ## Workflow
 
 1. **Resolve the pair.** From the section name or the active/opened file, locate
-   `sections/<name>.tex` and `sections/<name>.md`. If the `.md` is missing, offer to scaffold
+   `sections/<name>.tex` and `sections/<name>.concepts.md`. If the sidecar is missing, offer to scaffold
    one from the skeleton in `PROGRESSION.md` and bootstrap its spine from the prose. With
    `--all`, iterate every `sections/*.{tex,md}` pair: report drift and age, then drill in.
 2. **Git-aware age / direction check.** Determine which file changed more recently using

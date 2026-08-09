@@ -13,7 +13,7 @@ through stages rather than something written once.
 | File         | Register / layer | Role                                                              |
 | ------------ | ---------------- | ----------------------------------------------------------------- |
 | `<name>.tex` | Authoring        | The polished prose that ships in the compiled PDF.                |
-| `<name>.md`  | Thinking         | The design log: scratch, ideas, the conceptual spine, decisions.  |
+| `<name>.concepts.md` | Thinking  | The design log: scratch, ideas, the conceptual spine, decisions. (Typed name — subject.register.format, engine ADR 0015; prose below says "the `.md`" as shorthand.) |
 
 The sidecar is **never** `\input` by `main.tex`, so it is invisible to the LaTeX build and can
 never leak into the PDF. Both files are tracked in git.

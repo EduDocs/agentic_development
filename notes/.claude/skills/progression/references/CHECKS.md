@@ -11,7 +11,7 @@ setup that never pays off.
 
 ## The concept ledger
 
-For each in-scope `<name>.md`, read the conceptual spine (not the prose) and record four sets:
+For each in-scope sidecar (`<name>.concepts.md`, or the legacy `<name>.md` spelling), read the conceptual spine (not the prose) and record four sets:
 
 - **introduces** — concepts, definitions, notation, framings this section establishes.
 - **uses** — concepts it relies on or assumes from upstream.
@@ -93,7 +93,7 @@ Match concepts by meaning, not by string: the same idea under two names is *one*
 ```
 
 Lead with the inferred structure so the user can catch a wrong edge before reading findings.
-Pin every finding to a `sections/<name>.md` (and the related upstream/downstream section).
+Pin every finding to a sidecar file (and the related upstream/downstream section).
 
 ## Fix discipline
 
