@@ -79,14 +79,14 @@ Match concepts by meaning, not by string: the same idea under two names is *one*
 ## Findings
 
 ### Blockers
-- [forward-ref] `main_results.md` uses <concept> before it is introduced
-  (no ancestor establishes it; `system_model.md` is the natural home). -> add the setup there.
+- [forward-ref] `main_results.concepts.md` uses <concept> before it is introduced
+  (no ancestor establishes it; `system_model.concepts.md` is the natural home). -> add the setup there.
 
 ### Warnings
-- [aliasing] <concept> is called "X" in `system_model.md` and "Y" in `case_study.md`. -> pick one.
+- [aliasing] <concept> is called "X" in `system_model.concepts.md` and "Y" in `case_study.concepts.md`. -> pick one.
 
 ### Notes
-- [redundancy] <concept> is set up in both `introduction.md` and `system_model.md`. -> keep one.
+- [redundancy] <concept> is set up in both `introduction.concepts.md` and `system_model.concepts.md`. -> keep one.
 
 ## Suggested fixes (ask-first)
 - <surgical, additive sidecar edit>, pinned to the file it lands in.
@@ -102,7 +102,7 @@ Pin every finding to a sidecar file (and the related upstream/downstream section
   the downstream use?) — surface the options, don't guess.
 - Respect each sidecar's exclusive zones: never delete scratch, open questions, or rationale to
   "clean up." Coherence fixes add or adjust spine content; they don't prune the thinking layer.
-- Stay on the `.md` layer. If a fix implies prose work, note it as a follow-up `md2tex`, don't
+- Stay on the `.md` layer. If a fix implies prose work, note it as a follow-up `concepts2tex`, don't
   touch the `.tex` here.
 
 ## Convergence

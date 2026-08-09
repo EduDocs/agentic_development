@@ -21,11 +21,11 @@ than doing it.
 ## When to use
 
 - The user asks how the draft is doing, what a referee would say, or where it is weakest.
-- After a `md2tex` pass or a substantive edit, before deciding what to do next.
+- After a `concepts2tex` pass or a substantive edit, before deciding what to do next.
 - To decide *what to work on*, when several sections all feel unfinished.
 
 Do **not** use it to record an attempt or advance the loop (that is `./nel step`), to
-sync a `.tex`/`.md` pair (`md2tex` / `tex2md`), or to check cross-section coherence
+sync a `.tex`/`.md` pair (`concepts2tex` / `tex2concepts`), or to check cross-section coherence
 (`progression`).
 
 ## Workflow
@@ -68,8 +68,8 @@ sync a `.tex`/`.md` pair (`md2tex` / `tex2md`), or to check cross-section cohere
    have nothing to do with the paper.
 
 6. **Offer one action.** Ask which finding to act on, then route it: prose lives in the
-   `.tex` (edit directly, or `md2tex` if the sidecar leads), concepts and framing live
-   in the `.md` (`tex2md` if the prose already moved), cross-section problems go to
+   `.tex` (edit directly, or `concepts2tex` if the sidecar leads), concepts and framing live
+   in the `.md` (`tex2concepts` if the prose already moved), cross-section problems go to
    `progression`. One change, show the diff, confirm. Never batch-apply the findings.
 
 ## What this skill must not do
@@ -105,7 +105,7 @@ findings you are ignoring and why, rather than pretending the others did not run
 | Stops early | `compile-error`, `metrics-gate`, `review-error` — report and fix those first |
 | Reports | 3–5 ranked findings + one line on what is working |
 | Score | a trailing aside at most; never the headline, never the target |
-| Follow-up | one finding, routed to `md2tex` / `tex2md` / `progression` or a direct edit |
+| Follow-up | one finding, routed to `concepts2tex` / `tex2concepts` / `progression` or a direct edit |
 | Not this skill | `./nel step` (records + commits), `progression` (cross-section), `format-tex` (style) |
 
 Synthesis and ranking rules: [references/SYNTHESIS.md](references/SYNTHESIS.md).

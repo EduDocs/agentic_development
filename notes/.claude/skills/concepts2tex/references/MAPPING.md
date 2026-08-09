@@ -1,11 +1,11 @@
-# md2tex — Concept Mapping (sidecar → shipped prose)
+# concepts2tex — Concept Mapping (sidecar → shipped prose)
 
 This is the realize direction of the [PROGRESSION.md](../../../../PROGRESSION.md) convention:
 turn a section sidecar's **settled conceptual spine** into publishable LaTeX prose. Read that
 document first for the registers, exclusive zones, and the source-of-truth flip.
 
-`md2tex` **expands**: a compact concept in the `.md` becomes one or more polished sentences in
-the `.tex`. It is the asymmetric counterpart of `tex2md` (which compresses).
+`concepts2tex` **expands**: a compact concept in the `.md` becomes one or more polished sentences in
+the `.tex`. It is the asymmetric counterpart of `tex2concepts` (which compresses).
 
 ## What maps (the shared spine)
 
@@ -61,7 +61,7 @@ The realized prose must match the project's LaTeX register (the `format-tex` hou
 
 Before writing, run the git-aware age check (working-tree dirty → last-commit time → mtime). If
 the `.md` you are propagating *from* is **older** than the `.tex`, the prose has likely moved
-ahead of the sidecar — say so and suggest `/tex2md`. Proceed only on confirmation.
+ahead of the sidecar — say so and suggest `/tex2concepts`. Proceed only on confirmation.
 
 ## Worked example
 
@@ -92,6 +92,6 @@ sidecar. The em-dash-free, one-sentence-per-line prose matches the section's reg
 
 ## Idempotency
 
-Re-running `md2tex` on a section whose spine is already realized finds no missing/divergent
+Re-running `concepts2tex` on a section whose spine is already realized finds no missing/divergent
 concepts and proposes nothing. Minor wording choices are the author's to refine; the skill does
 not re-litigate already-realized prose.

@@ -1,18 +1,18 @@
 ---
 name: progression
-description: Audit the vertical conceptual coherence of the section sidecars (sections/*.md) across the whole document — the through-line from introduction.md to system_model.md to main_results.md and onward, including the tree/branch case. Use when the user asks to "progression", "check coherence across sections", "do the sidecars hang together", "is the conceptual arc coherent", "check the through-line", or "audit the spine across sections". Operates on the .md conceptual layer only (not the .tex prose, not a single pair). Reads the section order from main.tex's \input sequence (and an optional declared tree/DAG map in PROGRESSION.md when the document branches), builds a concept ledger per section, and checks setup<->payoff (every concept introduced is used and every concept used is introduced), topological order (no forward reference to an undefined concept), terminology/notation/framing consistency, and tree coherence (branches valid against the trunk, siblings non-contradictory). Produces a report pinned to specific sidecars, then offers surgical, ask-first fixes. Read-only until you confirm an edit. See PROGRESSION.md.
+description: Audit the vertical conceptual coherence of the section sidecars (sections/*.concepts.md; legacy *.md honored) across the whole document — the through-line from introduction.concepts.md to system_model.concepts.md to main_results.concepts.md and onward, including the tree/branch case. Use when the user asks to "progression", "check coherence across sections", "do the sidecars hang together", "is the conceptual arc coherent", "check the through-line", or "audit the spine across sections". Operates on the .md conceptual layer only (not the .tex prose, not a single pair). Reads the section order from main.tex's \input sequence (and an optional declared tree/DAG map in PROGRESSION.md when the document branches), builds a concept ledger per section, and checks setup<->payoff (every concept introduced is used and every concept used is introduced), topological order (no forward reference to an undefined concept), terminology/notation/framing consistency, and tree coherence (branches valid against the trunk, siblings non-contradictory). Produces a report pinned to specific sidecars, then offers surgical, ask-first fixes. Read-only until you confirm an edit. See PROGRESSION.md.
 ---
 
 # progression — Audit Conceptual Coherence Across Sidecars
 
-The `md2tex`/`tex2md` skills work **horizontally** — within one section, syncing its
+The `concepts2tex`/`tex2concepts` skills work **horizontally** — within one section, syncing its
 `.tex` ↔ `.md` pair. This skill works **vertically**: it checks that the conceptual spine
-running *across* the sidecars (`introduction.md` → `system_model.md` → `main_results.md` → …)
+running *across* the sidecars (`introduction.concepts.md` → `system_model.concepts.md` → `main_results.concepts.md` → …)
 holds together, including when the document branches into a tree.
 
 It operates on the `.md` layer on purpose: the sidecars hold concepts in compact, explicit
 form before they are buried in prose, so incoherence is catchable earlier and more cheaply than
-at the `.tex` level. If the `.md` spine is coherent and `md2tex` is faithful, the `.tex`
+at the `.tex` level. If the `.md` spine is coherent and `concepts2tex` is faithful, the `.tex`
 inherits the coherence.
 
 It is **read-only until you confirm an edit.** It produces a report, then offers surgical,
@@ -25,13 +25,13 @@ report format.
 ## When to use
 
 - After several sidecars have matured and you want to know whether they tell one coherent story.
-- Before an `md2tex` pass, to catch a gap or contradiction in the spine before it reaches prose.
+- Before an `concepts2tex` pass, to catch a gap or contradiction in the spine before it reaches prose.
 - When the document branches (parallel case studies, appendices) and you want each branch
   checked against the shared trunk.
 - User says "progression", "check coherence/through-line/arc across sections", "do the sidecars
   hang together".
 
-Do **not** use it to check a single `.tex`/`.md` pair (that is `md2tex`/`tex2md`), to edit prose,
+Do **not** use it to check a single `.tex`/`.md` pair (that is `concepts2tex`/`tex2concepts`), to edit prose,
 or to reformat (that is `format-md`).
 
 ## Workflow

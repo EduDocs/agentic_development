@@ -99,8 +99,8 @@ On each iteration, do exactly the following:
 
 3. **Propose — choose your move.** Either is a legitimate step:
    - **Evolve the `.tex` prose** (crystallize/sharpen) — edit between the
-     `% EVOLVE-BLOCK` markers. Use `/md2tex` to realize a settled sidecar spine
-     into prose; use `/tex2md` to feed prose-led concept changes back.
+     `% EVOLVE-BLOCK` markers. Use `/concepts2tex` to realize a settled sidecar spine
+     into prose; use `/tex2concepts` to feed prose-led concept changes back.
    - **Evolve the `.md` spine** (a theorem sketch, a promising direction,
      restructured argument) — edit within the `<!-- EVOLVE-BLOCK -->` region.
      Run `/progression` to keep the cross-section spine coherent.
