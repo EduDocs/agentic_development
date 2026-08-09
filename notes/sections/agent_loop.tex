@@ -172,7 +172,7 @@ The loop exits when the model produces a final answer rather than another tool c
 
 The explicit thought step serves two purposes.
 First, it conditions the subsequent action on intermediate reasoning, reducing errors that arise from the model jumping directly from context to action without an intermediate planning step.
-Second, it produces an \emph{audit trail}: by reading the thought steps, the researcher can understand exactly why the agent made each tool call.
+Second, it exposes the agent's \emph{rationale}: the thought steps let the researcher follow the reasoning the agent gave for each tool call. Read this as a debugging aid rather than a definitive account of why the agent acted, since a model's stated reasoning need not faithfully report the computation that produced its action.
 
 The figure is a picture of a program, and the program is short enough to read whole.
 Everything the chapter has introduced so far, the tool definitions, the message list, the tool result, meets in about twenty lines.
@@ -363,7 +363,7 @@ The agent is the author (Chapter~\ref{chapter:AgenticCoding}); the artifact it l
 A repetitive step that can be coded away, a nightly reformat of instrument output, or a fixed cleaning-and-normalization pass over each new batch of assays, is often best turned into exactly such a program: agentically built once, then run unattended for as long as the task holds.
 
 The fixed-code end buys a specific set of properties.
-A workflow is \emph{deterministic} (the same input yields the same output), cheap (it spends no tokens per run), fast, and auditable, since the code is its own specification.
+A workflow is \emph{repeatable} (absent external nondeterminism such as a clock, a network call, or unseeded randomness, the same input yields the same output), cheap (it spends no tokens per run), fast, and auditable, since the code is its own specification.
 It is also \emph{robust to model evolution}: a fixed program does not change when the underlying model is updated, retired, or repriced, whereas an agent's behavior can shift with every model release.
 For a pipeline a lab expects to rerun for years, that stability is not a minor convenience; it is part of what keeps results comparable across time.
 
