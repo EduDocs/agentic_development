@@ -215,9 +215,18 @@
   \foreach \i/\t in {0/{licensed apps}, 1/{compiled binaries}, 2/{domain tools}}{
     \node[dead] at (14.95,6.5-\i*0.68) [minimum width=1.5cm, minimum height=0.5cm]
       {\sffamily\tiny \t};}
-  \node[dead] at (14.95,4.46) [minimum width=1.5cm, minimum height=0.5cm]
-    {\sffamily\tiny your files};
-  \node[font=\sffamily\tiny\itshape, text=deadInk] at (14.95,3.85) {out of reach};
+  \node[font=\sffamily\tiny\itshape, text=deadInk] at (14.95,4.5) {out of reach};
+
+  % A connected folder, by contrast, IS reachable — through a permissioned
+  % opening in the wall (the brokered file-access channel), not arbitrary host reach.
+  \fill[rigCanvas] (13.55,2.45) rectangle (13.95,2.95);
+  \draw[roleFsAcc, line width=0.6pt] (13.55,2.45) rectangle (13.95,2.95);
+  \node[draw=roleFsAcc, line width=0.8pt, fill=roleFsFill, rounded corners=2.5pt]
+        (connFolder) at (14.95,2.7) [minimum width=1.7cm, minimum height=0.55cm] {};
+  \rigFolder{14.2}{2.7}{roleFsAcc}
+  \node[font=\sffamily\tiny, text=roleFsAcc, anchor=west] at (14.38,2.7) {connected folder};
+  \node[font=\sffamily\tiny\itshape, text=roleFsAcc] at (14.95,2.12) {reachable, permissioned};
+  \draw[conduit,<->] (13.35,2.7) -- (connFolder.west);
   \end{scope}
 
   % caption

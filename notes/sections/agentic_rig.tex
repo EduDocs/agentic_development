@@ -47,7 +47,7 @@ For agentic work, the terminal is indispensable: agents invoke tools by running 
 The shell is therefore more than a place to type; it is a \emph{gateway} through which the agent reaches tools: interpreters, compilers, converters, domain-specific programs, and the file system itself.
 Figure~\ref{figure:ShellGateway} contrasts two paradigms that share this gateway but differ sharply in what is reachable through it.
 An agent running locally (Claude Code with a native shell) commands the machine's real toolchain: installed, licensed, compiled, domain-specific, and the researcher's actual files.
-An agent in a managed sandbox (a virtual-machine shell, as in Cowork) reaches a preloaded set of general tools and can install more, but a wall seals it off from the local machine.
+An agent in a managed sandbox (a virtual-machine shell, as in Cowork) reaches a preloaded set of general tools and can install more, but a wall seals it off from the machine's own toolchain; it touches the researcher's files only through an explicitly connected folder, reached over a permissioned channel rather than by arbitrary host access.
 For research computing, where the decisive tools are often licensed, compiled, or homegrown, this difference determines what the agent can actually do.
 
 \begin{figure}[t]
@@ -55,7 +55,7 @@ For research computing, where the decisive tools are often licensed, compiled, o
 {\rigfigurefonts\input{figures/shell-as-tool-gateway}}
 \caption{The shell as the gateway to tools.
 The gateway is the same component in both paradigms; the paradigm sets what is reachable through it.
-Locally (left), the agent reaches the machine's full toolchain and files; in a sandboxed virtual machine (right), it reaches general preloaded tools but is walled off from local, licensed, compiled, domain-specific software, and from the researcher's files.}
+Locally (left), the agent reaches the machine's full toolchain and files; in a sandboxed virtual machine (right), it reaches general preloaded tools but is walled off from the machine's licensed, compiled, and domain-specific software, reaching the researcher's files only through an explicitly connected folder over a permissioned channel.}
 \label{figure:ShellGateway}
 \end{figure}
 
