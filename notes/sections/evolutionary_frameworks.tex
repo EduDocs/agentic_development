@@ -33,7 +33,7 @@ Definition~\ref{definition:GenEvalSel} is already in place; this chapter adds th
 An \emph{agentic evolutionary framework} is a tuple $(\Artifacts, \Fitness, \Mutate, \Select, \Population_0)$ where
 \begin{itemize}
 \item $\Artifacts$ is the space of artifacts (expressions, programs, designs),
-\item $\Fitness : \Artifacts \to \RealNumbers$ is the fitness function (lower is better, following the convention of the course harness),
+\item $\Fitness : \Artifacts \to \RealNumbers$ is the fitness function (lower is better, following the course-wide sign convention of Section~\ref{subsection:MultiObjectiveScoring}),
 \item $\Mutate : \Artifacts \to \Artifacts$ is the mutation operator that derives a variant from a survivor,
 \item $\Select : 2^{\Artifacts} \to 2^{\Artifacts}$ is the selection rule that retains the best members of a population, and
 \item $\Population_0 \subset \Artifacts$ is the initial population (the set of candidates before any evolution begins).

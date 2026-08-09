@@ -1,11 +1,7 @@
-# Build configuration for the manuscript (the evolving artifact).
+# Convenience recipes for the manuscript.
 # Build output lives in the .nel/ container (ADR 0009); this justfile itself
 # stays at the project root because `just` only ever searches upward from cwd.
 outdir     := ".nel/build"
-latex      := "pdflatex"
-bibtex     := "bibtex"
-makeindex  := "makeindex"
-latexflags := "-interaction=nonstopmode"
 main       := "main"
 open_cmd   := "open"
 
@@ -17,41 +13,16 @@ default:
 compose:
     ./nel compose
 
-# Full build: pdflatex -> bibtex (only if cited) -> makeindex (only if indexed)
-#             -> pdflatex -> pdflatex
-# Runs bibtex only when something is actually \cite'd — otherwise bibtex emits a
-# degenerate empty thebibliography that breaks pdflatex (mirrors evaluate._compile).
-# Runs makeindex only when the first pass actually wrote a .idx, i.e. when the
-# document has \makeindex plus at least one \index entry. Without this step a
-# manuscript that indexes gets no index at all: \printindex finds no .ind and
-# prints nothing, silently, while the log says only "No file main.ind."
+# Delegates on purpose. `./nel build` is already self-contained — it needs only
+# pdflatex and the project's templates/, no Python engine — so keeping the recipe
+# here too meant maintaining the same conditionals twice (bibtex only when
+# something is \cite'd; makeindex only when a .idx appeared). They DID drift: the
+# absolute BIBINPUTS that a nested output directory requires had to be fixed in
+# both copies separately. `nel` is the one implementation.
+#
+# Compile the manuscript to .nel/build/main.pdf
 build:
-    #!/usr/bin/env bash
-    set -e
-    mkdir -p {{outdir}}
-    # \include (unlike \input) writes a per-file .aux mirroring its source path
-    # under -output-directory; that dir must exist first (book-class documents,
-    # e.g. an adopted manuscript, that \include per chapter). Best-effort scan.
-    while IFS= read -r inc; do
-        [[ -n "$inc" ]] && mkdir -p "{{outdir}}/$(dirname "$inc")"
-    done < <(grep -hoE '\\include\{[^}]+\}' ./*.tex sections/*.tex 2>/dev/null \
-              | sed -E 's/\\include\{([^}]+)\}/\1/')
-    export TEXINPUTS=.:templates/:
-    {{latex}} {{latexflags}} -output-directory={{outdir}} {{main}}.tex
-    if grep -qE '\\cite[a-zA-Z]*\{' sections/*.tex main.tex; then
-        # Absolute BIB/BSTINPUTS: outdir is nested, so ".." no longer reaches the root.
-        root="$PWD"
-        ( cd {{outdir}} && BIBINPUTS="$root:$root/templates:" BSTINPUTS="$root:$root/templates:" {{bibtex}} {{main}} ) || true
-    else
-        rm -f {{outdir}}/{{main}}.bbl
-    fi
-    if [ -f "{{outdir}}/{{main}}.idx" ]; then
-        ( cd {{outdir}} && {{makeindex}} -q {{main}}.idx ) || true
-    else
-        rm -f {{outdir}}/{{main}}.ind
-    fi
-    {{latex}} {{latexflags}} -output-directory={{outdir}} {{main}}.tex
-    {{latex}} {{latexflags}} -output-directory={{outdir}} {{main}}.tex
+    ./nel build
 
 # Open the compiled PDF
 view: build

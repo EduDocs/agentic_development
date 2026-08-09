@@ -38,6 +38,27 @@ case "$cmd" in
         fi ;;
 esac
 
+# Refuse the manuscript commands when this is the ENGINE repo rather than a
+# project. The `ENGINE=$PROJECT` fallback above dates from before the split,
+# when this repo *was* the paper; the engine now ships no manuscript by design,
+# so running these here silently produces junk — an empty .nel/log/archive.db,
+# a build/ of nothing — which then looks like project state in the engine.
+#
+# The test is the MANIFEST, not self-resolution: a legitimate single-repo setup
+# (engine and paper in one place) has a manifest and keeps working. `doctor` and
+# `resources` are deliberately still allowed — doctor is what tells you this is
+# not a project, and resources lists the engine's own knowledge layer.
+case "$cmd" in
+    step|evaluate|compose|build|archive|db-archive)
+        if [[ ! -f "$PROJECT/nel.toml" && ! -f "$PROJECT/project.toml" ]]; then
+            echo "nel: '$PROJECT' is not a nel project (no nel.toml) — refusing '$cmd'." >&2
+            echo "      This looks like the engine repo, which has no manuscript by design." >&2
+            echo "      Scaffold one:  python3 $ENGINE/scaffold.py init ../my-paper" >&2
+            echo "      Then run ./nel from THERE. ('doctor' and 'resources' work here.)" >&2
+            exit 4
+        fi ;;
+esac
+
 case "$cmd" in
     step)       exec python3 "$ENGINE/step.py" "$@" --project "$PROJECT" ;;
     evaluate)   exec python3 "$ENGINE/evaluate.py" --project "$PROJECT" ;;
@@ -89,9 +110,11 @@ case "$cmd" in
         fi ;;
     build)
         # Self-contained compile (needs only pdflatex + the project's templates),
-        # so a collaborator can build without the Python engine. Mirrors justfile.
-        # Output goes in the container (ADR 0009); templates/ stays at the project
-        # root so a bare `pdflatex main.tex` still finds the class file.
+        # so a collaborator can build without the Python engine. This is the ONLY
+        # implementation — `just build` delegates here rather than mirroring it,
+        # because the two copies drifted. Output goes in the container (ADR 0009);
+        # templates/ stays at the project root so a bare `pdflatex main.tex` still
+        # finds the class file.
         BUILD_DIR="build"
         [[ -d "$PROJECT/.nel" || ! -d "$PROJECT/build" ]] && BUILD_DIR=".nel/build"
         mkdir -p "$PROJECT/$BUILD_DIR"

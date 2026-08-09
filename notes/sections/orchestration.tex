@@ -38,7 +38,7 @@ def run_pipeline(dataset_path, k=5):
 \end{lstlisting}
 Each step can be a model call, a tool invocation, or a subprocess; the pipeline connects them.
 Read the data flow rather than the syntax: \code{context} is produced by step~1 and consumed by step~2, and \code{candidates} is produced by step~2 and consumed by step~3, so these three lines admit only one order.
-Note also that \code{min} is the correct selector only because the score here is an error, for which lower is better; under a fitness convention where higher is better, the same line would need \code{max}.
+Note also that \code{min} is the correct selector only because the score here is an error, for which lower is better (the course-wide convention; Section~\ref{subsection:MultiObjectiveScoring}); under a fitness convention where higher is better, the same line would need \code{max}.
 \end{example}
 
 \subsection{Parallel Execution}

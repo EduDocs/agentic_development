@@ -18,7 +18,7 @@ Section~\ref{section:AgenticCodingLoop} lays out the read--direct--inspect loop;
 \section{The Agentic Coding Loop}
 \label{section:AgenticCodingLoop}
 
-Agentic coding proceeds in a cycle that alternates between researcher direction and agent execution.\index{Agentic!coding loop}
+Agentic coding proceeds in a cycle that alternates between researcher direction and agent execution (Figure~\ref{figure:AgenticCodingLoop}).\index{Agentic!coding loop}
 
 \begin{enumerate}
 \item \textbf{Specify.} State clearly what the agent should produce (a function, a script, a test) with explicit constraints on interface, style, and correctness criteria.
@@ -34,6 +34,17 @@ A commit is not a backup of a file: it is a labelled point the project can be re
 This iterative process is deliberately incremental.
 Each cycle should produce a small, reviewable change, not a thousand-line scaffolding dump.
 A change the researcher cannot fully read is a change the researcher does not own.
+
+\begin{figure}[htb!]
+\begin{center}
+\input{figures/agentic-coding-loop}
+\caption{The agentic coding loop.
+Direction and execution alternate: the researcher \emph{specifies}, the agent \emph{executes}, the researcher \emph{reads} the resulting diff, and the change is either \emph{committed} or sent back for revision.
+The \emph{Execute} step is grounded by a verification oracle (interpreter, test runner, compiler) it can invoke on its own output, so each run--fail--fix cycle is checked feedback rather than a prediction; that grounded inner loop is why the outer loop converges even when the first attempt is wrong.
+\emph{Read} is the one node that cannot be delegated: it is the ownership checkpoint, where the researcher comes to understand the change well enough to answer for it.}
+\label{figure:AgenticCodingLoop}
+\end{center}
+\end{figure}
 
 What makes the execute step more than fast code generation is the \emph{verification oracle}\index{Verification oracle}: the interpreter, test runner, or compiler the agent can invoke on its own output.
 Each of those is a program that answers a question the agent cannot settle by reasoning alone.

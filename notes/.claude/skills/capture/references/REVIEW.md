@@ -36,7 +36,7 @@ Decide one disposition per blob. Group near-duplicates first so a single change 
 |---|---|---|
 | **update-skill** | an existing skill is missing or wrong behavior | edit **the engine's copy** of that skill, then re-vendor (see *engine*) |
 | **new-skill** | a recurring need no skill covers | scaffold a new skill under **the engine's** `.claude/skills/`, then re-vendor |
-| **doc** | a repo convention, build, structure, or notation rule | amend `CLAUDE.md`, `PROGRESSION.md`, or the relevant doc — project-side if paper-specific, engine `template/` if every future paper should inherit it |
+| **doc** | a repo convention, build, structure, or notation rule | amend `CLAUDE.md`, `PROGRESSION.md`, or the relevant doc — project-side if paper-specific. If it belongs to *every* paper: a loop/protocol rule goes in the engine's **`NEL.md`** (vendored, so `update` propagates it — never patch `.nel/NEL.md` in the project, it is overwritten); anything else in the engine's `template/` |
 | **hook** | an automated "whenever X, do Y" behavior | use the `update-config` skill to add a settings hook |
 | **memory** | a durable fact about the user or project | write a memory file (`~/.claude/.../memory` + `MEMORY.md`) |
 | **engine** | any mechanism lesson (loop, `nel`, contract, evaluator/critic defaults) without an immediate fix | promote: append the blob to the **engine's** own `scratch/LEARNINGS.md` |
