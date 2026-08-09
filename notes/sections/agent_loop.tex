@@ -229,6 +229,9 @@ Some frontier \emph{reasoning models}\index{Reasoning model} with extended think
 This is the same chain-of-thought mechanism introduced in Chapter~\ref{chapter:ContextEngineering}, now performed by the model on its own rather than elicited by a ``think step-by-step'' instruction.
 These two placements are complementary rather than exclusive: reasoning can happen \emph{before} the first action, as planning over the initial prompt, or \emph{during} the loop, as a deliberate step that reasons over a freshly returned tool result before the next call.
 The latter can be induced even without a reasoning model by exposing a no-op ``think'' tool, a tool with no external effect whose only job is to give the model a scratchpad turn mid-loop, which reportedly helps most in policy-heavy or long sequential-decision settings and little on simple parallel calls (Anthropic, 2025).
+That workaround is becoming a fallback rather than the main mechanism.
+Frontier models increasingly support \emph{interleaved} thinking: reasoning is resumed between tool calls as a native part of the loop, so the model deliberates over each returned result without a scratchpad tool to hold the turn open.
+Where that is available, the thinking budget stops being a single pre-loop allowance and becomes a per-step parameter, and the no-op tool is worth adding only for models that do not interleave natively.
 
 A practical consequence is that hand-writing a \code{Thought:}/\code{Action:} scaffold buys little when the model already deliberates before acting; the builder's lever shifts from a prompt template to a \emph{thinking budget}\index{Thinking budget}, a cap on how many reasoning tokens the model may spend before it must answer.
 The cost falls on the audit trail.

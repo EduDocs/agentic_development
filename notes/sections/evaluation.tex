@@ -20,9 +20,11 @@ An \emph{evaluation harness}\index{Evaluation!harness} can be abstracted as a fu
 An \emph{evaluation harness} is a tuple $(\mathcal{D}, \Score)$ where
 \begin{itemize}
 \item $\mathcal{D} = (\mathcal{D}_{\mathrm{train}}, \mathcal{D}_{\mathrm{val}}, \mathcal{D}_{\mathrm{test}})$ partitions the data into a \emph{training} split (on which the agent may fit parameters), a \emph{validation} split (against which candidates are scored and selected, repeatedly, across a search), and a held-out \emph{final-test} split (reserved for a single audit), and
-\item $\Score : \Artifacts \times \mathcal{D}_{\mathrm{val}} \to \RealNumbers$ is the reusable scoring function that evaluates a candidate artifact $a \in \Artifacts$ against the validation split.
+\item $\Score : \Artifacts \times \mathcal{D} \to \RealNumbers$ is the scoring function that evaluates a candidate artifact $a \in \Artifacts$ against whichever split it is handed.
 \end{itemize}
-The reusable score of artifact $a$ is $\Score(a, \mathcal{D}_{\mathrm{val}})$; the final-test metric $\Score(a^{\star}, \mathcal{D}_{\mathrm{test}})$ is computed once, for the selected artifact $a^{\star}$ alone, after every modeling and selection choice is frozen.
+The scoring function is split-parametric on purpose: one piece of code, applied to different data.
+What distinguishes the roles is not the formula but how often it may be called on a given split.
+The reusable score of artifact $a$ is $\Score(a, \mathcal{D}_{\mathrm{val}})$, queried freely across a search; the same function computes the final-test metric $\Score(a^{\star}, \mathcal{D}_{\mathrm{test}})$ once, for the selected artifact $a^{\star}$ alone, after every modeling and selection choice is frozen.
 \end{definition}
 
 A note on terminology: we write $a \in \Artifacts$ for a \emph{candidate artifact} --- in the symbolic-regression setting, a \emph{candidate expression} --- to keep it distinct from the language model $M$ of Chapter~\ref{chapter:ContextEngineering}.
@@ -133,9 +135,9 @@ def build_harness(data, val_fraction=0.2, seed=42):
     train_idx, val_idx = idx[n_val:], idx[:n_val]
     X_val, y_val = X[val_idx], y[val_idx]
 
-    def fitness_score(model):
+    def fitness_score(candidate):
         """Score a candidate on the sealed validation split (reusable)."""
-        y_pred = model.predict(X_val)
+        y_pred = candidate.predict(X_val)
         return float(np.mean((y_pred - y_val) ** 2))  # MSE
 
     return fitness_score   # a closure over X_val, y_val
@@ -298,8 +300,8 @@ Calling that list a \emph{contract} is a promise that those facts will not chang
 \label{definition:HarnessContract}
 A harness interface is a pair $(\texttt{score}, \texttt{report})$ where
 \begin{itemize}
-\item $\texttt{score}(\text{model}) \to \text{float}$ returns the composite score (lower is better), and
-\item $\texttt{report}(\text{model}) \to \text{dict}$ returns a structured breakdown: MSE, complexity, and score.
+\item $\texttt{score}(\text{candidate}) \to \text{float}$ returns the composite score (lower is better), and
+\item $\texttt{report}(\text{candidate}) \to \text{dict}$ returns a structured breakdown: MSE, complexity, and score.
 \end{itemize}
 A harness satisfying this interface can be dropped into any unit in the course without modification.
 \end{definition}
@@ -315,6 +317,9 @@ The organizing idea of the course is sharpest in this form: \emph{a reusable val
 
 Beyond this course's numeric harness, the field compares agents on shared \emph{capability benchmarks}: SWE-bench for resolving real GitHub issues, WebArena and related suites for web tasks, GAIA for general assistant questions, and OSWorld for computer use, so a claim that ``my agent scores $X$'' is a claim against a named, public harness with its own contract (Anthropic, 2025--2026).
 Each of those is a harness in the sense of Definition~\ref{definition:EvalHarness}, with the dataset replaced by a fixed collection of tasks and the score replaced by the fraction of them solved: SWE-bench, for instance, counts a software issue as resolved only if the repository's own test suite passes once the agent's patch is applied, which is an oracle in the sense of Section~\ref{section:LLMJudge}.
+The names matter when reading a reported number.
+SWE-bench results are now usually quoted on \emph{SWE-bench Verified}, a human-reviewed subset whose task statements and tests were checked to be solvable and correctly specified, because the original set contained items no correct patch could pass.
+Two scores on the two variants are not comparable, and a reader who does not notice which one is quoted will misjudge a system by tens of points: the same benchmark-hygiene discipline this chapter asks of a private harness applies to reading public ones.
 The mean-squared-error-plus-parsimony harness built here is one domain-specific instance of that general practice, not a different kind of thing: the discipline --- a sealed test set, a stable interface, a leakage-resistant score --- is the same at any scale.
 
 \begin{remark}

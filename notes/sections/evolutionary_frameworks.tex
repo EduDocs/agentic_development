@@ -54,6 +54,10 @@ $\Population_0$ says where the search starts.
 A biologist will recognize the vocabulary immediately: $\Artifacts$ is the space of possible genotypes, $\Fitness$ is the environment that scores them, $\Mutate$ is the source of heritable variation, and $\Select$ is the pressure deciding which individuals get to reproduce.
 The analogy is close enough to be load-bearing throughout this chapter, with one difference worth naming up front: the variation operator here is not random, it is a language model carrying priors about which variations are worth trying at all (Section~\ref{section:MutationOperators}).
 
+The recurrence describes the loop once it is running.
+Getting $\Population_0$ in the first place is a separate move: a generation pass proposes candidates from the problem statement alone, with no survivor to derive them from, which is why Figure~\ref{figure:EvolutionaryLoop} draws \emph{Generate} and \emph{Mutate} as two nodes rather than one.
+Eq.~\eqref{equation:EvolutionaryLoop} governs every step after that seeding.
+
 The recurrence uses $\Select$ twice, and the two uses do different jobs.
 The inner $\Select(\Population_t)$ chooses the \emph{parents}, the survivors that will be mutated; the outer $\Select$ prunes the enlarged pool back down to a next generation of fixed size.
 Reading Eq.~\eqref{equation:EvolutionaryLoop} from the inside out therefore traces one round in four moves: choose parents, mutate each parent once, pool parents together with their offspring, keep the best of that pool.
@@ -224,6 +228,14 @@ The attack surface widens sharply when the fitness evaluation itself runs in a t
 As of early 2026, capable models have been observed to recognize that they are being evaluated, enumerate likely benchmarks by name, and --- given web search and code execution --- locate a benchmark's own answer materials, turning ``solve the task'' into ``solve the evaluation'' (Anthropic, 2026).
 The defenses are the ones the leakage discussion of Chapter~\ref{chapter:Evaluation} already prescribes: run the fitness function in a sandbox with no route to the sealed held-out data or the open web, and treat honest-failure reporting as part of the harness contract rather than an afterthought.
 \end{remark}
+
+The symbolic-regression vehicle makes fitness look like a formula because its outputs are numbers.
+Many discovery problems are not so lucky: an evolving experimental design, proof sketch, or protocol has no mean squared error, and a researcher reading this chapter with such a problem in hand needs to know the loop still applies.
+It does, because the evaluability spectrum of Section~\ref{section:LLMJudge} already covers this case.
+A rubric-driven critic model scoring each candidate is a fitness function in the sense of Definition~\ref{definition:EvolutionaryLoop}: it is automatic, it returns a number, and it can be called ten thousand times.
+What it is not is objective, and the Goodhart pressure of this section applies to it with full force and one extra edge.
+A weak judge is exploited exactly as a weak metric is, but its holes are rhetorical rather than numerical: the search learns which phrasings, hedges, and formatting the judge rewards, and converges on candidates that read well to that judge rather than ones that are better.
+The countermeasures are the ones Section~\ref{section:LLMJudge} names --- pin the judge model and rubric before the run, calibrate against a small human-scored set, prefer relative judgments to absolute scores --- plus one the loop makes necessary: audit a sample of scored candidates by hand every so many generations, because nothing else in an unattended run will notice the drift while it is happening.
 
 \subsection{Multi-Objective Fitness}
 
