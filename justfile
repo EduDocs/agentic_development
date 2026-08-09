@@ -80,22 +80,22 @@ notes-data:
 # LaTeX build stays on your machine, the binary never enters history, and deploys
 # stay fast. The deploy workflow pulls this asset.
 # Requires a one-time `gh auth login`, and a one-time release creation:
-#   gh release create notes-pdf notes/build/agentic-development-notes.pdf \
+#   gh release create notes-pdf notes/.nel/build/agentic-development-notes.pdf \
 #       -t "Notes PDF" -n "Latest build of the course notes."
 # After that, this recipe rebuilds and overwrites the asset.
 #
 # Build the book and publish it to the rolling `notes-pdf` release
 publish-notes-pdf:
     just --justfile notes/justfile --working-directory notes build
-    cp notes/build/main.pdf notes/build/{{NOTES_PDF}}
-    gh release upload notes-pdf notes/build/{{NOTES_PDF}} --clobber
+    cp notes/.nel/build/main.pdf notes/.nel/build/{{NOTES_PDF}}
+    gh release upload notes-pdf notes/.nel/build/{{NOTES_PDF}} --clobber
     @echo "Published {{NOTES_PDF}} to the 'notes-pdf' release."
 
 # Preview the NOTES alone at http://localhost:8001
 notes-serve: notes-data
     # The PDF is not in the repo. If you have built the book locally, serve that
     # copy so the link resolves in preview; otherwise the link 404s here.
-    -cp notes/build/main.pdf notes/site/{{NOTES_PDF}}
+    -cp notes/.nel/build/main.pdf notes/site/{{NOTES_PDF}}
     @echo "Notes site at http://localhost:8001 (the Course link 404s here; use 'just web')"
     python3 -m http.server 8001 --directory notes/site
 
@@ -107,7 +107,7 @@ web: site-links notes-data
     cp -R notes/site/. _site/
     cp -R site/.       _site/course/
     # In CI this comes from the release; locally, use a build if you have one.
-    -cp notes/build/main.pdf _site/{{NOTES_PDF}}
+    -cp notes/.nel/build/main.pdf _site/{{NOTES_PDF}}
     @echo "Assembled site at http://localhost:8000  (course at /course/)"
     python3 -m http.server 8000 --directory _site
 
