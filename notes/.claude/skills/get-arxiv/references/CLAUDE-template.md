@@ -2,8 +2,8 @@
 
 Fill in the placeholders and write this as `CLAUDE.md` at the root of the
 `resources/arXiv-<id>v<ver>/` folder. Keep it short and factual: it tells a future agent how
-this particular paper is wired and where it deviates from the canonical `TemplateArticle/`
-layout. Model it on `~/ClaudeAMP/arXiv-2402.08676v1/CLAUDE.md`.
+this particular paper is wired and where it deviates from the canonical `template/`
+layout. The skeleton below is the model — fill it in, don't redesign it.
 
 ---
 
@@ -27,7 +27,7 @@ layout. Model it on `~/ClaudeAMP/arXiv-2402.08676v1/CLAUDE.md`.
 - Section content: `<section>.tex` is `\input` from `<jobname>.tex` and kept at the project
   root (treated as a section file, not a template).   <!-- omit if monolithic -->
 
-## Local Deviations from `TemplateArticle/`
+## Local Deviations from `template/`
 - <e.g. "Monolithic `.tex`; not split into `sections/*.tex`.">
 - File names kept as `<jobname>.tex` / `<jobname>.bbl` to preserve the jobname/.bbl coupling.
 - <e.g. "One loose figure (`plot_19.png`) moved into a new `figures/` directory; its

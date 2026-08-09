@@ -4,7 +4,7 @@ Fill this in and write it as `SYNOPSIS.md` at the root of `resources/arXiv-<id>v
 The purpose is **discovery**: a future agent (or the PI) reads this to decide whether and how
 the paper is relevant to the manuscript in progress. Pull title/authors/abstract from the
 arXiv Atom API (`http://export.arxiv.org/api/query?id_list=<id>`) for accuracy. Model the
-tone and depth on `~/ClaudeAMP/arXiv-2402.08676v1/SUMMARY.md`.
+tone and depth on the skeleton below — factual, specific, and short enough to be re-read.
 
 Keep the reading-note disclaimer when the PI is **not** an author. Make the
 "Relevance to the manuscript" section concrete — point at real `sections/*.tex` files.

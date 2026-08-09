@@ -1,7 +1,8 @@
 # arXiv Source Notes
 
-Reference detail for the `format-arxiv-source` skill. Ground-truth examples of a finished
-ingest live in `~/ClaudeAMP/arXiv-*/` (e.g. `arXiv-2402.08676v1/`, `arXiv-2412.01511v2/`).
+Reference detail for the `get-arxiv` skill. A finished ingest looks like the
+`resources/arXiv-<id>v<ver>/` folders this skill produces; the sibling templates in this
+directory define the shape.
 
 ## Downloading the source
 
@@ -69,7 +70,7 @@ Therefore:
   (The `.bib`, if present, is moved to `templates/` for reference, but the build uses the
   `.bbl`.)
 
-## Target layout (mini-`TemplateArticle`)
+## Target layout (mini-`template`)
 
 ```
 resources/arXiv-<id>v<ver>/
@@ -114,5 +115,5 @@ resources/arXiv-<id>v<ver>/
 - **Multi-paper / multi-`\documentclass` tarball** → identify the intended top-level from
   the manifest; flag the extras in the report.
 - **Loose unused source** (e.g. a stray `trash.tex` not `\input` anywhere) → leave it at the
-  root rather than deleting; note it. (See `~/ClaudeAMP/arXiv-2402.08676v1/trash.tex`.)
+  root rather than deleting; note it in the ingest's `CLAUDE.md`.
 - **`\graphicspath` already set** → respect it; don't move figures out from under it.

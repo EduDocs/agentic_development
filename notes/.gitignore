@@ -60,3 +60,18 @@ resources/*
 !resources/README.md
 !resources/STYLE.md
 !resources/exemplars/
+
+# >>> nel contract v3 (scaffold.py update) >>>
+**/.nel/engine
+**/.nel/log/state-*.json
+**/.nel/log/elites/
+**/.nel/log/feedback/
+**/.nel/log/branch-solo.md
+**/.nel/log/by-approach/*.md
+!**/.nel/log/by-approach/README.md
+**/.nel/log/archive.db
+**/.nel/log/archive.db-wal
+**/.nel/log/archive.db-shm
+**/.nel/scratch/*
+!**/.nel/scratch/README.md
+# <<< nel contract v3 <<<

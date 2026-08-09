@@ -1,6 +1,6 @@
 ---
 name: capture
-description: A learning-flywheel inbox. In CAPTURE mode (default), distill the recent conversation into a small structured "blob" — context, lesson, proposed action — append it to the inbox at scratch/LEARNINGS.md, and ack in one line WITHOUT disrupting the current task. Use when the user says "/capture", "capture this", "log a lesson", "jot that gap", "stash this for review", "note this for later", or "remember to improve X". In REVIEW mode ("/capture review"), process the scratch/LEARNINGS.md backlog: triage each open blob, route it to its proper home (update a skill AT THE ENGINE and re-vendor, write a new skill, amend CLAUDE.md/PROGRESSION.md, add a hook via update-config, save to memory, promote a mechanism lesson to the engine's own inbox, or drop it), apply changes ask-first, and archive the entry with its resolution. Mechanism lessons (vendored skills, nel, the loop) are never patched in the project — scaffold.py update would clobber them; they are applied engine-side so every scaffolded paper inherits the fix. Capture is one append + one-line ack (never derails the flow); review is where all the judgment and integration happen. The inbox lives at scratch/LEARNINGS.md (ephemeral and gitignored — your personal backlog, not paper history); the scratch area and entry format are documented in scratch/README.md.
+description: A learning-flywheel inbox. In CAPTURE mode (default), distill the recent conversation into a small structured "blob" — context, lesson, proposed action — append it to the inbox at .nel/scratch/LEARNINGS.md, and ack in one line WITHOUT disrupting the current task. Use when the user says "/capture", "capture this", "log a lesson", "jot that gap", "stash this for review", "note this for later", or "remember to improve X". In REVIEW mode ("/capture review"), process the .nel/scratch/LEARNINGS.md backlog: triage each open blob, route it to its proper home (update a skill AT THE ENGINE and re-vendor, write a new skill, amend CLAUDE.md/PROGRESSION.md, add a hook via update-config, save to memory, promote a mechanism lesson to the engine's own inbox, or drop it), apply changes ask-first, and archive the entry with its resolution. Mechanism lessons (vendored skills, nel, the loop) are never patched in the project — scaffold.py update would clobber them; they are applied engine-side so every scaffolded paper inherits the fix. Capture is one append + one-line ack (never derails the flow); review is where all the judgment and integration happen. The inbox lives at .nel/scratch/LEARNINGS.md (ephemeral and gitignored — your personal backlog, not paper history); the scratch area and entry format are documented in .nel/scratch/README.md.
 ---
 
 # capture — Learning-Flywheel Inbox
@@ -16,10 +16,10 @@ The methodology: capture collects cheap signal during normal work (an experience
 buffer); review is the consolidation step where signal becomes concrete changes to skills,
 docs, hooks, and memory. Capture stays dumb and fast; **all judgment lives in review.**
 
-The inbox is **`scratch/LEARNINGS.md`** — ephemeral and gitignored (a personal, per-clone
+The inbox is **`.nel/scratch/LEARNINGS.md`** — ephemeral and gitignored (a personal, per-clone
 backlog, not shared paper history), created on demand. It has a `## Open` list (new blobs) and a
 `## Archive` (integrated blobs with their resolution). The scratch area and the entry format are
-documented in [scratch/README.md](../../../scratch/README.md); the triage taxonomy and the
+documented in [.nel/scratch/README.md](../../../.nel/scratch/README.md); the triage taxonomy and the
 integration playbook are in [references/REVIEW.md](references/REVIEW.md).
 
 ## Mode selection
@@ -42,7 +42,7 @@ nothing to capture. Then return to whatever we were doing.
    the gap / lesson / question / idea worth keeping. If the args fully state it, use them; if
    context is empty and no steer is given, ask a single short question — otherwise, infer.
 2. **Distill the blob** into the entry schema (one tight entry — format in
-   [scratch/README.md](../../../scratch/README.md)):
+   [.nel/scratch/README.md](../../../.nel/scratch/README.md)):
    - **title** — a short, specific handle.
    - **when** — today's date (`date +%Y-%m-%d`); **type** — one of `skill-gap`, `skill-idea`,
      `workflow`, `bug`, `question`, `preference`; **tags** — the skills/files/topics involved.
@@ -53,13 +53,13 @@ nothing to capture. Then return to whatever we were doing.
    - **lesson** — the distilled observation (1–2 lines).
    - **proposed action** — the integration hint: which skill/doc/hook/memory it likely touches.
    - **status: open**.
-3. **Append.** If `scratch/LEARNINGS.md` does not exist, create it from the skeleton in
-   `scratch/README.md` (the `scratch/` dir is gitignored except its README, so the inbox is
+3. **Append.** If `.nel/scratch/LEARNINGS.md` does not exist, create it from the skeleton in
+   `.nel/scratch/README.md` (the `.nel/scratch/` dir is gitignored except its README, so the inbox is
    never tracked). Add the entry at the **top of `## Open`** (newest first).
-4. **Ack in one line** — e.g. `Captured -> scratch/LEARNINGS.md: <title>` — and stop. Resume the
+4. **Ack in one line** — e.g. `Captured -> .nel/scratch/LEARNINGS.md: <title>` — and stop. Resume the
    prior task.
 
-Capture writes only `scratch/LEARNINGS.md`. It never edits a skill, doc, or config — that is
+Capture writes only `.nel/scratch/LEARNINGS.md`. It never edits a skill, doc, or config — that is
 review's job.
 
 ---
@@ -71,7 +71,7 @@ for the full taxonomy and playbook.
 
 ### Workflow
 
-1. **Load the backlog.** Read `## Open` in `scratch/LEARNINGS.md`. If a filter arg is given
+1. **Load the backlog.** Read `## Open` in `.nel/scratch/LEARNINGS.md`. If a filter arg is given
    (`<tag|type|id>`), scope to it. Group near-duplicates so one fix can resolve several.
 2. **Triage.** For each blob, decide its disposition (route to a sink):
    update-skill · new-skill · doc (`CLAUDE.md`/`PROGRESSION.md`/…) · hook (via `update-config`) ·
@@ -92,14 +92,14 @@ for the full taxonomy and playbook.
 | A skill missing/wrong behavior | **the ENGINE's copy** of that skill (skills are vendored; see below), then re-vendor |
 | A recurring need with no skill | a new skill under the **engine's** `.claude/skills/`, then re-vendor |
 | A repo convention / build / structure rule | `CLAUDE.md`, `PROGRESSION.md`, or the relevant doc |
-| The mechanism itself (loop, `nel`, contract, engine defaults) | **engine** — apply upstream, or append to the engine's `scratch/LEARNINGS.md` |
+| The mechanism itself (loop, `nel`, contract, engine defaults) | **engine** — apply upstream, or append to the engine's own `scratch/LEARNINGS.md` (the engine is not a project, so its inbox stays at its root) |
 | An automated "whenever X do Y" behavior | a hook in settings via the `update-config` skill |
 | A durable fact about the user/project | a memory file (`~/.claude/.../memory` + `MEMORY.md`) |
 | No longer relevant / not worth doing | archive as `dropped` |
 
 **The engine promotion rule:** in a scaffolded project, `.claude/skills/`, `nel`, and the
 `justfile` are *vendored* — overwritten by every `scaffold.py update`. Editing them in the
-project silently loses the lesson. Mechanism fixes go to the engine (the path in `.nel-engine`
+project silently loses the lesson. Mechanism fixes go to the engine (the path in `.nel/engine`
 or `$NEL_ENGINE`), then `python3 <engine>/scaffold.py update <project>` re-vendors them here —
 and into every other project on its next update. Full playbook:
 [references/REVIEW.md](references/REVIEW.md).
@@ -108,9 +108,9 @@ and into every other project on its next update. Full playbook:
 
 | | |
 |---|---|
-| Inbox | `scratch/LEARNINGS.md` (ephemeral, gitignored; `## Open` newest-first, `## Archive`) |
+| Inbox | `.nel/scratch/LEARNINGS.md` (ephemeral, gitignored; `## Open` newest-first, `## Archive`) |
 | Capture | distill recent context → one blob → append → **one-line ack**; never derails |
-| Capture writes | `scratch/LEARNINGS.md` only — never a skill/doc/config |
+| Capture writes | `.nel/scratch/LEARNINGS.md` only — never a skill/doc/config |
 | Review | triage backlog → route to a sink → apply ask-first → archive with resolution |
 | Entry | title · when · type · tags · scope · context · lesson · proposed action · status |
 | Mechanism lessons | promoted to the **engine** (vendored files are clobbered by `update`) |
@@ -119,4 +119,4 @@ and into every other project on its next update. Full playbook:
 
 Triage taxonomy, integration playbook, dedup, and routing:
 [references/REVIEW.md](references/REVIEW.md). Scratch area and entry format:
-[scratch/README.md](../../../scratch/README.md).
+[.nel/scratch/README.md](../../../.nel/scratch/README.md).

@@ -65,7 +65,7 @@ reusing CATALOG tag words), `## Authors` (optional, arXiv author form), `## Excl
 down-rank/skip terms). Seed it from `CATALOG.md` tags + manuscript topics; the user curates it.
 It is tracked, so the watch list travels with the repo.
 
-### `scratch/check-arxiv-state.md` (gitignored — what's been seen)
+### `.nel/scratch/check-arxiv-state.md` (gitignored — what's been seen)
 
 Per-clone operational state, created/updated by the skill:
 

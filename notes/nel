@@ -4,24 +4,25 @@
 # The agent and skills call `./nel <cmd>` so their commands never depend on
 # WHERE the engine lives. Engine resolution, in order:
 #   1. $NEL_ENGINE (explicit; what a collaborator on another machine sets)
-#   2. <project>/.nel-engine (a path file scaffold.py writes; gitignored)
+#   2. <project>/.nel/engine (a path file scaffold.py writes; gitignored)
 #   3. the project itself (the engine repo's own in-place case)
-# This script is vendored UNCHANGED into every project; only .nel-engine differs.
-# (NEL_ENGINE / .nel-engine are the canonical names; the pre-rename
-# NANO_ENGINE / .nano-engine are still honored as a fallback.)
+# This script is vendored UNCHANGED into every project; only .nel/engine differs.
+# (NEL_ENGINE / .nel/engine are the canonical names; the pre-container
+# .nel-engine and the pre-rename NANO_ENGINE / .nano-engine are still honored
+# as fallbacks — see ADR 0009 and ADR 0008.)
 
 set -euo pipefail
 
 PROJECT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ENGINE="${NEL_ENGINE:-${NANO_ENGINE:-}}"
 if [[ -z "$ENGINE" ]]; then
-    if [[ -f "$PROJECT/.nel-engine" ]]; then
-        ENGINE="$(cat "$PROJECT/.nel-engine")"
-    elif [[ -f "$PROJECT/.nano-engine" ]]; then
-        ENGINE="$(cat "$PROJECT/.nano-engine")"
-    else
-        ENGINE="$PROJECT"   # engine repo operating on itself
-    fi
+    for link in "$PROJECT/.nel/engine" "$PROJECT/.nel-engine" "$PROJECT/.nano-engine"; do
+        if [[ -f "$link" ]]; then
+            ENGINE="$(cat "$link")"
+            break
+        fi
+    done
+    ENGINE="${ENGINE:-$PROJECT}"   # engine repo operating on itself
 fi
 
 cmd="${1:-}"; shift || true
@@ -41,13 +42,29 @@ case "$cmd" in
     step)       exec python3 "$ENGINE/step.py" "$@" --project "$PROJECT" ;;
     evaluate)   exec python3 "$ENGINE/evaluate.py" --project "$PROJECT" ;;
     compose)    exec python3 "$ENGINE/compose.py" --project "$PROJECT" ;;
-    archive)    exec python3 "$ENGINE/db/archive.py" "$@" ;;
+    archive)    exec python3 "$ENGINE/db/archive.py" --project "$PROJECT" "$@" ;;
     doctor)     exec python3 "$ENGINE/doctor.py" --project "$PROJECT" "$@" ;;
     db-archive) exec python3 "$ENGINE/contribute.py" --project "$PROJECT" "$@" ;;
     resources)
         # The two resources layers (ADR 0007): the project's private grounding
         # library, then the engine's shared layer. A project file with the same
         # name as an engine file SHADOWS it.
+        #
+        # `--path <name>` RESOLVES rather than lists: it prints the effective
+        # path for one entry and exits 0, or exits 1 if neither layer has it.
+        # Without this the shadowing rule had no implementation — every consumer
+        # re-derived it in prose, and the one that did got the engine path wrong.
+        if [[ "${1:-}" == "--path" ]]; then
+            name="${2:?usage: ./nel resources --path <name>}"
+            if [[ -e "$PROJECT/resources/$name" ]]; then
+                echo "$PROJECT/resources/$name"; exit 0
+            fi
+            if [[ -e "$ENGINE/resources/$name" ]]; then
+                echo "$ENGINE/resources/$name"; exit 0
+            fi
+            echo "nel resources: no '$name' in the project or engine layer" >&2
+            exit 1
+        fi
         echo "project layer ($PROJECT/resources):"
         if [[ -d "$PROJECT/resources" ]]; then
             n=0
@@ -73,36 +90,43 @@ case "$cmd" in
     build)
         # Self-contained compile (needs only pdflatex + the project's templates),
         # so a collaborator can build without the Python engine. Mirrors justfile.
-        mkdir -p "$PROJECT/build"
+        # Output goes in the container (ADR 0009); templates/ stays at the project
+        # root so a bare `pdflatex main.tex` still finds the class file.
+        BUILD_DIR="build"
+        [[ -d "$PROJECT/.nel" || ! -d "$PROJECT/build" ]] && BUILD_DIR=".nel/build"
+        mkdir -p "$PROJECT/$BUILD_DIR"
         cd "$PROJECT"
         # \include (unlike \input) writes a per-file .aux mirroring its source
         # path under -output-directory; that dir must exist first (book-class
         # documents, e.g. an adopted manuscript, that \include per chapter).
         # Best-effort scan (no Python engine here): top-level + sections/*.tex.
         while IFS= read -r inc; do
-            [[ -n "$inc" ]] && mkdir -p "build/$(dirname "$inc")"
+            [[ -n "$inc" ]] && mkdir -p "$BUILD_DIR/$(dirname "$inc")"
         done < <(grep -hoE '\\include\{[^}]+\}' ./*.tex sections/*.tex 2>/dev/null \
                   | sed -E 's/\\include\{([^}]+)\}/\1/')
         export TEXINPUTS=".:templates/:"
-        pdflatex=(pdflatex -interaction=nonstopmode -output-directory=build main.tex)
+        pdflatex=(pdflatex -interaction=nonstopmode -output-directory="$BUILD_DIR" main.tex)
         "${pdflatex[@]}" >/dev/null 2>&1 || true
+        # Absolute BIB/BSTINPUTS: the build dir may be nested (.nel/build), so a
+        # relative ".." from inside it no longer lands on the project root.
         if grep -qE '\\cite[a-zA-Z]*\{' sections/*.tex main.tex 2>/dev/null; then
-            ( cd build && BIBINPUTS=..:../templates: BSTINPUTS=..:../templates: bibtex main >/dev/null 2>&1 ) || true
+            ( cd "$BUILD_DIR" && BIBINPUTS="$PROJECT:$PROJECT/templates:" \
+                BSTINPUTS="$PROJECT:$PROJECT/templates:" bibtex main >/dev/null 2>&1 ) || true
         else
-            rm -f build/main.bbl
+            rm -f "$BUILD_DIR/main.bbl"
         fi
         # Same shape as the bibtex branch above: index only when the first pass
         # wrote a .idx. Without it \printindex finds no .ind and silently emits
         # nothing, so an indexed manuscript ships with no index at all.
-        if [ -f build/main.idx ]; then
-            ( cd build && makeindex -q main.idx >/dev/null 2>&1 ) || true
+        if [ -f "$BUILD_DIR/main.idx" ]; then
+            ( cd "$BUILD_DIR" && makeindex -q main.idx >/dev/null 2>&1 ) || true
         else
-            rm -f build/main.ind
+            rm -f "$BUILD_DIR/main.ind"
         fi
         "${pdflatex[@]}" >/dev/null 2>&1 || true
         "${pdflatex[@]}" >/dev/null 2>&1
-        echo "built $PROJECT/build/main.pdf" ;;
+        echo "built $PROJECT/$BUILD_DIR/main.pdf" ;;
     *)
-        echo "usage: ./nel {step <rationale> --approach <name> [--register tex|md|both] | evaluate | compose | archive <best|show|history|status|pending|...> | db-archive [--by <id>] | build | resources | doctor [--compile] [--fix] [--strict]}" >&2
+        echo "usage: ./nel {step <rationale> --approach <name> [--register tex|md|both] | evaluate | compose | archive <best|show|history|status|pending|...> | db-archive [--by <id>] | build | resources [--path <name>] | doctor [--compile] [--fix] [--strict]}" >&2
         exit 2 ;;
 esac

@@ -1,6 +1,6 @@
 ---
 name: get-arxiv
-description: Ingest an arXiv paper's LaTeX source into the local arXiv library under resources/, reshaped into a self-contained mini-project that mirrors this repo's TemplateArticle layout (original top-level .tex kept for jobname/.bbl coupling, macros and .bib moved to templates/, figures kept in figures/, plus a tailored justfile, CLAUDE.md build notes, and a discovery SYNOPSIS.md). Use when the user asks to "ingest an arXiv paper", "download arXiv source", "add 2402.08676 to my library/resources", "build my local arXiv", or "write a synopsis (reading note) for a paper". Fetches and reshapes one paper per run; keeps referenced figures and the shipped .bbl, deletes only unused figures and build cruft.
+description: Ingest an arXiv paper's LaTeX source into the local arXiv library under resources/, reshaped into a self-contained mini-project that mirrors this repo's template layout (original top-level .tex kept for jobname/.bbl coupling, macros and .bib moved to templates/, figures kept in figures/, plus a tailored justfile, CLAUDE.md build notes, and a discovery SYNOPSIS.md). Use when the user asks to "ingest an arXiv paper", "download arXiv source", "add 2402.08676 to my library/resources", "build my local arXiv", or "write a synopsis (reading note) for a paper". Fetches and reshapes one paper per run; keeps referenced figures and the shipped .bbl, deletes only unused figures and build cruft.
 ---
 
 # Ingest an arXiv Source into the Local Library
@@ -8,7 +8,7 @@ description: Ingest an arXiv paper's LaTeX source into the local arXiv library u
 ## What this does
 
 Given an arXiv ID (e.g. `2402.08676`), this fetches the paper's LaTeX source and
-reshapes it into a **self-contained mini-`TemplateArticle`** under
+reshapes it into a **self-contained mini-`template`** under
 `resources/arXiv-<id>v<ver>/` — so the agent can read it, build it locally, and cite
 it while drafting. The result mirrors this repo's own layout: the original top-level
 `.tex` at root, macros and `.bib` in `templates/`, figures in `figures/`, plus a
@@ -33,8 +33,9 @@ download URL, the tarball→folder-name rule, the `00README.json` schema, the jo
 coupling, the metadata API, and the edge cases. The three output docs are generated from
 [references/CLAUDE-template.md](references/CLAUDE-template.md),
 [references/SYNOPSIS-template.md](references/SYNOPSIS-template.md), and
-[references/justfile.template](references/justfile.template). Study a real processed
-example to match the convention exactly: `~/ClaudeAMP/arXiv-2402.08676v1/`.
+[references/justfile.template](references/justfile.template). Those four templates ARE the
+convention — follow them literally. If the project already has ingests under `resources/`,
+skim the most recent `arXiv-*/CLAUDE.md` for how a real one turned out.
 
 ## Workflow
 
@@ -51,7 +52,7 @@ example to match the convention exactly: `~/ClaudeAMP/arXiv-2402.08676v1/`.
    **Keep its original name** — the precompiled `.bbl` shares that jobname, so renaming
    breaks the build. Keep `00README.json` as shipped.
 
-3. **Reshape to mirror `TemplateArticle/`.**
+3. **Reshape to mirror `template/`.**
    - Move macros (`.sty`, `commands.tex`) and the `.bib` into `templates/`. Omit the
      directory entirely if there's nothing to relocate.
    - Keep the top-level `.tex` and its `\input`/`\include` section files at the root
@@ -68,7 +69,7 @@ example to match the convention exactly: `~/ClaudeAMP/arXiv-2402.08676v1/`.
    `TEXINPUTS/BIBINPUTS/BSTINPUTS=.:templates/:` — **no `bibtex`**.
 
 5. **Write `CLAUDE.md`** from [references/CLAUDE-template.md](references/CLAUDE-template.md):
-   Paper Metadata, Top-Level Files, Local Deviations from `TemplateArticle/`, Build.
+   Paper Metadata, Top-Level Files, Local Deviations from `template/`, Build.
 
 6. **Write `SYNOPSIS.md`** from [references/SYNOPSIS-template.md](references/SYNOPSIS-template.md).
    Open with the YAML provenance header (`skill: get-arxiv`, `arxiv`, `doi`, `generated` =

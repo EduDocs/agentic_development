@@ -43,9 +43,7 @@ or to reformat (that is `format-md`).
    sections as a linear chain in `\input` order. Note any section whose `.tex` is not `\input`
    (parked / out of scope) and any `.tex` missing its `.md` (a hole in the audit — offer to
    scaffold). An optional argument (a section name) scopes the audit to that node plus its
-   ancestors and descendants; default is the whole document. Also read the optional
-   `# stable-anchors` block in `PROGRESSION.md`: the section stems it lists are **anchored**
-   (reviewed, trusted as ground truth) and drive the fix-direction rule in step 5.
+   ancestors and descendants; default is the whole document.
 2. **Build the concept ledger.** Read each in-scope `.md` in topological order. For each, record
    what it **introduces** (defines/sets up), what it **uses** (assumes from upstream), what it
    **promises** (claims to deliver later), and what it **pays off** (delivers an earlier
@@ -63,12 +61,7 @@ or to reformat (that is `format-md`).
    missing setup bullet, add a forward-pointer, harmonize a term, move a setup earlier. One
    change at a time, show the diff, confirm. A coherence defect is often a judgment call about
    *which* section is wrong — surface the options rather than guessing, and respect each
-   sidecar's exclusive zones (never delete scratch/open-questions/rationale). **Honor the
-   anchors:** when a defect spans an anchored and a non-anchored section, propose the fix on the
-   **non-anchored** side; an anchored sidecar is flagged in the report but never offered for edit.
-   A defect confined to anchored sections is reported for the user to adjudicate, not auto-fixed —
-   moving an anchor requires explicit confirmation. This makes the trusted chapters a fixed point
-   that loose chapters harmonize toward, not the reverse.
+   sidecar's exclusive zones (never delete scratch/open-questions/rationale).
 6. **Re-runnable.** Re-running after fixes yields fewer findings; the audit is naturally
    convergent, not stateful.
 
@@ -81,7 +74,6 @@ or to reformat (that is `format-md`).
 | Ledger per section | introduces · uses · promises · pays off |
 | Checks | setup↔payoff · topological order · consistency · tree/branch coherence · redundancy |
 | Output | inferred structure + findings pinned to sidecars, then **ask-first** surgical fixes |
-| Anchors | `# stable-anchors` in `PROGRESSION.md` = ground-truth sections; fixes land on the non-anchored side, anchored sidecars are flag-only |
 | Scope | whole document (default); a section arg scopes to that node + ancestors + descendants |
 | Holes | missing `.md` → offer to scaffold; parked `.tex` (not `\input`) → noted out of scope |
 | Never | edit prose, check a single pair, reformat, or rewrite across sections silently |

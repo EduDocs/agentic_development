@@ -1,5 +1,7 @@
 # Build configuration for the manuscript (the evolving artifact).
-outdir     := "build"
+# Build output lives in the .nel/ container (ADR 0009); this justfile itself
+# stays at the project root because `just` only ever searches upward from cwd.
+outdir     := ".nel/build"
 latex      := "pdflatex"
 bibtex     := "bibtex"
 makeindex  := "makeindex"
@@ -11,9 +13,9 @@ open_cmd   := "open"
 default:
     @just --list
 
-# Compose the standalone aggregate + spine digest (build/aggregate.tex, build/spine.md)
+# Compose the standalone aggregate + spine digest (.nel/build/aggregate.tex, .nel/build/spine.md)
 compose:
-    python3 compose.py
+    ./nel compose
 
 # Full build: pdflatex -> bibtex (only if cited) -> makeindex (only if indexed)
 #             -> pdflatex -> pdflatex
@@ -37,7 +39,9 @@ build:
     export TEXINPUTS=.:templates/:
     {{latex}} {{latexflags}} -output-directory={{outdir}} {{main}}.tex
     if grep -qE '\\cite[a-zA-Z]*\{' sections/*.tex main.tex; then
-        ( cd {{outdir}} && BIBINPUTS=..:../templates: BSTINPUTS=..:../templates: {{bibtex}} {{main}} ) || true
+        # Absolute BIB/BSTINPUTS: outdir is nested, so ".." no longer reaches the root.
+        root="$PWD"
+        ( cd {{outdir}} && BIBINPUTS="$root:$root/templates:" BSTINPUTS="$root:$root/templates:" {{bibtex}} {{main}} ) || true
     else
         rm -f {{outdir}}/{{main}}.bbl
     fi
@@ -55,7 +59,7 @@ view: build
 
 # Run the soft-feedback evaluator (composes, compiles, reviewer panel)
 evaluate:
-    python3 evaluate.py
+    ./nel evaluate
 
 # Remove build artifacts
 clean:

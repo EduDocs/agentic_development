@@ -1,8 +1,8 @@
 # capture — Review Taxonomy & Integration Playbook
 
-This is the REVIEW half of the `/capture` flywheel: turn the `scratch/LEARNINGS.md` backlog into
+This is the REVIEW half of the `/capture` flywheel: turn the `.nel/scratch/LEARNINGS.md` backlog into
 durable changes to the toolkit. Read the inbox format in
-[scratch/README.md](../../../../scratch/README.md) first.
+[.nel/scratch/README.md](../../../../.nel/scratch/README.md) first.
 
 Capture is cheap and dumb on purpose; **all the judgment is here.** Review is deliberate,
 ask-first, and surgical — it edits skills, docs, config, and memory, so it follows the same
@@ -39,7 +39,7 @@ Decide one disposition per blob. Group near-duplicates first so a single change 
 | **doc** | a repo convention, build, structure, or notation rule | amend `CLAUDE.md`, `PROGRESSION.md`, or the relevant doc — project-side if paper-specific, engine `template/` if every future paper should inherit it |
 | **hook** | an automated "whenever X, do Y" behavior | use the `update-config` skill to add a settings hook |
 | **memory** | a durable fact about the user or project | write a memory file (`~/.claude/.../memory` + `MEMORY.md`) |
-| **engine** | any mechanism lesson (loop, `nel`, contract, evaluator/critic defaults) without an immediate fix | promote: append the blob to the **engine's** `scratch/LEARNINGS.md` |
+| **engine** | any mechanism lesson (loop, `nel`, contract, evaluator/critic defaults) without an immediate fix | promote: append the blob to the **engine's** own `scratch/LEARNINGS.md` |
 | **drop** | stale, out of scope, or not worth doing | archive marked `dropped: <why>` |
 
 Present the triage as a compact table — `id → disposition → one-line plan` — before touching
@@ -52,13 +52,14 @@ anything, so the user can redirect a routing call.
   Re-read the edited skill's quick-reference table to confirm it still matches.
   **Where:** in a scaffolded project, skills are *vendored* — `scaffold.py update` overwrites
   `.claude/skills/`, `nel`, and the `justfile`, so an in-project edit is silently lost. Resolve
-  the engine (`cat .nel-engine`, or `$NEL_ENGINE`), edit the skill **there**, then run
+  the engine (`cat .nel/engine`, or `$NEL_ENGINE`), edit the skill **there**, then run
   `python3 <engine>/scaffold.py update <project>` to pull the fix back in. Only when the repo
-  *is* the engine (no `.nel-engine`) is a direct edit correct.
+  *is* the engine (no `.nel/engine`) is a direct edit correct.
 - **engine (promote upstream)** — for mechanism lessons that need more thought than a surgical
   edit (or when the engine checkout isn't writable from here): append the blob, unchanged plus a
   `promoted-from: <project-id> <date>` line, to `<engine>/scratch/LEARNINGS.md` under `## Open`
-  (create from the skeleton if absent — the engine keeps its own inbox, `<engine>/scratch/README.md`).
+  (create from the skeleton if absent). The engine is not a project, so its own inbox stays at
+  `<engine>/scratch/`; only a *project's* inbox lives in the container at `.nel/scratch/`.
   Archive the local copy as `promoted <date> -> engine inbox`. A later `/capture review` **in the
   engine repo** integrates it; every project then inherits the fix via `scaffold.py update`.
   If the engine is unreachable (collaborator clone, no path), leave the blob open with

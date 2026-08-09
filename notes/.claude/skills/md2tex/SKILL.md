@@ -16,12 +16,12 @@ diverges, and write that as prose in the project's house style.
 Read [PROGRESSION.md](../../../PROGRESSION.md) for the convention (registers, exclusive zones,
 the source-of-truth flip) and [references/MAPPING.md](references/MAPPING.md) for exactly what
 maps, what is protected, and the worked example. The output prose must follow the **house
-style guide**, resolved with layer shadowing (ADR 0007): the project's
-`resources/STYLE.md` if it exists, else the engine's (`$(cat .nel-engine)/resources/STYLE.md`,
-or `$NEL_ENGINE`). `format-tex` handles the mechanical layout half; STYLE.md carries the
-prose-voice half. Gold section pairs live in the engine's `resources/exemplars/` — worth a
-read before writing a first pair. Any legacy "Prose Style" section in the project `CLAUDE.md`
-still applies on top.
+style guide**. Resolve it with `./nel resources --path STYLE.md`, which prints the effective
+path — the project's copy if it has one, else the engine's (the layer shadowing of ADR 0007).
+Do not construct that path by hand. `format-tex` handles the mechanical layout half; STYLE.md
+carries the prose-voice half. Gold section pairs resolve the same way:
+`./nel resources --path exemplars` — worth a read before writing a first pair. Any legacy
+"Prose Style" section in the project `CLAUDE.md` still applies on top.
 
 ## When to use
 

@@ -1,8 +1,8 @@
 {
   "engine_path": "/Users/chmbrlnd/sandbox/EvolutionaryFrameworks/nel-operator",
-  "framework_commit": "6c0b108",
-  "contract_version": 2,
+  "framework_commit": "037f38b",
+  "contract_version": 3,
   "formed_by": "adopt",
   "scaffolded_at": "2026-07-10T23:02:28Z",
-  "updated_at": "2026-07-10T23:27:08Z"
+  "updated_at": "2026-08-09T00:25:21Z"
 }

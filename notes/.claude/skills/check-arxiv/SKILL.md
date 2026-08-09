@@ -1,6 +1,6 @@
 ---
 name: check-arxiv
-description: Scan arXiv for recent, relevant papers NOT yet in the local library and suggest a ranked shortlist — discovery, never auto-download. Use when the user says "check-arxiv", "check arxiv for new papers", "what's new on arxiv", "any papers I should read", "find relevant papers not in my library", or "scan arxiv for <topic>". Reads a tracked watch profile (resources/WATCH.md: categories, keywords, authors — seeded from CATALOG tags + the manuscript), queries the arXiv API for recent matches since a stored watermark, excludes everything already in resources/ or already ingested/dismissed in a local ledger, ranks the rest by genuine relevance to the manuscript, and prints top-N with a get-arxiv command to ingest. Memory is incremental: a date watermark bounds the query window and a seen/dismissed ledger (scratch/check-arxiv-state.md, gitignored) stops it re-pitching papers you already triaged. Suggest-only — it updates its own state but downloads nothing and edits no paper. Needs network access to export.arxiv.org. See resources/WATCH.md and references/QUERY.md.
+description: Scan arXiv for recent, relevant papers NOT yet in the local library and suggest a ranked shortlist — discovery, never auto-download. Use when the user says "check-arxiv", "check arxiv for new papers", "what's new on arxiv", "any papers I should read", "find relevant papers not in my library", or "scan arxiv for <topic>". Reads a tracked watch profile (resources/WATCH.md: categories, keywords, authors — seeded from CATALOG tags + the manuscript), queries the arXiv API for recent matches since a stored watermark, excludes everything already in resources/ or already ingested/dismissed in a local ledger, ranks the rest by genuine relevance to the manuscript, and prints top-N with a get-arxiv command to ingest. Memory is incremental: a date watermark bounds the query window and a seen/dismissed ledger (.nel/scratch/check-arxiv-state.md, gitignored) stops it re-pitching papers you already triaged. Suggest-only — it updates its own state but downloads nothing and edits no paper. Needs network access to export.arxiv.org. See resources/WATCH.md and references/QUERY.md.
 ---
 
 # check-arxiv — Suggest Relevant New arXiv Papers
@@ -41,7 +41,7 @@ Do **not** use it to ingest (that is `get-arxiv`) or to compare a paper to the d
    topic words from `resources/CATALOG.md` tags and a skim of the manuscript sections, write the
    skeleton (categories / keywords / authors), and ask the user to curate before the first real
    scan (or proceed with the seed on request).
-2. **Load the state.** Read `scratch/check-arxiv-state.md` (gitignored). If missing, create it
+2. **Load the state.** Read `.nel/scratch/check-arxiv-state.md` (gitignored). If missing, create it
    with a first-run watermark (default: 60 days ago — confirm with the user) and an empty ledger.
 3. **Reconcile.** For any ledger id now present as a folder in `resources/` (`arXiv-<id>v*/`),
    flip its status `suggested → ingested`. This keeps the ledger honest without manual bookkeeping.
@@ -68,7 +68,7 @@ re-pitched. Ingestion needs no manual step — step 3 reconciles it.
 | | |
 |---|---|
 | Profile (tracked) | `resources/WATCH.md` — categories · keywords · authors (seed from CATALOG tags) |
-| State (gitignored) | `scratch/check-arxiv-state.md` — watermark + seen/dismissed ledger |
+| State (gitignored) | `.nel/scratch/check-arxiv-state.md` — watermark + seen/dismissed ledger |
 | Recall | arXiv API: `cat:`/`ti:`/`abs:`/`au:`, `submittedDate` from watermark, newest first |
 | Precision | read abstracts → rank vs manuscript+profile → one-line why; top ~8 |
 | Exclude | ids in `resources/` or ledger-marked `ingested`/`dismissed` |
