@@ -1,15 +1,14 @@
 ---
 name: prose2concepts
-description: Distill concept changes made in a section's shipped prose (sections/<name>.prose.tex; legacy <name>.tex honored) back into its Markdown sidecar (sections/<name>.concepts.md; legacy <name>.md honored), keeping the design log honest. Use late in the lifecycle, when the argument was sharpened directly in the prose and the user asks to "prose2concepts" (or the former names "tex2concepts" / "tex2md"), "propagate the prose back to the sidecar", "update the sidecar from the section", "sync the .md to the .tex", or "feed the prose changes back". This is concept propagation, NOT a mechanical tex->md conversion: it captures only conceptual changes (new/reordered/dropped claims, sharpened framing), updates the sidecar's spine and decision log, closes resolved open questions, and NEVER pastes polished prose verbatim into the .md. Writes in the sidecar's markdown voice (SEMBR; see format-md). Surgical and additive — proposes targeted edits to the .md, protects its scratch/open-questions/rationale, and confirms a shown diff before writing. Runs a git-aware age check and warns if the prose looks older than the sidecar (you may want /concepts2prose instead). One section pair per run; pass --all to sweep every pair and report drift. See PROGRESSION.md.
+description: Distill concept changes made in a section's shipped prose (sections/<name>.prose.tex) back into its Markdown sidecar (sections/<name>.concepts.md; legacy <name>.md honored), keeping the design log honest. Use late in the lifecycle, when the argument was sharpened directly in the prose and the user asks to "prose2concepts" (or the former names "tex2concepts" / "tex2md"), "propagate the prose back to the sidecar", "update the sidecar from the section", "sync the .md to the .tex", or "feed the prose changes back". This is concept propagation, NOT a mechanical tex->md conversion: it captures only conceptual changes (new/reordered/dropped claims, sharpened framing), updates the sidecar's spine and decision log, closes resolved open questions, and NEVER pastes polished prose verbatim into the .md. Writes in the sidecar's markdown voice (SEMBR; see format-md). Surgical and additive — proposes targeted edits to the .md, protects its scratch/open-questions/rationale, and confirms a shown diff before writing. Runs a git-aware age check and warns if the prose looks older than the sidecar (you may want /concepts2prose instead). One section pair per run; pass --all to sweep every pair and report drift. See PROGRESSION.md.
 ---
 
 # prose2concepts — Feed Prose Concepts Back into the Sidecar
 
 > **Register naming (ADR 0015, ADR 0019).** A section pair is two *registers* of one
 > subject: `sections/<name>.prose.tex` (shipped) and `sections/<name>.concepts.md`
-> (sidecar). Each keeps a legacy bare spelling — `<name>.tex`, `<name>.md` — and you
-> resolve whichever exists, never both. "The prose" and "the sidecar" below mean
-> either spelling of that register.
+> (sidecar). The sidecar keeps a legacy bare spelling `<name>.md` — resolve
+> whichever exists, never both. Shipped prose has no legacy spelling (ADR 0020).
 
 Propagate **conceptual changes** made in a section's shipped prose
 (`sections/<name>.prose.tex`) back into its Markdown sidecar

@@ -37,9 +37,8 @@ The manuscript is a set of section **pairs** under `sections/`:
 - `sections/<name>.prose.tex` — the shipped, polished prose (the only thing the
   PDF sees), assembled by `main.tex` via `\input{sections/<name>.prose}`. (The
   name is typed — subject.register.format, ADR 0019 — so both halves of a pair
-  name a *register* rather than one naming a file extension; a bare
-  `<name>.tex` is the legacy spelling and still works. "The `.tex`" below means
-  the shipped prose, whichever spelling this project uses.)
+  name a *register* rather than one naming a file extension. "The `.tex`" below
+  means this file.)
 - `sections/<name>.concepts.md` — the *sidecar*: scratch, the conceptual
   spine, theorem sketches, promising directions, and a decision log. Never
   `\input`; invisible to the build. (The name is typed —

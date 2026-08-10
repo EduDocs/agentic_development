@@ -1,16 +1,16 @@
 ---
 name: concepts2prose
-description: Realize settled concepts from a section's Markdown sidecar (sections/<name>.concepts.md; legacy <name>.md honored) into its shipped prose (sections/<name>.prose.tex; legacy <name>.tex honored). Use when the sidecar's ideas have harmonized and the user asks to "concepts2prose" (or the former names "concepts2tex" / "md2tex"), "propagate the sidecar to the prose", "realize these concepts in the section", "write up the sidecar", or "push the .md into the .tex". This is concept propagation, NOT a mechanical md->tex conversion: it pulls only from the sidecar's settled conceptual spine, ignores its scratch/open-questions/rationale, and writes house-style LaTeX prose (one sentence per line, ~ ties; see format-tex). Surgical and additive — proposes targeted edits to the shipped prose, protects existing wording, and confirms a shown diff before writing. Runs a git-aware age check and warns if the sidecar looks older than the prose (you may want /prose2concepts instead). One section pair per run; pass --all to sweep every pair and report drift. See PROGRESSION.md.
+description: Realize settled concepts from a section's Markdown sidecar (sections/<name>.concepts.md; legacy <name>.md honored) into its shipped prose (sections/<name>.prose.tex). Use when the sidecar's ideas have harmonized and the user asks to "concepts2prose" (or the former names "concepts2tex" / "md2tex"), "propagate the sidecar to the prose", "realize these concepts in the section", "write up the sidecar", or "push the .md into the .tex". This is concept propagation, NOT a mechanical md->tex conversion: it pulls only from the sidecar's settled conceptual spine, ignores its scratch/open-questions/rationale, and writes house-style LaTeX prose (one sentence per line, ~ ties; see format-tex). Surgical and additive — proposes targeted edits to the shipped prose, protects existing wording, and confirms a shown diff before writing. Runs a git-aware age check and warns if the sidecar looks older than the prose (you may want /prose2concepts instead). One section pair per run; pass --all to sweep every pair and report drift. See PROGRESSION.md.
 ---
 
 # concepts2prose — Realize Sidecar Concepts into Shipped Prose
 
 > **Register naming (ADR 0015, ADR 0019).** A section pair is two *registers* of one
 > subject: `sections/<name>.prose.tex` (shipped) and `sections/<name>.concepts.md`
-> (sidecar). Each keeps a legacy bare spelling — `<name>.tex`, `<name>.md` — and you
-> resolve whichever exists, never both. "The prose" and "the sidecar" below mean
-> either spelling of that register. Note `main.tex` inputs the shipped half without
-> its extension: `\input{sections/<name>.prose}`.
+> (sidecar). The sidecar keeps a legacy bare spelling `<name>.md` — resolve
+> whichever exists, never both. Shipped prose has no legacy spelling (ADR 0020).
+> Note `main.tex` inputs the shipped half without its extension:
+> `\input{sections/<name>.prose}`.
 
 Propagate the **settled concepts** of a section's Markdown sidecar (`sections/<name>.concepts.md`) into
 its shipped prose (`sections/<name>.prose.tex`). This is the **early-to-mid lifecycle** move: the
