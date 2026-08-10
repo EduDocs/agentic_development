@@ -21,11 +21,6 @@ draft is doing, that is *not* the loop: use the **`critique`** skill, which read
 the manuscript and reports findings without recording an attempt or committing
 anything.
 
-One thing to be clear about, because the machinery's vocabulary can mislead:
-this is not a search over a population. There is one manuscript, it is never
-reverted to an earlier draft, and every version that clears the compile and
-metrics gates is checkpointed. Improve the paper. Do not try to move a score.
-
 **What the paper is about** — the problem, the contribution you are driving
 toward — is stated under `## Problem` in the project's `CLAUDE.md`. Read it
 first; this file tells you only *how* to work, never *what* to write.
@@ -60,6 +55,11 @@ convention, the source-of-truth flip, and the exclusive zones. The key rule:
 - In `.md`, `<!-- EVOLVE-BLOCK-START --> … <!-- EVOLVE-BLOCK-END -->` bounds the
   **shareable spine** the evaluator and the archive export outward. The rest of
   the sidecar is private scratch you may still freely edit.
+
+"EVOLVE" in those markers is inherited from the engine's search ancestry and is
+the one place that vocabulary survives; read it as "the region you may edit",
+not as an instruction to optimize. What the markers bound is a *zone*, not a
+generation.
 
 ## Mode
 
@@ -172,7 +172,8 @@ On each iteration, do exactly the following:
      cosmetic edits makes the paper worse, not better.
 
    There is deliberately **no score threshold** to stop at (ADR 0010). The score
-   is a mean of four uncalibrated 0–1 judgements that moves between runs on an
+   is a mean of uncalibrated 0–1 judgements — one per persona your `nel.toml`
+   declares — that moves between runs on an
    unchanged draft; it is not a quantity you can aim at. Judge the *feedback*.
 
    Otherwise loop back to step 2.
