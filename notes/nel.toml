@@ -37,18 +37,20 @@ gate = ["undefined-references", "undefined-citations",
 # CLIs actually installed; falls back to `claude` with `model` otherwise.
 # Editing this table or any persona file changes the evaluator_version, so a new
 # panel never silently reuses an old evaluation-cache entry.
+# The `notes` profile (engine personas/profiles.toml, ADR 0022).
+#
+# `rigor` and `visual` are DESELECTED, not deleted — their rubrics are still in
+# .nel/prompts/reviewers/ and reachable on demand as `/critique by rigor` or
+# `by visual`. That is the lens case (ADR 0021): a targeted attended read that
+# costs one call and touches neither the panel nor the archive. Re-declare
+# either here if a run should judge by it every time.
 [[evaluation.panel]]
-persona = "rigor"
-backend_pref = ["claude"]
-model = "opus"
-
-[[evaluation.panel]]
-persona = "clarity"
+persona = "currency"
 backend_pref = ["claude"]
 model = "sonnet"
 
 [[evaluation.panel]]
-persona = "currency"
+persona = "clarity"
 backend_pref = ["claude"]
 model = "sonnet"
 
@@ -58,9 +60,12 @@ backend_pref = ["claude"]
 model = "opus"
 
 [[evaluation.panel]]
-persona = "visual"
+# Whole-document and cross-round: the lens that tracks whether promising spine
+# directions actually get realized as prose. `pedagogy` is holistic too, but per
+# chapter and for student readiness — watch whether the pair earns its keep.
+persona = "editor"
 backend_pref = ["claude"]
-model = "sonnet"
+model = "opus"
 
 # Authoritative elsewhere (own consumer; not duplicated here):
 #   strategies -> prompts/strategies.txt  (per-branch biases, read by run.sh)
