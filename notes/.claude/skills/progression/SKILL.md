@@ -5,14 +5,14 @@ description: Audit the vertical conceptual coherence of the section sidecars (se
 
 # progression — Audit Conceptual Coherence Across Sidecars
 
-The `concepts2tex`/`tex2concepts` skills work **horizontally** — within one section, syncing its
+The `concepts2prose`/`prose2concepts` skills work **horizontally** — within one section, syncing its
 `.tex` ↔ `.md` pair. This skill works **vertically**: it checks that the conceptual spine
 running *across* the sidecars (`introduction.concepts.md` → `system_model.concepts.md` → `main_results.concepts.md` → …)
 holds together, including when the document branches into a tree.
 
 It operates on the `.md` layer on purpose: the sidecars hold concepts in compact, explicit
 form before they are buried in prose, so incoherence is catchable earlier and more cheaply than
-at the `.tex` level. If the `.md` spine is coherent and `concepts2tex` is faithful, the `.tex`
+at the `.tex` level. If the `.md` spine is coherent and `concepts2prose` is faithful, the `.tex`
 inherits the coherence.
 
 It is **read-only until you confirm an edit.** It produces a report, then offers surgical,
@@ -25,13 +25,13 @@ report format.
 ## When to use
 
 - After several sidecars have matured and you want to know whether they tell one coherent story.
-- Before an `concepts2tex` pass, to catch a gap or contradiction in the spine before it reaches prose.
+- Before a `concepts2prose` pass, to catch a gap or contradiction in the spine before it reaches prose.
 - When the document branches (parallel case studies, appendices) and you want each branch
   checked against the shared trunk.
 - User says "progression", "check coherence/through-line/arc across sections", "do the sidecars
   hang together".
 
-Do **not** use it to check a single `.tex`/`.md` pair (that is `concepts2tex`/`tex2concepts`), to edit prose,
+Do **not** use it to check a single `.tex`/`.md` pair (that is `concepts2prose`/`prose2concepts`), to edit prose,
 or to reformat (that is `format-md`).
 
 ## Workflow

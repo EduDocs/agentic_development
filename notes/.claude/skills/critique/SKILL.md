@@ -1,11 +1,11 @@
 ---
 name: critique
-description: Read the manuscript as it stands and report what a reviewer panel finds — triaged, synthesized, and prioritized — without committing anything or recording an attempt. Use when the user asks to "critique", "review the draft", "what would a referee say", "how is this section doing", "run the panel", "get feedback on the manuscript", or "where is this weakest". This is the HUMAN-IN-THE-LOOP verb: one read, a short prioritized list of findings, and an offer to act on one of them. It is not `./nel step` (the loop primitive, which records a candidate and commits) and not `./nel iterate`. Runs the project's declared reviewer panel via `./nel evaluate`, then does the part the engine cannot: cluster findings across personas, drop the ones that disagree or are vague, rank what remains by how much it would actually improve the paper, and route the chosen fix to the right skill. Stops early and says so when the draft does not compile or trips a metrics gate — those are mechanical and cheap to fix first. Read-only until you confirm an edit.
+description: Read the manuscript as it stands and report what a reviewer panel finds — triaged, synthesized, and prioritized — without committing anything or recording an attempt. Use when the user asks to "critique", "review the draft", "what would a referee say", "how is this section doing", "run the panel", "get feedback on the manuscript", or "where is this weakest". This is the HUMAN-IN-THE-LOOP verb: one read, a short prioritized list of findings, and an offer to act on one of them. It is not `./nel step` (the loop primitive, which records an attempt and commits) and not `./nel iterate`. Runs the project's declared reviewer panel via `./nel evaluate`, then does the part the engine cannot: cluster findings across personas, drop the ones that disagree or are vague, rank what remains by how much it would actually improve the paper, and route the chosen fix to the right skill. Stops early and says so when the draft does not compile or trips a metrics gate — those are mechanical and cheap to fix first. Read-only until you confirm an edit.
 ---
 
 # critique — What the panel sees, triaged for a human
 
-`./nel step` is the loop primitive: it evaluates, records a candidate in the archive,
+`./nel step` is the loop primitive: it evaluates, records an attempt in the archive,
 and checkpoints the manuscript in git. That is right for an unattended run and wrong
 for a human who wants to know how the draft is doing.
 
@@ -21,11 +21,11 @@ than doing it.
 ## When to use
 
 - The user asks how the draft is doing, what a referee would say, or where it is weakest.
-- After a `concepts2tex` pass or a substantive edit, before deciding what to do next.
+- After a `concepts2prose` pass or a substantive edit, before deciding what to do next.
 - To decide *what to work on*, when several sections all feel unfinished.
 
 Do **not** use it to record an attempt or advance the loop (that is `./nel step`), to
-sync a `.tex`/`.md` pair (`concepts2tex` / `tex2concepts`), or to check cross-section coherence
+sync a `.tex`/`.md` pair (`concepts2prose` / `prose2concepts`), or to check cross-section coherence
 (`progression`).
 
 ## Workflow
@@ -68,15 +68,15 @@ sync a `.tex`/`.md` pair (`concepts2tex` / `tex2concepts`), or to check cross-se
    have nothing to do with the paper.
 
 6. **Offer one action.** Ask which finding to act on, then route it: prose lives in the
-   `.tex` (edit directly, or `concepts2tex` if the sidecar leads), concepts and framing live
-   in the `.md` (`tex2concepts` if the prose already moved), cross-section problems go to
+   `.tex` (edit directly, or `concepts2prose` if the sidecar leads), concepts and framing live
+   in the `.md` (`prose2concepts` if the prose already moved), cross-section problems go to
    `progression`. One change, show the diff, confirm. Never batch-apply the findings.
 
 ## What this skill must not do
 
 - **Never commit.** Checkpointing is `./nel step`'s job, and the user is in the loop
   precisely so the decision is theirs.
-- **Never record a candidate.** `./nel evaluate` writes an *evaluation* row (the
+- **Never record an attempt.** `./nel evaluate` writes an *evaluation* row (the
   content-addressed cache, which is why re-runs are free). It does not create an
   attempt, and neither should you.
 - **Never present the raw panel output.** If you find yourself pasting four persona
@@ -101,11 +101,11 @@ findings you are ignoring and why, rather than pretending the others did not run
 |---|---|
 | Mode | human-in-the-loop; read-only until you confirm an edit |
 | Runs | `./nel evaluate` (the project's declared panel) |
-| Writes | nothing — no commit, no candidate, no branch log |
+| Writes | nothing — no commit, no attempt, no branch log |
 | Stops early | `compile-error`, `metrics-gate`, `review-error` — report and fix those first |
 | Reports | 3–5 ranked findings + one line on what is working |
 | Score | a trailing aside at most; never the headline, never the target |
-| Follow-up | one finding, routed to `concepts2tex` / `tex2concepts` / `progression` or a direct edit |
+| Follow-up | one finding, routed to `concepts2prose` / `prose2concepts` / `progression` or a direct edit |
 | Not this skill | `./nel step` (records + commits), `progression` (cross-section), `format-tex` (style) |
 
 Synthesis and ranking rules: [references/SYNTHESIS.md](references/SYNTHESIS.md).

@@ -1,14 +1,20 @@
-# nano-evolve (LaTeX paper authoring)
+# Course notes — agent instructions
 
-You are one branch (or in solo mode, the only worker) of an evolutionary
-search that **authors a mathematical paper**. The evolving artifact is the
-sectionized LaTeX manuscript at the repo root. This file is your only spec.
-Follow it carefully and persistently.
+The evolving artifact is the sectionized LaTeX manuscript at **this project's
+root** (`notes/`, the directory holding `nel.toml`) — not the course repo one
+level up. There is one manuscript; it is never reverted, and every draft that
+clears the gates is checkpointed. Improve the notes; do not try to move a
+score.
+
+The authoring protocol — the section-pair convention, the unattended loop, how
+to read evaluation output, what not to touch — is imported at the bottom of
+this file from `.nel/NEL.md`. That file is engine-owned and re-vendored on
+`scaffold.py update`, which is how protocol fixes reach this project. Read
+both: this file says *what* the notes are, the protocol says *how* to work.
 
 ## Problem
 
-> **EDIT THIS SECTION FOR YOUR PAPER.** Leave the rest of the file alone
-> unless you have a specific reason to change it.
+> **EDIT THIS SECTION FOR THIS PROJECT.**
 
 This is not a research paper — it is the **course notes** (a `\documentclass{book}`)
 for a graduate course, *Agentic Development in Research → Agentic Evolutionary

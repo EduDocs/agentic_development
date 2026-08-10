@@ -102,7 +102,7 @@ Pin every finding to a sidecar file (and the related upstream/downstream section
   the downstream use?) — surface the options, don't guess.
 - Respect each sidecar's exclusive zones: never delete scratch, open questions, or rationale to
   "clean up." Coherence fixes add or adjust spine content; they don't prune the thinking layer.
-- Stay on the `.md` layer. If a fix implies prose work, note it as a follow-up `concepts2tex`, don't
+- Stay on the `.md` layer. If a fix implies prose work, note it as a follow-up `concepts2prose`, don't
   touch the `.tex` here.
 
 ## Convergence

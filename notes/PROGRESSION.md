@@ -2,7 +2,7 @@
 
 > How each section is authored across its lifecycle, using a paired `.tex` / `.md`
 > "sidecar," and how concepts move between the two. The folder layout lives in `CLAUDE.md`.
-> This file is read by the `md2tex`, `tex2md`, and `progression` skills.
+> This file is read by the `concepts2prose`, `prose2concepts`, and `progression` skills.
 
 This project separates **thinking** from **authoring** by pairing every LaTeX section file
 with a same-named Markdown *sidecar*, and treats a section as something that **progresses**
@@ -12,11 +12,16 @@ through stages rather than something written once.
 
 | File         | Register / layer | Role                                                              |
 | ------------ | ---------------- | ----------------------------------------------------------------- |
-| `<name>.tex` | Authoring        | The polished prose that ships in the compiled PDF.                |
-| `<name>.concepts.md` | Thinking  | The design log: scratch, ideas, the conceptual spine, decisions. (Typed name — subject.register.format, engine ADR 0015; prose below says "the `.md`" as shorthand.) |
+| `<name>.prose.tex` | Authoring  | The polished prose that ships in the compiled PDF.                |
+| `<name>.concepts.md` | Thinking  | The design log: scratch, ideas, the conceptual spine, decisions. |
 
-The sidecar is **never** `\input` by `main.tex`, so it is invisible to the LaTeX build and can
-never leak into the PDF. Both files are tracked in git.
+Both names are typed — *subject.register.format* (engine ADR 0015 for the sidecar, ADR 0019 for
+the shipped half) — so a pair is two *registers* of one subject and neither is identified by its
+file extension. Prose below says "the `.tex`" and "the `.md`" as shorthand for the two registers.
+
+`main.tex` names the shipped half **without its extension**, so this book's chapter list reads
+`\include{sections/<name>.prose}`. The sidecar is **never** `\include`d, so it is invisible to
+the LaTeX build and can never leak into the PDF. Both files are tracked in git.
 
 ## EVOLVE-BLOCK markers mean different things per register
 
@@ -40,14 +45,14 @@ Which file *leads* changes as the work matures.
 ```
    early                                                          late
    |  think in the .md  ──►  harmonize concepts  ──►  author into the .tex  ──► push in the .tex
-   |  (scratch, ideas)       (the conceptual spine)    (/md2tex realizes)        (/tex2md feeds back)
+   |  (scratch, ideas)       (the conceptual spine)    (/concepts2prose realizes)        (/prose2concepts feeds back)
    |  .md LEADS ───────────────────────────────────────────────► .tex LEADS
 ```
 
 1. **Think in the `.md` first.** Rough out purpose, key points, open questions before prose.
 2. **Harmonize the concepts.** The sidecar settles into a coherent spine (inside the block).
-3. **Realize into the `.tex` (`/md2tex`).** Translate *settled* spine into polished prose.
-4. **Push happens in the `.tex` (`/tex2md`).** Sharpen in prose; feed concept changes back so
+3. **Realize into the `.tex` (`/concepts2prose`).** Translate *settled* spine into polished prose.
+4. **Push happens in the `.tex` (`/prose2concepts`).** Sharpen in prose; feed concept changes back so
    the spine stays honest.
 
 Either move is a legitimate evolutionary step: sometimes the best iteration crystallizes an idea
@@ -63,8 +68,8 @@ into `.tex` prose; sometimes it evolves the `.md` spine (a theorem sketch, a pro
 - **Shared spine (the only thing that syncs, and the only `.md` content shared outward):** the
   concepts, claims, framing, theorem statements/strategies, and order of argument.
 
-`/md2tex` **realizes** (settled spine → polished prose, ignoring the `.md`'s exclusive zones).
-`/tex2md` **distills** (prose-led concept change → updated spine + decision log; never pastes
+`/concepts2prose` **realizes** (settled spine → polished prose, ignoring the `.md`'s exclusive zones).
+`/prose2concepts` **distills** (prose-led concept change → updated spine + decision log; never pastes
 prose verbatim). Both are surgical, additive, and ask before writing.
 
 ## Sidecar skeleton
@@ -98,7 +103,7 @@ external:
 
 # <Section> — scratch
 
-> Scratch/ideas only. The shipped prose lives in `<name>.tex`. Not part of the LaTeX build.
+> Scratch/ideas only. The shipped prose lives in `<name>.prose.tex`. Not part of the LaTeX build.
 
 ## Purpose
 What this section must accomplish for the reader.
@@ -121,15 +126,16 @@ The website also uses this paragraph as the chapter's summary in the concept map
 
 ## Tooling
 
-- **`/md2tex`** — realize settled sidecar concepts into shipped `.tex` prose (one pair).
-- **`/tex2md`** — feed prose-led concept changes back into the sidecar (one pair).
+- **`/concepts2prose`** — realize settled sidecar concepts into shipped `.tex` prose (one pair).
+- **`/prose2concepts`** — feed prose-led concept changes back into the sidecar (one pair).
 - **`/progression`** — audit conceptual coherence of the sidecars *across* sections.
 - **`/format-tex`, `/format-md`** — keep each register's source tidy and diff-friendly.
 
 ## Progression map
 
-Default reading order is the `\input{sections/<name>}` sequence in `main.tex`. Declared as a
-`parent -> child` edge list for `/progression`; node names match the section file stems.
+Default reading order is the `\include{sections/<name>.prose}` sequence in `main.tex`. Declared as a
+`parent -> child` edge list for `/progression`; node names are the section **stems** — the
+subject alone, with no register (`agent_loop`, not `agent_loop.prose`).
 
 ```
 # progression-map
@@ -177,7 +183,7 @@ not the reverse.
 Edit this list as chapters harden (or soften). An **empty** block disables the protection and
 restores uniform treatment. Anchoring binds the `.md` spine `/progression` audits; it does not by
 itself freeze the `.tex` prose (that is always safe from `/progression`, which never touches the
-`.tex`), but it does stop a loose sidecar from seeding a later `/md2tex` that would.
+`.tex`), but it does stop a loose sidecar from seeding a later `/concepts2prose` that would.
 
 ```
 # stable-anchors

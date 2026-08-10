@@ -9,7 +9,9 @@
 > than editing here, where the next update will discard it.
 
 You **author a mathematical paper** under an iterated review loop. The evolving
-artifact is the sectionized LaTeX manuscript at the repo root, and the cycle is:
+artifact is the sectionized LaTeX manuscript at the **project** root — the
+directory holding `nel.toml`, which is not necessarily a repo root: a project
+may be nested inside a larger repository. The cycle is:
 propose a change, evaluate it, read the critique, propose the next one.
 
 This file is your spec **when you are running that loop unattended** — launched
@@ -32,8 +34,12 @@ first; this file tells you only *how* to work, never *what* to write.
 
 The manuscript is a set of section **pairs** under `sections/`:
 
-- `sections/<name>.tex` — the shipped, polished prose (the only thing the PDF
-  sees), assembled by `main.tex` via `\input`.
+- `sections/<name>.prose.tex` — the shipped, polished prose (the only thing the
+  PDF sees), assembled by `main.tex` via `\input{sections/<name>.prose}`. (The
+  name is typed — subject.register.format, ADR 0019 — so both halves of a pair
+  name a *register* rather than one naming a file extension; a bare
+  `<name>.tex` is the legacy spelling and still works. "The `.tex`" below means
+  the shipped prose, whichever spelling this project uses.)
 - `sections/<name>.concepts.md` — the *sidecar*: scratch, the conceptual
   spine, theorem sketches, promising directions, and a decision log. Never
   `\input`; invisible to the build. (The name is typed —
@@ -61,7 +67,14 @@ convention, the source-of-truth flip, and the exclusive zones. The key rule:
 The axis that matters is **whether a human is watching**:
 
 - **Unattended** — you were launched to run the loop below until a stop
-  condition, and nobody is reading each step as it happens.
+  condition, and nobody is reading each step as it happens. The launch is
+  `claude "Follow .nel/NEL.md."` from a plain terminal — this file, named by
+  path (ADR 0017). The path matters: `CLAUDE.md` is auto-loaded from the
+  session's directory *and every ancestor*, so in a project nested inside a
+  larger repo that name matches two or three files. This one is unambiguous,
+  and it is the file the contract requires. You still have the project's
+  `CLAUDE.md` — auto-loading delivers it whether or not the prompt says so,
+  which is why the prompt no longer needs to.
 - **Attended** — a human is driving and asking for one thing at a time. Do not
   run the loop; do what they asked and stop. To report on the draft, use the
   `critique` skill — it evaluates without recording an attempt or committing, so
@@ -82,9 +95,6 @@ On each iteration, do exactly the following:
    feedback is asking for, and name it in your `--approach`.
 
 2. **Read state.**
-   - If `${NEL_LOG_DIR}/state-${BRANCH_ID}.json` exists, read it
-     (`{"attempts": <int>}`). If `attempts >= MAX_ATTEMPTS`, stop now — a resumed
-     run that has exhausted its budget.
    - **Read your latest reviewer feedback** at
      `./.nel/log/feedback/branch-solo/latest.md`. This is the heart of the loop —
      the actionable critique you are responding to. Also skim the tail of your
@@ -99,8 +109,8 @@ On each iteration, do exactly the following:
 
 3. **Propose — choose your move.** Either is a legitimate step:
    - **Evolve the `.tex` prose** (crystallize/sharpen) — edit between the
-     `% EVOLVE-BLOCK` markers. Use `/concepts2tex` to realize a settled sidecar spine
-     into prose; use `/tex2concepts` to feed prose-led concept changes back.
+     `% EVOLVE-BLOCK` markers. Use `/concepts2prose` to realize a settled sidecar spine
+     into prose; use `/prose2concepts` to feed prose-led concept changes back.
    - **Evolve the `.md` spine** (a theorem sketch, a promising direction,
      restructured argument) — edit within the `<!-- EVOLVE-BLOCK -->` region.
      Run `/progression` to keep the cross-section spine coherent.
@@ -135,8 +145,15 @@ On each iteration, do exactly the following:
      pass `--context paper:<arxiv-id>` (repeatable).
 
 5. **Stop** if any of:
-   - `attempt >= max_attempts` (defined in `nel.toml`, `[project]`) — the run's
-     budget, so an unattended launch terminates
+   - **you have run `./nel step` `max_attempts` times in THIS run** — the
+     budget that makes an unattended launch terminate. Count your own calls in
+     this session; do not read a count from disk. The default is
+     `[project].max_attempts` in `nel.toml`, and **the prompt that launched you
+     wins** if it named a number ("Follow .nel/NEL.md. Max 40 steps.").
+     The bound is per launch: it does **not** accumulate across runs, and
+     relaunching is an unconstrained human decision (ADR 0018). The status
+     line's `attempt` field is a lifetime counter for the log — it is not this
+     budget, so do not compare it to `max_attempts`.
    - a `STOP` file exists at `.nel/STOP` (or, pre-v3, the repo root)
    - **proof mode only** — the predicate closes: `./nel step` reports
      `"closed": true` *and* the last panel raised nothing you have not already

@@ -6,7 +6,7 @@ durable changes to the toolkit. Read the inbox format in
 
 Capture is cheap and dumb on purpose; **all the judgment is here.** Review is deliberate,
 ask-first, and surgical — it edits skills, docs, config, and memory, so it follows the same
-posture as `concepts2tex`/`tex2concepts`/`progression`: show the change, confirm, then write.
+posture as `concepts2prose`/`prose2concepts`/`progression`: show the change, confirm, then write.
 
 ## The entry schema (what a blob looks like)
 
@@ -96,6 +96,6 @@ blob — graduate it.
 
 - Review changes the toolkit (skills/docs/config/memory); it does **not** touch paper content
   (`sections/*`, `figures/*`) unless a blob is explicitly about fixing a specific section, in
-  which case prefer the dedicated skill (`concepts2tex`/`tex2concepts`/`format-tex`).
+  which case prefer the dedicated skill (`concepts2prose`/`prose2concepts`/`format-tex`).
 - One sink per blob; if a lesson implies two changes (e.g. a skill edit *and* a hook), split it
   into two archived resolutions so each is traceable.

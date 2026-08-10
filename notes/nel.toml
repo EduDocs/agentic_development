@@ -1,4 +1,4 @@
-# project.toml — the per-paper manifest. The engine reads it; you edit it.
+# nel.toml — the per-project manifest. The engine reads it; you edit it.
 #
 # Centralizes the knobs the Python entrypoints (evaluate.py) consume, so config
 # stops being scattered across CLAUDE.md prose and Python constants. Things that
@@ -8,11 +8,14 @@
 [project]
 # Globally-unique, location-independent id as "owner/slug" (namespaced like a
 # GitHub repo). `owner` is an ownership identity (a Google account/domain or org;
-# scaffold.py seeds "local/<dir>"); `slug` is your paper's short name. This scopes
-# the paper's candidates in a shared archive — independent of where the DB lives.
+# scaffold.py seeds "local/<dir>"); `slug` is this project's short name. It scopes
+# the project's attempts in a shared archive — independent of where the DB lives.
 id = "local/agentic-development-notes"
 title = "Agentic Development in Research — Course Notes"
-target_score = 0.9      # stop early once the mean reviewer rubric reaches this
+# The budget for ONE unattended run: a bound so the run terminates, not a target.
+# (There is deliberately no `target_score` — the reviewer score is a mean of
+# uncalibrated 0–1 judgements that moves between runs on an unchanged draft, so
+# thresholding it stopped runs for reasons unrelated to the notes. ADR 0010.)
 max_attempts = 10       # per-branch attempt budget
 
 [evaluation]
@@ -21,7 +24,7 @@ compile_timeout = 180   # seconds per pdflatex pass
 
 # The quantitative EVALUATOR stage (metrics.py; ADR 0005): deterministic
 # checks over the manuscript + compile log, always reported in feedback. A
-# metric listed in `gate` REJECTS the candidate in milliseconds, before the
+# metric listed in `gate` REJECTS the draft in milliseconds, before the
 # reviewer panel spends any LLM call. Gateable: undefined-references,
 # undefined-citations, multiply-defined-labels, todo-markers. Editing this
 # list changes the evaluator_version (no stale cache reuse).

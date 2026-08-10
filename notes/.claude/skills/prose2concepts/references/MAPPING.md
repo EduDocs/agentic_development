@@ -1,12 +1,12 @@
-# tex2concepts — Concept Mapping (shipped prose → sidecar)
+# prose2concepts — Concept Mapping (shipped prose → sidecar)
 
 This is the distill direction of the [PROGRESSION.md](../../../../PROGRESSION.md) convention:
 capture the **conceptual changes** made directly in a section's LaTeX prose and record them in
 the Markdown sidecar's design log. Read that document first for the registers, exclusive zones,
 and the source-of-truth flip.
 
-`tex2concepts` **compresses**: a paragraph of polished prose becomes a compact concept entry in the
-`.md`. It is the asymmetric counterpart of `concepts2tex` (which expands). Round-tripping is not
+`prose2concepts` **compresses**: a paragraph of polished prose becomes a compact concept entry in the
+`.md`. It is the asymmetric counterpart of `concepts2prose` (which expands). Round-tripping is not
 lossless and is not meant to be — each file keeps its own register and exclusive content.
 
 ## What maps (conceptual changes only)
@@ -46,7 +46,7 @@ The distilled entry must match the sidecar register (the `format-md` SEMBR style
 
 ## Additive — protect the thinking layer
 
-- `tex2concepts` **appends and updates**; it does not prune. Leave scratch, rationale,
+- `prose2concepts` **appends and updates**; it does not prune. Leave scratch, rationale,
   rejected-alternative notes, and source detail intact even if the prose has moved past them —
   that history is the sidecar's reason to exist.
 - Never overwrite an open question with an unrelated answer; only close the one the prose
@@ -57,7 +57,7 @@ The distilled entry must match the sidecar register (the `format-md` SEMBR style
 
 Before writing, run the git-aware age check (working-tree dirty → last-commit time → mtime). If
 the `.tex` you are propagating *from* is **older** than the `.md`, the sidecar has likely moved
-ahead of the prose — say so and suggest `/concepts2tex`. Proceed only on confirmation.
+ahead of the prose — say so and suggest `/concepts2prose`. Proceed only on confirmation.
 
 ## Worked example
 
@@ -87,6 +87,6 @@ The concept (digest reclassified) and the decision (why) are recorded; the polis
 
 ## Idempotency
 
-Re-running `tex2concepts` after the sidecar already reflects the prose's concepts finds no delta and
+Re-running `prose2concepts` after the sidecar already reflects the prose's concepts finds no delta and
 proposes nothing. Pure wording changes never trigger an edit, so a `format-tex` pass on the
 `.tex` does not make the sidecar look stale in content terms.

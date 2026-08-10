@@ -59,24 +59,27 @@
 \setcounter{tocdepth}{1} % chapters and sections only; suppress subsections
 \tableofcontents
 
-\include{sections/preface}
+% Each \include names the SHIPPED register of a section pair — the extension is
+% omitted, so sections/<name>.prose resolves to sections/<name>.prose.tex. Its
+% sidecar is sections/<name>.concepts.md, never included (ADR 0015, ADR 0019).
+\include{sections/preface.prose}
 
 \mainmatter
 
-\include{sections/how_we_got_here}
-\include{sections/agentic_paradigm}
-\include{sections/agentic_rig}
-\include{sections/context_engineering}
-\include{sections/agentic_coding}
-\include{sections/agent_loop}
-\include{sections/evaluation}
-\include{sections/retrieval}
-\include{sections/orchestration}
-\include{sections/evolutionary_frameworks}
+\include{sections/how_we_got_here.prose}
+\include{sections/agentic_paradigm.prose}
+\include{sections/agentic_rig.prose}
+\include{sections/context_engineering.prose}
+\include{sections/agentic_coding.prose}
+\include{sections/agent_loop.prose}
+\include{sections/evaluation.prose}
+\include{sections/retrieval.prose}
+\include{sections/orchestration.prose}
+\include{sections/evolutionary_frameworks.prose}
 
 \appendix
-\include{sections/rig_reference}
-\include{sections/cowork_reference}
+\include{sections/rig_reference.prose}
+\include{sections/cowork_reference.prose}
 
 \printindex
 
