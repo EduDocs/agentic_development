@@ -61,7 +61,12 @@ esac
 
 case "$cmd" in
     step)       exec python3 "$ENGINE/step.py" "$@" --project "$PROJECT" ;;
-    evaluate)   exec python3 "$ENGINE/evaluate.py" --project "$PROJECT" ;;
+    # "$@" is forwarded so the attended lenses reach evaluate.py:
+    #   --persona <name>   one reviewer instead of the declared panel
+    #   --gates-only       compile + metrics + verifier, no reviewer at all
+    # Both are ephemeral (nothing cached, nothing recorded); the bare verb is
+    # unchanged and still runs the declared panel through the cache (ADR 0021).
+    evaluate)   exec python3 "$ENGINE/evaluate.py" --project "$PROJECT" "$@" ;;
     verify)
         # Proof mode's fast inner loop (ADR 0013): run ONLY the project's
         # declared [evaluation.verifier] command and print its verdict as one
@@ -157,6 +162,6 @@ case "$cmd" in
         "${pdflatex[@]}" >/dev/null 2>&1
         echo "built $PROJECT/$BUILD_DIR/main.pdf" ;;
     *)
-        echo "usage: ./nel {step <rationale> --approach <name> [--register tex|md|both] | evaluate | verify | compose | archive <top|show|history|status|pending|...> | db-archive [--by <id>] | build | resources [--path <name>] | doctor [--compile] [--fix] [--strict]}" >&2
+        echo "usage: ./nel {step <rationale> --approach <name> [--register tex|md|both] | evaluate [--persona <name> | --gates-only] | verify | compose | archive <top|show|history|status|pending|...> | db-archive [--by <id>] | build | resources [--path <name>] | doctor [--compile] [--fix] [--strict]}" >&2
         exit 2 ;;
 esac
