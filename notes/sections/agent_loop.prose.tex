@@ -184,7 +184,7 @@ messages = [{"role": "user", "content": task_description}]
 
 for step in range(MAX_STEPS):
     reply = client.messages.create(
-        model=MODEL, tools=TOOL_DEFS, messages=messages
+        model=MODEL, max_tokens=4096, tools=TOOL_DEFS, messages=messages
     )
     messages.append({"role": "assistant", "content": reply.content})
 

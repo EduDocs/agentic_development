@@ -26,7 +26,7 @@ figures, a `justfile`, `CLAUDE.md` build notes, and a `SYNOPSIS.md`).
 > `CATALOG.md` is what the library **has**; [`WATCH.md`](WATCH.md) is what it **wants** — the
 > `/check-arxiv` profile that suggests relevant new papers not yet ingested.
 
-## Papers (14)
+## Papers (15)
 
 | Folder | arXiv | Title | Year | Tags | Role in the manuscript |
 | ------ | ----- | ----- | ---- | ---- | ---------------------- |
@@ -44,6 +44,7 @@ figures, a `justfile`, `CLAUDE.md` build notes, and a `SYNOPSIS.md`).
 | `arXiv-2203.02155v1/` | 2203.02155v1 | Training language models to follow instructions with human feedback | 2022 | reinforcement-learning, rlhf, fine-tuning, language-models, evaluation, prompting | InstructGPT / RLHF; primary source for aligning LLMs with human intent via supervised fine-tuning + reward modeling + PPO, foundational to agentic_paradigm (alignment vs. capability), evaluation (human-preference eval design), and evolutionary_frameworks (RL as generate-evaluate-select loop). |
 | `arXiv-2210.03629v3/` | 2210.03629v3 | ReAct: Synergizing Reasoning and Acting in Language Models | 2022 | agents, reasoning, chain-of-thought, tool-use, in-context-learning, prompting, question-answering, reinforcement-learning, language-models | ReAct paradigm — interleaved reasoning traces and tool actions; primary source for the agent loop (Ch6) and context engineering via trajectory prompts (Ch4). |
 | `arXiv-2307.03172v3/` | 2307.03172v3 | Lost in the Middle: How Language Models Use Long Contexts | 2023 | language-models, in-context-learning, retrieval-augmented-generation, retrieval, evaluation, question-answering, prompting | Positional sensitivity in long contexts (U-shaped performance curve); primary source for context-window layout constraints in context_engineering (Ch4) and RAG reader saturation in retrieval (Ch8). |
+| `arXiv-2510.04618v3/` | 2510.04618v3 | Agentic Context Engineering: Evolving Contexts for Self-Improving Language Models | 2025 | context-engineering, agents, prompting, in-context-learning, memory, self-improvement, evaluation | ACE; names and measures *context collapse*, argues contexts should be evolving playbooks not summaries, and shows delta-update memory beats prompt optimizers on agent + finance tasks. Directly bears on context_engineering (Ch4) — note the terminology collision with that chapter's own "Agentic Context Engineering" subsection — plus caching economics, context evolution as a generate-evaluate-select loop (Ch10), and feedback quality as the precondition for self-improvement (Ch7). |
 
 ## Maintenance
 - `get-arxiv` adds a row here on ingest; keep the table curated and sorted as it grows.

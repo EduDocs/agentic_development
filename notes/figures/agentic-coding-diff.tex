@@ -12,7 +12,7 @@
 % left column: the diff hunk, top to bottom
 \node[diffline]                     (l1) at (0, 0.0)  {-{}-{}- a/loader.py};
 \node[diffline]                     (l2) at (0,-0.5)  {+++ b/loader.py};
-\node[diffline]                     (l3) at (0,-1.0)  {@@ -12,4 +12,5 @@ def load(path):};
+\node[diffline]                     (l3) at (0,-1.0)  {@@ -12,2 +12,3 @@ def load(path):};
 \node[diffline, text=black!55]      (l4) at (0,-1.5)  {\ \ \ \ \ if path.endswith('.npz'):};
 \node[diffline, text=red!65!black]  (l5) at (0,-2.0)  {-\ \ \ \ return np.load(path)};
 \node[diffline, text=green!50!black](l6) at (0,-2.5)  {+\ \ \ \ \ \ \ \ data = np.load(path)};

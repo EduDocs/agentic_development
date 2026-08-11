@@ -14,16 +14,32 @@ directory holding `nel.toml`, which is not necessarily a repo root: a project
 may be nested inside a larger repository. The cycle is:
 propose a change, evaluate it, read the critique, propose the next one.
 
-This file is your spec **when you are running that loop unattended** — launched
-by a human who started you and walked away. Follow it carefully
-and persistently in that mode. When a human is sitting with you and asks how the
-draft is doing, that is *not* the loop: use the **`critique`** skill, which reads
-the manuscript and reports findings without recording an attempt or committing
-anything.
-
 **What the paper is about** — the problem, the contribution you are driving
 toward — is stated under `## Problem` in the project's `CLAUDE.md`. Read it
 first; this file tells you only *how* to work, never *what* to write.
+
+## Which loop you are running
+
+This file is the part of the protocol that does not depend on what kind of paper
+this is. The **loop itself** does, and it lives in a second file:
+
+- **`.nel/loop.proof.md`** — if `nel.toml` declares an `[evaluation.verifier]`
+  table. The paper carries a checkable claim and ships a deterministic check for
+  it, so the run is driving toward a *predicate*, not toward better prose.
+- **`.nel/loop.authoring.md`** — otherwise. There is no honest scalar, the
+  reviewer panel is the only judge, and the run is driving toward prose that
+  stops attracting criticism.
+
+Read the one that applies, in full, before your first move. The declared
+verifier **is** the mode (ADR 0013) — there is no `kind` key to set and nothing
+to configure. `./nel step` reports which mode it ran in as `"mode"` in its status
+line, and `./nel doctor` names it in preflight; if either disagrees with the file
+you read, stop and say so rather than guessing.
+
+The two loops differ in more than emphasis. Their stop conditions are different,
+their tempo is different, and a rule that is right in one is actively wrong in
+the other — the authoring loop treats repetition as exhaustion, which for a hard
+proof is what the run immediately before a breakthrough looks like (ADR 0025).
 
 ## Artifact: the manuscript and its sidecars
 
@@ -61,23 +77,20 @@ the one place that vocabulary survives; read it as "the region you may edit",
 not as an instruction to optimize. What the markers bound is a *zone*, not a
 generation.
 
-## Mode
+## Mode: is a human watching?
 
-The axis that matters is **whether a human is watching**:
-
-- **Unattended** — you were launched to run the loop below until a stop
-  condition, and nobody is reading each step as it happens. The launch is
+- **Unattended** — you were launched to run the loop until a stop condition, and
+  nobody is reading each step as it happens. The launch is
   `claude "Follow .nel/NEL.md."` from a plain terminal — this file, named by
   path (ADR 0017). The path matters: `CLAUDE.md` is auto-loaded from the
   session's directory *and every ancestor*, so in a project nested inside a
   larger repo that name matches two or three files. This one is unambiguous,
   and it is the file the contract requires. You still have the project's
-  `CLAUDE.md` — auto-loading delivers it whether or not the prompt says so,
-  which is why the prompt no longer needs to.
+  `CLAUDE.md` — auto-loading delivers it whether or not the prompt says so.
 - **Attended** — a human is driving and asking for one thing at a time. Do not
   run the loop; do what they asked and stop. To report on the draft, use the
-  `critique` skill — it evaluates without recording an attempt or committing, so
-  the decision about what to change, and whether to keep it, stays theirs.
+  **`critique`** skill — it evaluates without recording an attempt or committing,
+  so the decision about what to change, and whether to keep it, stays theirs.
 
 You are a single worker. `BRANCH_ID` is normally unset (or `"solo"`), and
 `NEL_LOG_DIR` defaults to `.nel/log`. Both exist so that several workers *could*
@@ -85,186 +98,51 @@ share one archive and one log mirror, but the engine ships no multi-worker
 launcher today — so there are no sibling branches to read and no cross-branch
 coordination to do.
 
-## Loop (unattended)
+## Asking a question: `./nel consult`
 
-On each iteration, do exactly the following:
+The reviewer panel judges a finished draft. When you are stuck *mid-move* — a
+sub-problem will not yield, an approach might be a dead end, you want a second
+reading of a step — do not spend a `./nel step` to find out. Run:
 
-1. **Pick your bias.** `.nel/prompts/strategies.txt` is a catalog of editorial
-   angles (rigor-first, clarity-first, …). Choose one that fits what the
-   feedback is asking for, and name it in your `--approach`.
+```
+./nel consult "<a specific sub-question>"
+```
 
-2. **Read state.**
-   - **Read your latest reviewer feedback** at
-     `./.nel/log/feedback/branch-solo/latest.md`. This is the heart of the loop —
-     the actionable critique you are responding to. Also skim the tail of your
-     branch log `${NEL_LOG_DIR}/branch-${BRANCH_ID}.md`.
-   - Skim `${NEL_LOG_DIR}/by-approach/*.md` for angles already tried, so you do
-     not re-run one that did not move the paper. `./nel archive top` and
-     `./nel archive show <attempt_id>` read the same history from the archive.
-   - **Ground your ideation.** Consult `resources/CATALOG.md` and, for relevant
-     papers, their `SYNOPSIS.md`, to pull in techniques, framings, and
-     citations. Use `get-arxiv <id>` to ingest a new paper if you need one.
-   - Read the current section pair(s) you intend to touch.
+It sends your question, the manuscript, the spine, and (in proof mode) the
+current verifier verdict to every reviewer backend installed, and prints their
+answers verbatim. They are briefed as **collaborators, not referees**: expect
+approaches, decompositions and adjacent results rather than scores.
 
-3. **Propose — choose your move.** Either is a legitimate step:
-   - **Evolve the `.tex` prose** (crystallize/sharpen) — edit between the
-     `% EVOLVE-BLOCK` markers. Use `/concepts2prose` to realize a settled sidecar spine
-     into prose; use `/prose2concepts` to feed prose-led concept changes back.
-   - **Evolve the `.md` spine** (a theorem sketch, a promising direction,
-     restructured argument) — edit within the `<!-- EVOLVE-BLOCK -->` region.
-     Run `/progression` to keep the cross-section spine coherent.
+Nothing is recorded — no attempt, no archive row, no checkpoint. The transcript
+lands in `.nel/log/consult/` so you can re-read it next iteration. Ask *before* a
+hard move, not after a failed one. A question is cheap; a wasted attempt is not.
 
-   Keep the manuscript compiling at every step. Edit only within EVOLVE-BLOCK
-   markers in the section files; do not touch `templates/` or the `main.tex`
-   plumbing (adding one `\input` line + a `progression-map` edge for a *new*
-   section is the only allowed structural edit). To *see* the rendered result —
-   figure layout, code-listing framing, page breaks — run `./nel build`, which
-   writes a persistent `.nel/build/main.pdf` you can open; `./nel doctor --compile`
-   only proves it builds and leaves no inspectable PDF.
-
-4. **Evaluate and log.** Run:
-
-   ```
-   ./nel step "<2-3 line rationale>" --approach <kebab-case-name> [--register tex|md|both]
-   ```
-
-   `./nel step` runs the evaluator (which composes the manuscript + spine, compiles
-   it, and gathers the reviewer panel), appends a structured entry to your
-   branch log, files a one-liner under `by-approach/`, writes the full feedback
-   under `feedback/branch-${BRANCH_ID}/`, **records the attempt in the shared
-   archive** (attempt + lineage + provenance; a re-run of an unchanged
-   manuscript is a cache hit that skips the panel), **commits whenever the draft
-   clears the compile and metrics gates** (not only on a higher score — the
-   manuscript is never reverted, so every valid draft is worth a checkpoint), and
-   prints a JSON status line. Read that line — you'll need `attempt`, `score`,
-   `cached`, and `feedback_path`. Then **open the feedback file** and
-   let it drive your next proposal.
-   - To credit an earlier draft you built on, pass `--parent <attempt_id>`
-     (its id from `./nel archive top`); to record what grounded the proposal,
-     pass `--context paper:<arxiv-id>` (repeatable).
-
-5. **Stop** if any of:
-   - **you have run `./nel step` `max_attempts` times in THIS run** — the
-     budget that makes an unattended launch terminate. Count your own calls in
-     this session; do not read a count from disk. The default is
-     `[project].max_attempts` in `nel.toml`, and **the prompt that launched you
-     wins** if it named a number ("Follow .nel/NEL.md. Max 40 steps.").
-     The bound is per launch: it does **not** accumulate across runs, and
-     relaunching is an unconstrained human decision (ADR 0018). The status
-     line's `attempt` field is a lifetime counter for the log — it is not this
-     budget, so do not compare it to `max_attempts`.
-   - a `STOP` file exists at `.nel/STOP` (or, pre-v3, the repo root)
-   - **proof mode only** — the predicate closes: `./nel step` reports
-     `"closed": true` *and* the last panel raised nothing you have not already
-     addressed or consciously declined. A closed claim with rough prose is not
-     done — polish until the panel goes quiet — but a closed claim plus a quiet
-     panel is, regardless of how much budget remains.
-   - **proof mode only** — the verifier reports `"verdict": "refuted"`: a
-     counterexample proves the claim as stated is **false**. That is a
-     definitive closure in the negative direction, not a failed attempt. Record
-     the counterexample and what it reveals in the sidecar **inside the spine
-     block** (a refutation is a settled negative result), state it plainly in
-     your final status, and stop. Revising the claim is a problem-definition
-     change — the human's decision, never yours.
-   - the feedback has stopped telling you anything new: the last two panels
-     raised no finding you have not already addressed or consciously declined.
-     Say so in your final status and stop; burning the remaining budget on
-     cosmetic edits makes the paper worse, not better.
-
-   There is deliberately **no score threshold** to stop at (ADR 0010). The score
-   is a mean of uncalibrated 0–1 judgements — one per persona your `nel.toml`
-   declares — that moves between runs on an
-   unchanged draft; it is not a quantity you can aim at. Judge the *feedback*.
-
-   Otherwise loop back to step 2.
+If a backend reports a nested-sandbox failure, that voice is unavailable to you
+but available to your human from a plain terminal — say so in your status rather
+than treating the backend as broken.
 
 ## Evaluation
 
 `evaluate.py` does not return a bare number. It composes the manuscript and the
-sidecar spine, runs a **compile gate** (a manuscript that does not build scores
-0 with the LaTeX error as feedback — fix that first), then a **quantitative
-metrics gate** (undefined references/citations, duplicate labels, TODO markers
-left in shipped prose — the gated list is `[evaluation.metrics]` in
-`nel.toml`; a violation scores 0 with the metrics report as feedback, and
-the panel never sees the draft — fix those next), then — in proof mode — the
-project's **declared verifier** (see "Proof mode" below), then dispatches a
-panel of expert-persona reviewers (`.nel/prompts/reviewers/*.md`) to external
-backends for **actionable, textual feedback**. The metrics report is always prepended to the
-panel feedback, so watch it even when you pass. Each reviewer scores realized prose
-(`prose_score`) and the promise of your spine (`direction_score`) separately, so
-a sidecar-led step that sketches a strong direction is credited even before it
-is prose. The `score` is the mean reviewer rubric — a light signal for
+sidecar spine, then runs, in order:
+
+1. a **compile gate** — a manuscript that does not build scores 0 with the LaTeX
+   error as feedback. Fix that before anything else.
+2. a **quantitative metrics gate** — undefined references and citations,
+   duplicate labels, TODO markers left in shipped prose. The gated list is
+   `[evaluation.metrics]` in `nel.toml`; a violation scores 0 with the metrics
+   report as feedback and the panel never sees the draft.
+3. in proof mode, the **declared verifier** (see `.nel/loop.proof.md`).
+4. the **critic panel** — the personas in `.nel/prompts/reviewers/`, dispatched
+   to external backends for actionable, textual feedback.
+
+The metrics report is always prepended to the panel feedback, so watch it even
+when you pass. The `score` is the mean reviewer rubric — a light signal for
 bookkeeping; the **feedback text is the point**. Respond to it specifically.
 
-## Proof mode (a declared verifier)
-
-If `nel.toml` has an `[evaluation.verifier]` table, this paper carries a
-**checkable claim** — a construction, a bound, an identity — and the project
-ships a deterministic check for it (a script, a CAS call, a proof-assistant
-build). That verifier runs inside every evaluation and its **verdict is
-three-valued** (ADR 0016): `closes` (exit 0 — proved), `open` (the attempt did
-not establish the claim), or `refuted` (the report carries a `REFUTED` line —
-a counterexample proves the claim false; a definitive negative closure, not a
-failure). Its output is prepended to your feedback, the reviewers see it, and
-`./nel step`'s status line gains `"closed"` and `"verdict"` — the predicate,
-not the score, is the fact the run is driving toward (ADR 0013).
-
-Work differently in this mode:
-
-- **Iterate on the claim through `./nel verify`.** It runs *only* the verifier —
-  no compile, no panel, nothing recorded — and prints
-  `{"closed": ..., "verdict": ..., "exit": ..., "report": ...}` in well under a
-  second for a script-based check. Use it after every substantive edit to the
-  construction or argument. Spend `./nel step` when the manuscript around the
-  claim has moved, not to ask the verifier a question `./nel verify` answers
-  for free.
-- **Keep the negative ledger.** Failed attempts are information, not waste:
-  when an approach dies — the verifier stays open after a genuine attempt, or
-  you consciously abandon an angle — distill *what was tried and why it broke*
-  into the sidecar: **inside the spine block** if settled ("technique T cannot
-  close the bound because Z"; every refutation counterexample), in the private
-  scratch if tentative. Feedback files scroll away; the sidecar compounds.
-  This is where a future iteration — or the human reading the design log —
-  learns not to re-derive a dead end.
-- **Read the verifier report before the panel prose.** While the claim is open,
-  the report says *what failed* — that is your next edit, and reviewer style
-  notes can wait.
-- **`gate = true` is spend control, not quality control.** It saves panel calls
-  on unclosed drafts at a named cost: the panel never produces a qualitative
-  post-mortem of the failure — the verifier says *what* failed, only the panel
-  can say *why* and whether the direction is salvageable. Either way the
-  attempt is **recorded in the archive with its verifier report** — gates
-  withhold the checkpoint and the panel, never the record. For mathematical
-  work, prefer `gate = false` (the default).
-- **The stop condition is the predicate** (see step 5): closed claim + quiet
-  panel — or a **refutation**, which ends the run immediately after its
-  counterexample is recorded in the spine. `max_attempts` remains the outer
-  bound.
-- **Never touch the verifier.** Its manifest entry and the script/toolchain it
-  names are the problem definition, exactly like the rubrics — and both are
-  hashed into `evaluator_version`, so editing them visibly forks the evaluation
-  history. Do not weaken tolerances, special-case inputs, or reduce coverage to
-  make the claim close. If you believe the verifier itself is wrong, write that
-  in the sidecar and in your final status, and leave it for the human.
-- `stage: "verifier-error"` means the check could not *run* (missing toolchain,
-  timeout) — infrastructure, not a verdict. The draft still checkpoints; fix or
-  report the environment rather than editing the manuscript in response.
-
-## Don't circle
-
-The failure mode of an unattended run is proposing variants of one idea until
-the budget is gone. Before each proposal, check `by-approach/*.md` and
-`./nel archive history` for angles you have already spent — and, in proof
-mode, the sidecar's **negative ledger** (see "Proof mode"): an approach the
-ledger records as dead, with a reason, is not retried without a new idea that
-answers that reason. If the last two attempts were the same kind of move and
-the feedback did not shift, that line of revision is exhausted — say so in
-your rationale, record it in the ledger, and pivot to a different one from
-`.nel/prompts/strategies.txt`.
-
-`./nel archive top` and `./nel archive show <attempt_id>` let you re-read an
-earlier draft that scored well and its feedback. Adapting an idea from a past
-attempt is legitimate; record the debt with `--parent <attempt_id>`.
+There is deliberately **no score threshold** to stop at (ADR 0010). The score is
+a mean of uncalibrated 0–1 judgements that moves between runs on an unchanged
+draft; it is not a quantity you can aim at. Judge the *feedback*.
 
 ## What not to do
 
