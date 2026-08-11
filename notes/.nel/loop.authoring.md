@@ -24,7 +24,10 @@ asking for, and name it in your `--approach`.
 
 - **Your latest reviewer feedback** at `.nel/log/feedback/branch-solo/latest.md`.
   This is the heart of the loop — the actionable critique you are responding to.
-  Also skim the tail of your branch log `${NEL_LOG_DIR}/branch-${BRANCH_ID}.md`.
+  The **ledger block** at the top of that file is what this project already
+  knows, carried across runs; an angle it records as dead is not retried without
+  a new idea. Also skim the tail of your branch log
+  `${NEL_LOG_DIR}/branch-${BRANCH_ID}.md`.
 - `${NEL_LOG_DIR}/by-approach/*.md` for angles already tried, so you do not
   re-run one that did not move the paper. `./nel archive top` and
   `./nel archive show <attempt_id>` read the same history from the archive.
@@ -60,7 +63,12 @@ This runs the evaluator, appends to your branch log, files a one-liner under
 `by-approach/`, writes the full feedback under `feedback/`, records the attempt
 in the archive, **commits whenever the draft clears the compile and metrics
 gates** (not only on a higher score — the manuscript is never reverted, so every
-valid draft is worth a checkpoint), and prints a JSON status line. Read that
+valid draft is worth a checkpoint), and prints a JSON status line.
+
+When a line of revision dies — an angle you are consciously abandoning, a
+framing the panel rejected for a stated reason — record it as you abandon it
+with `--dead-end "<what you were trying>|<why it failed>"`, so a later run does
+not spend budget rediscovering the reason. Read that
 line — you need `attempt`, `score`, `cached`, `feedback_path` — then **open the
 feedback file** and let it drive your next proposal.
 

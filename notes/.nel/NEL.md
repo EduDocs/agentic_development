@@ -153,9 +153,11 @@ draft; it is not a quantity you can aim at. Judge the *feedback*.
 - Do not modify `templates/`, the preamble, or the EVOLVE-BLOCK markers.
 - Do not modify the evaluator, the reviewer rubrics, `max_attempts`, or — in
   proof mode — the `[evaluation.verifier]` entry and the script it names. These
-  are the problem definition, not variables you tune. Do not pad the spine with
-  speculative sketches to inflate `direction_score` — the editor persona checks
-  whether promises get realized.
+  are the problem definition, not variables you tune. In authoring mode, do not
+  pad the spine with speculative sketches to inflate `direction_score` — the
+  editor persona checks whether promises get realized. (Proof mode removes the
+  temptation instead of policing it: no direction score is asked for, and the
+  spine is background to the reviewers.)
 - Do not let `.md` scratch leak into the `.tex` (respect the exclusive zones in
   `PROGRESSION.md`).
 - Do not call out to the network except via the sanctioned skills
