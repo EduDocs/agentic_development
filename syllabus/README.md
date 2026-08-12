@@ -37,15 +37,15 @@ Boundaries are deliberately soft; the progression matters more than the grid.
 By the end, you can (full text + evidence map: [`outcomes.md`](outcomes.md),
 [`assessment-map.md`](assessment-map.md)):
 
-1. **LO1** Operate an agentic rig and drive an agent through a reproducible task.
-2. **LO2** Design prompts and engineer context that *measurably* improve agent performance.
-3. **LO3** Implement a research agent (tools, loop, structured outputs) end-to-end.
-4. **LO4** Design a leakage-resistant evaluation harness and compare methods/models.
-5. **LO5** Compose reliable multi-agent workflows and report failures honestly.
-6. **LO6** Implement an agentic evolutionary search (mutation + fitness + diversity + cost).
-7. **LO7** Scope, build, evolve, and analyze a discovery system in your **own** domain.
-8. **LO8** Teach a topic to peers and document reproducible results in a paper-style report.
-9. **LO9** Use AI critically and transparently — judge, verify, disclose, name failure modes.
+1. **LO1** Execute and direct an AI agent through a standardized, repeatable task sequence.
+2. **LO2** Formulate prompts and structure contextual information to systematically improve the accuracy and relevance of AI outputs.
+3. **LO3** Construct an end-to-end AI research agent equipped with external tools, an execution loop, and structured data outputs.
+4. **LO4** Build a testing environment free from data contamination (data leakage) to evaluate and compare the performance of different models and prompting strategies.
+5. **LO5** Design workflows where multiple specialized AI agents collaborate reliably, while transparently identifying and reporting system failures.
+6. **LO6** Implement a search algorithm that uses principles of variation, evaluation, and diversity (mutation, fitness, cost) to discover optimal solutions.
+7. **LO7** Define, build, refine, and evaluate an automated discovery tool tailored to research questions in your primary field.
+8. **LO8** Present technical concepts to peers and document your methodology, data, and reproducible findings in a standard academic paper.
+9. **LO9** Critically verify accuracy of AI outputs against reliable sources, disclose when and how AI was used, and explain where the model fails.
 
 The course is built on two threads: **evaluation becomes fitness** (the harness you build in
 Challenge 2 becomes the capstone's fitness function) and **context engineering** (a week-1 concept
