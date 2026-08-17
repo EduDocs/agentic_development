@@ -2,7 +2,7 @@
 \label{chapter:HowWeGotHere}
 % EVOLVE-BLOCK-START
 
-The agentic systems this course builds rest on large language models (LLMs), and those models can seem to have arrived all at once.
+The agentic AI systems this course builds rest on large language models (LLMs), and those models can seem to have arrived all at once.
 They did not.
 The capability that makes an agent possible (a single model that reads instructions, holds a conversation, writes code, and calls tools) is the accumulated payoff of a collection of significant advances, each of which removed a concrete limitation of the one before it.
 This chapter traces that lineage at a high level, highlighting a few milestones.
@@ -18,141 +18,203 @@ This is part of why the current moment feels sudden even though the path is legi
 
 An important step in natural language processing (NLP) was to give words a form a machine could compute with.
 The obstacle is that text arrives as discrete symbols, and a symbol supports no arithmetic: nothing in the character strings \emph{physician} and \emph{doctor} reveals that they are close in meaning, while \emph{physician} and \emph{physicist} look nearly identical and are not.
-A \emph{word embedding}\index{Word embedding} maps each word to a vector so that words with similar meanings land near one another, and the \emph{word2vec}\index{word2vec} models showed that such a space could be learned cheaply from raw text at scale (Mikolov et al., 2013).
-The vector is an ordinary list of numbers, typically a few hundred coordinates, and those coordinates are learned rather than designed: the training objective asks the model to predict a word from the words surrounding it, so words that keep the same company are pushed toward the same region of the space.
-A companion result added an efficient training objective and vectors for phrases, and displayed the now-famous regularity that simple vector arithmetic is meaningful in this space: adding the vectors for \emph{Germany} and \emph{capital} lands near the vector for \emph{Berlin} (Mikolov et al., 2013).
+A \emph{word embedding}\index{Word embedding} maps each word to a vector (an ordered list of numbers, typically a few hundred, corresponding to a point in a high-dimensional space). 
+Because text has no natural numerical scale, these coordinates are learned rather than hand-designed: the training objective asks the model to predict a target word from its surrounding context, pushing words that share similar environments toward nearby coordinates in this high-dimensional space.
+The \emph{word2vec}\index{word2vec} models showed that such a space could be learned cheaply from raw text at scale (Mikolov et al., 2013).
+A companion result added an efficient training objective and vectors for phrases, and displayed the now-famous regularity that simple vector arithmetic is meaningful in this space: subtracting the vectors for \emph{Germany} and \emph{Berlin} yields their relationship, and then adding that to the vector for \emph{France} will land near \emph{Paris} (Mikolov et al., 2013).
 Meaning had become geometry: a trained space in which distance encodes similarity.
 
 \begin{example}
-Anyone who has plotted samples in the first two principal components of a measurement matrix already has the picture, with one substitution: the axes are learned from text rather than derived from measurements.
-Each word is a point, and proximity is the quantity of interest.
-\emph{Plasmid} lands near \emph{promoter} and \emph{transfection}; \emph{inflation} lands near \emph{unemployment} and \emph{monetary}; the two neighborhoods sit far apart because the two literatures rarely use each other's vocabulary.
-No one labelled those groupings, and no linguist supplied them.
-They fall out of nothing more than which words co-occur, at a scale of billions of words.
+Think of a scatter plot generated from Principal Component Analysis (PCA)—a standard technique that reduces high-dimensional data tables down to a few principal components, often visualised on a two-dimensional map.
+In such a plot, data points cluster based on shared statistical traits, and spatial proximity reflects overall similarity.
+Word embeddings work the exact same way, with one distinction: the coordinate axes are learned automatically from raw text rather than calculated from tabular measurements.
+
+Each word becomes a single point in this space.
+Terms like \emph{ecosystem}, \emph{biodiversity}, and \emph{habitat} form one tight cluster, while terms like \emph{inflation}, \emph{unemployment}, and \emph{monetary} form another.
+The two neighborhoods sit far apart simply because the two fields rarely mix their vocabularies.
+No human labeled those groupings, and no linguist manually defined those relationships.
+The clusters emerge entirely from patterns of word co-occurrence across billions of sentences.
 \end{example}
 
 This is the direct ancestor of the embeddings the course uses for retrieval (Chapter~\ref{chapter:Retrieval}, Definition~\ref{definition:Embedding}), one representational level down, words rather than passages.
 
-Representing single words is not the same as handling a whole sentence.
-The next step was to map an entire input sequence to an entire output sequence.
-\emph{Sequence-to-sequence}\index{Sequence-to-sequence} learning used one recurrent network to compress an input sentence into a fixed-length vector and a second to decode an output sentence from it, trained end to end, and reached competitive machine translation with no hand-built linguistic machinery (Sutskever et al., 2014).
-A \emph{recurrent} network reads a sequence one \emph{token} at a time (a token being a chunk of text, usually a word or a piece of one) while updating a running summary of everything it has seen so far.
-Training \emph{end to end} means the two networks were optimized jointly against the final translation, with no intermediate stage of parsing or word alignment specified by hand.
-Its weakness was precisely that single fixed vector: forcing an entire sentence through one bottleneck lost information on long inputs.
-The arithmetic makes the pressure concrete: a four-word source sentence and a forty-word one are both squeezed into the same fixed budget of, say, a thousand numbers, so the longer the input, the more of it must be discarded before the decoder ever sees it.
+Representing isolated words, however, is not the same as handling an entire sentence.
+The next milestone was mapping an input sequence to an output sequence.
+\emph{Sequence-to-sequence}\index{Sequence-to-sequence} learning achieved this using two linked networks: an \emph{encoder} that compresses an input sequence into a single vector, and a \emph{decoder} that reads that vector to generate the output sequence (Sutskever et al., 2014).
+These models were \emph{recurrent}: they read text one \emph{token} at a time (a token being a word or sub-word chunk) while updating an internal memory, much like processing sequential or time-series data step-by-step.
+The system was trained \emph{end-to-end}, meaning both networks were optimized jointly against final translation accuracy without relying on hand-built grammar rules or manual dictionary alignments.
+
+The weakness of this setup was precisely that single summary vector: forcing an entire input sentence through one numerical bottleneck lost detail on long inputs.
+The arithmetic makes the pressure concrete: a four-word title and a forty-word paragraph are both squeezed into the exact same budget—say, a fixed list of 1,000 numbers.
+The longer the input, the more information is squeezed out before the decoder ever sees it.
 Removing that bottleneck was the next breakthrough.
+
 
 \section{The Transformer and the Age of Scale (2017--2018)}
 \label{section:TransformerEra}
 
-\emph{Attention}\index{Attention} came first as a patch to the bottleneck: additive attention let a recurrent decoder look back over all of the encoder's states rather than a single summary vector (Bahdanau et al., 2015), which relieved the pressure on long inputs but kept the sequential recurrence.
-The mechanism is a weighted lookup, and it is worth stating plainly, since everything after this point is built from it.
-For each position the model is producing, it scores how relevant every input position is, normalizes those scores so that they sum to one, and reads out the corresponding weighted average of the inputs.
-Nothing is compressed away in advance; the relevant part of the input is selected at the moment it is needed, and the weights that do the selecting are learned rather than specified.
-The \emph{Transformer}\index{Transformer} took the more radical step of discarding recurrence entirely and building the model out of attention alone (Vaswani et al., 2017; Figure~\ref{figure:Transformer}).
-It let every position in a sequence attend directly to every other, and made it practical to train much larger models on much more data because attention is parallel where recurrence is serial.
-That distinction is what unlocked scale: recurrence must finish position $t$ before it can begin position $t+1$, whereas attention scores all positions in one matrix operation and therefore keeps thousands of processors busy at once.
-Every large language model the course uses is a Transformer.
-Its attention mechanism carries a hard architectural cost: comparing every token with every other makes compute and memory grow quadratically with length; and a softer behavioral one: longer contexts empirically tend to reduce a model's effective use of any one relevant token.
-The latter, often framed as a finite ``attention budget,'' is a useful heuristic rather than a theorem, since attention is computed per head, per layer, and per query and can be learned to concentrate sharply; Chapter~\ref{chapter:ContextEngineering} develops it and its limits.
-The former is easy to underestimate, since \emph{quadratic} is a steep word: doubling the input doubles the work per token and therefore quadruples the total, which is the difference between a million pairwise comparisons at a thousand tokens and ten billion at a hundred thousand.
+\emph{Attention}\index{Attention} arose as a solution to this bottleneck: rather than forcing the model to rely on a single summary vector, attention allows a network to dynamic compute a weighted score for every input word, selectively focusing on the most relevant parts of the input sequence at each step. 
+Additive attention first let a recurrent decoder look back across all intermediate encoder states rather than a single fixed vector (Bahdanau et al., 2015), relieving pressure on long inputs while retaining sequential recurrence.
+
+The mechanism acts as a dynamic weighted lookup, and stating it plainly is essential since virtually all modern AI architectures build upon it. 
+When generating a specific output token, the model evaluates every input position, scores its relevance, and converts those scores into weights that sum to one (much like a weighted average in statistics). 
+It then retrieves a weighted sum of the inputs based on those scores. 
+Instead of compressing information upfront, the model dynamically selects relevant context as needed, using attention weights learned during training.
+
+The \emph{Transformer}\index{Transformer} took the more radical step of discarding sequential recurrence entirely and building the architecture out of attention alone (Vaswani et al., 2017; Figure~\ref{figure:Transformer}). 
+By allowing every position in a sequence to attend directly to every other position simultaneously, it made training over massive datasets practical through parallel computing. 
+Recurrence requires step $t$ to finish before step $t+1$ can begin; attention evaluates all token interactions at once using matrix operations, efficiently utilizing thousands of parallel processors. 
+Every large language model used in this course is a Transformer.
+
+This mechanism carries a hard computational cost: calculating pairwise attention between every token means compute and memory scale \emph{quadratically} with sequence length ($O(N^2)$). 
+Doubling the input length doubles the comparison work per token and quadruples total compute—the difference between one million pairwise comparisons for 1,000 tokens and ten billion for 100,000 tokens. 
+It also introduces a behavioral challenge: in extremely long contexts, a model's effective focus per token can dilute. 
+This empirical phenomenon—often called a finite ``attention budget''—is explored alongside its limits in Chapter~\ref{chapter:ContextEngineering}.
+
 
 \begin{figure}[t]
 \centering
 \input{figures/transformer}
-\caption{The original Transformer of Vaswani et al.\ (2017): a sequence-to-sequence \emph{encoder-decoder} architecture.
-On the left, an input embedding combined with a \emph{positional encoding} passes through a stack of \emph{encoder} blocks (repeated $n$ times), each a self-attention sublayer followed by a position-wise feed-forward layer.
-On the right, a \emph{decoder} stack builds the output, each block adding \emph{masked} self-attention and an \emph{encoder-decoder attention} sublayer that reads the encoder's output; a final linear projection and softmax turn the top-layer representation into a probability distribution over the next token.
-Every sublayer is wrapped in a residual connection and layer normalization (add \& normalize).
-The reader need not follow every box; the point is that the whole model is built from attention and feed-forward layers, with no recurrence.
-The decoder-only lineage that leads to GPT (Section~\ref{section:ScaleAndGrounding}) keeps a stack like the right-hand one but drops the encoder and its encoder-decoder attention.}
+\caption{The original Transformer sequence-to-sequence architecture (Vaswani et al., 2017).
+\textbf{Left (Encoder):} Input text embeddings are combined with a \emph{positional encoding}—adding sequence order signals, since attention processes all tokens at once—and passed through $n$ repeated encoder blocks. Each block pairs a \emph{self-attention} sublayer (allowing tokens to score relevance against one another) with a position-wise feed-forward layer.
+\textbf{Right (Decoder):} The decoder stack generates output text token by token. It uses \emph{masked} self-attention (hiding future tokens so the model cannot look ahead) and \emph{encoder-decoder attention} to cross-reference the encoder's representations.
+A final \emph{linear projection and softmax} step maps the top-layer vectors to a normalized probability distribution over the vocabulary to select the next token.
+Sublayers include \emph{residual connections} and \emph{layer normalization} to stabilize numerical training across deep layers.
+The key takeaway is that the architecture relies entirely on attention and feed-forward layers, removing sequential recurrence entirely.
+The decoder-only lineage behind models like GPT (Section~\ref{section:ScaleAndGrounding}) drops the encoder stack on the left and relies exclusively on a modified decoder stack.}
 \label{figure:Transformer}
 \end{figure}
 
-The Transformer was an architecture; the next move was a \emph{recipe} for using it.
-Rather than train a fresh model for every task, one could \emph{pre-train}\index{Pre-training} a single Transformer on a large corpus of unlabeled text and then adapt it to specific tasks with comparatively little further training.
-The economics are what changed.
-Labelled data is expensive, domain-specific, and always scarce, whereas raw text is abundant and requires no annotation, so the costly general-purpose learning happens once and is then amortized across every task downstream.
-A laboratory that would previously have trained a classifier from scratch on a few thousand hand-labelled abstracts could instead start from a model that had already read a large slice of the written record and adjust it on those same few thousand, at a fraction of the cost and with better accuracy.
-\emph{BERT}\index{BERT} did this with a bidirectional encoder trained to fill in masked words, producing \emph{contextual} representations; in this setting, a word's vector now depends on the sentence around it.
-The training task is a fill-in-the-blank exercise run over ordinary text at scale: hide a word, predict it from the words on both sides, and repeat billions of times, which requires no human labelling at all.
-\emph{Contextual} is meant literally: in \emph{river bank} and \emph{central bank} the word \emph{bank} now receives two different vectors, where word2vec had one vector averaging both senses together.
-This paradigm set new results across many language tasks at once (Devlin et al., 2019).
-Contextual embeddings from this family are what many modern retrieval systems actually run on, the successor to the static word vectors of the previous section.
-A parallel effort pre-trained \emph{decoder} models for generation rather than understanding: the \emph{Generative Pre-trained Transformer} (GPT) line, from GPT and GPT-2 onward.
-The two branches differ in what they are trained to do: an encoder sees a whole passage at once and is well suited to judging it (classifying, scoring, matching), while a decoder emits text one token at a time, each token conditioned on those already written, which is what one needs when the output is itself language.
-The latter branch is the thread that leads to the models that many agents are built from.
+The Transformer was an architecture; the next move was a \emph{recipe} for deploying it.
+Rather than training a bespoke model from scratch for every specific task, researchers realized they could \emph{pre-train}\index{Pre-training} a single, massive Transformer on raw, unlabeled text and then adapt (or \emph{fine-tune}) it to specific tasks with minimal additional training.
+The underlying economics shifted completely.
+Human-annotated data is expensive, domain-specific, and scarce, whereas raw text is abundant.
+The expensive, general-purpose step of learning how language works happens once; that computational investment is then amortized across every downstream task.
+A laboratory that previously had to train a custom classifier on a few thousand hand-labeled scientific abstracts could now start with a model that had already read billions of web pages and adjust it using those same abstracts—achieving higher accuracy at a fraction of the cost.
+
+\emph{BERT}\index{BERT} pioneered this approach using a \emph{bidirectional} encoder, meaning the model evaluates words by looking simultaneously at the context both to the left and to the right (Devlin et al., 2019).
+Its pre-training task was a scale fill-in-the-blank exercise: hide a word, predict it from its surrounding context, and repeat billions of times without human supervision.
+This produced \emph{contextual} embeddings, where a word's vector dynamically updates based on its sentence: in \emph{river bank} and \emph{central bank}, the word \emph{bank} receives two distinct vectors, whereas static word2vec models assigned one vector that averaged both meanings together.
+Contextual embeddings from this encoder family now power modern document search and retrieval systems.
+
+A parallel effort pre-trained \emph{decoder} models optimized for generation rather than classification: the \emph{Generative Pre-trained Transformer} (GPT) series.
+The two branches split by objective:
+\begin{itemize}
+    \item \textbf{Encoders (e.g., BERT):} Read a whole passage at once to evaluate, classify, or match text.
+    \item \textbf{Decoders (e.g., GPT):} Predict the next token given previous words, emitting text sequentially—the core mechanics needed when the goal is to generate natural language.
+\end{itemize}
+This decoder branch is the direct lineage leading to the promptable models and agents used in this course.
+
 
 \section{Scale, Prompting, and Grounding (2020)}
 \label{section:ScaleAndGrounding}
 
 Scaling the decoder branch produced a qualitative change, not merely a quantitative one.
-\emph{GPT-3} was a 175-billion-parameter model that, with no task-specific training, could perform a new task from a plain-language instruction and a handful of examples placed in its context window: \emph{in-context}, or \emph{few-shot}, learning\index{In-context learning} (Brown et al., 2020).
-Two terms in that sentence carry the weight.
-\emph{Parameters} are the model's learned numbers, the weights fixed at the end of training, and 175 billion of them was roughly a hundredfold increase over the previous model in the line.
-The \emph{context window} is the span of text the model can hold in view at once, and \emph{few-shot} means the demonstrations of the task live there, in the prompt, rather than in the weights.
-This is the origin of prompting as the primary interface: the model is steered by the text it is given rather than by gradient updates, which is the premise the entire course operates on (Chapter~\ref{chapter:ContextEngineering}).
+\emph{GPT-3} was a 175-billion-parameter model that, with no task-specific training, could perform a new task given a plain-language instruction and a handful of examples placed directly in its input text: \emph{in-context}, or \emph{few-shot}, learning\index{In-context learning} (Brown et al., 2020).
+Three terms in that sentence carry the weight:
+\begin{itemize}
+    \item \textbf{Parameters:} The model's learned internal weights fixed at the end of training. At 175 billion parameters, GPT-3 represented a roughly hundredfold scale increase over its predecessor (GPT-2).
+    \item \textbf{Context Window:} The maximum length of text (measured in tokens) the model can process and hold in view at a single moment.
+    \item \textbf{Few-Shot Prompting:} Demonstrations of the desired task live directly inside the input text (the \emph{prompt}) at runtime, rather than being learned into the model's parameters via iterative mathematical adjustments (\emph{gradient updates}).
+\end{itemize}
+This marked the birth of prompting as a primary software interface: instead of retraining model weights for every new problem, the model is steered entirely by the text it is given—the foundational premise of this course (Chapter~\ref{chapter:ContextEngineering}).
 
 \begin{example}
-Suppose an economist wants journal abstracts sorted into \emph{empirical}, \emph{theoretical}, and \emph{both}.
-The route available before 2020 was to hand-label a few thousand abstracts, train a classifier, and repeat the whole exercise for the next categorization scheme.
-The in-context route is to write out what the three categories mean, paste five already-sorted abstracts as demonstrations, append the sixth, and read the answer.
-Not one weight changes, and nothing is trained; the complete specification of the task is a paragraph of text that a domain expert can read, argue with, and revise in a minute.
-That last property, more than any accuracy figure, is why prompting became the interface: it moved the point of control from the machine-learning pipeline to the researcher's own description of the problem.
+Suppose an economist wants journal abstracts categorized into \emph{empirical}, \emph{theoretical}, or \emph{both}.
+The standard route available before 2020 was to hand-label a few thousand abstracts, train a dedicated classifier, and repeat the entire engineering exercise for the next classification scheme.
+The in-context route is to write out what the three categories mean, paste five already-sorted abstracts as demonstrations into the prompt, append the target abstract, and read the answer.
+Not a single weight changes, and nothing is trained; the complete specification of the task is a plain-language paragraph that a domain expert can evaluate, refine, and revise in seconds.
+That property, more than any accuracy figure, is why prompting became the primary interface: it moved the point of control from the machine-learning pipeline to the researcher's own description of the problem.
 \end{example}
 
-It is also where the honest limits come into view; few-shot performance is uneven, and training on web-scale text raises the leakage and contamination concerns the evaluation chapter takes seriously (Chapter~\ref{chapter:Evaluation}).
-\emph{Contamination} names a specific hazard: when the training corpus is scraped from the open web, the test items of a public benchmark may already sit somewhere inside it, so a high score can reflect recall of the answer key rather than the capability the benchmark was built to measure.
+It is also where the honest limits come into view: few-shot performance is uneven, and training on web-scale text introduces risks of data leakage and benchmark contamination (Chapter~\ref{chapter:Evaluation}).
+\emph{Contamination} names a specific hazard: when the training corpus is scraped broadly from the open web, the test questions of a standard evaluation benchmark may already reside inside the training dataset.
+In such cases, a high score can reflect memorization of the answer key rather than the underlying reasoning capability the benchmark was designed to test.
 
-A frozen model's knowledge is fixed at training time: it cannot cite its sources, and it is hard to update.
-\emph{Retrieval-augmented generation}\index{Retrieval-augmented generation} addressed this by pairing the model's parametric memory with a non-parametric one: retrieve relevant passages from an external corpus, then generate an answer conditioned on them (Lewis et al., 2020).
-The two memories differ in kind.
-\emph{Parametric} memory is whatever the weights absorbed during training: fast and blended, but unattributable, because no particular fact resides at any particular address that could be pointed to or corrected.
-A \emph{non-parametric} memory is an ordinary searchable collection of documents living outside the model, which can have a paper added to it on Tuesday and be consulted on Wednesday without retraining anything.
-Concretely, a model whose training ended last year cannot know this year's revised protocol, while a system that searches a laboratory's own document store, places the three most relevant passages into the prompt, and answers against them can, and can report which passages it used.
-This made knowledge updatable and, when the system preserves and validates provenance, attributable, and it is a basis of the grounding developed in Chapter~\ref{chapter:Retrieval}.
+Furthermore, a \emph{frozen} model—one whose internal weights are fixed and no longer updating—has knowledge locked at its training cutoff date: it cannot cite specific source locations, and its internal facts are difficult to update.
+\emph{Retrieval-augmented generation} (RAG)\index{Retrieval-augmented generation} addressed this by pairing the model's \emph{parametric memory} with an external \emph{non-parametric memory}: retrieving relevant passages from a document database, then generating an answer conditioned directly on those passages (Lewis et al., 2020).
+
+The two memory systems differ fundamentally:
+\begin{itemize}
+    \item \textbf{Parametric Memory:} The internal weights absorbed across trillions of tokens during training. It is fast and flexible, but unattributable—no single fact lives at a distinct, editable memory address.
+    \item \textbf{Non-Parametric Memory:} An external, searchable document repository (such as a database of PDFs, spreadsheets, or text files). A new paper can be added on Tuesday and consulted on Wednesday without retraining or altering a single model weight.
+\end{itemize}
+
+Concretely, a model whose training ended last year cannot know a newly published trial protocol or economic index.
+A RAG system searches the research group's document store, inserts the three most relevant passages directly into the prompt context, and answers using those sources.
+This architecture makes AI knowledge continuously updatable and, when the system preserves document provenance (source attribution and citation tracking), fully auditable—forming the core foundation of grounding developed in Chapter~\ref{chapter:Retrieval}.
+
 
 \section{From Models to Agents (2022 onward)}
 \label{section:FromModelsToAgents}
 
 A capable, promptable model is still not an agent.
-Further developments closed that gap.
-For instance, \emph{instruction tuning} with human feedback aligned models to follow instructions helpfully rather than merely continue plausible text, making their behavior reliable enough to direct (Ouyang et al., 2022).
-That distinction is sharper than it first sounds.
-A model trained only to continue text, handed \emph{List three limitations of this assay}, may well continue with a fourth and a fifth exam question and answer none of them, because in a corpus scraped from the web what most often follows a question is another question.
-Instruction tuning is what makes the plain request behave like a request.
-\emph{Chain-of-thought} prompting showed that eliciting intermediate reasoning before a final answer improves performance on multi-step problems (Wei et al., 2022).
-Asked for a final number outright, the model must commit in a single step; asked to write the intermediate quantities first, it conditions each step on the one before, which is why the gain is largest on problems with several dependent stages, such as a chained unit conversion or a conditional-probability calculation.
-And giving the model \emph{tools}, letting it act, observe the result, and act again turned a text generator into a system that operates in the world, formalized as the reason-and-act loop the course builds in Chapter~\ref{chapter:AgentLoop} (Yao et al., 2023).
-At that point the model is no longer only answering; it is perceiving, reasoning, and acting.
+Further technical advances were required to close that gap.
+
+First, \emph{instruction tuning}—often fine-tuned using Reinforcement Learning from Human Feedback (RLHF)—aligned models to respond to requests helpfully rather than simply predicting plausible text continuations (Ouyang et al., 2022).
+That distinction is much sharper than it sounds.
+A raw language model trained solely to predict the next word, handed the prompt \emph{"List three limitations of this assay,"} might simply generate a fourth and fifth exam question without answering any of them.
+In a massive text corpus scraped from the web, the most likely follow-up to an exam question is another exam question.
+Instruction tuning transforms the model from a passive text predictor into a responsive assistant that executes commands.
+
+Second, \emph{chain-of-thought} prompting demonstrated that asking a model to generate step-by-step intermediate reasoning before emitting a final answer dramatically improves performance on multi-step problems (Wei et al., 2022).
+When asked for a final complex value outright, the model must commit in a single generative step.
+When prompted to write out intermediate calculations first, it conditions each subsequent step on its previous reasoning—yielding significant gains on multi-stage tasks such as chained unit conversions, economic equilibrium derivations, or conditional-probability calculations.
+
+Finally, equipping models with \emph{tools}—permitting them to issue external commands, inspect the output, and adjust their next action—transformed text generators into active systems.
+This iterative process forms the core reason-and-act loop developed in Chapter~\ref{chapter:AgentLoop} (Yao et al., 2023).
+By requesting external execution (such as running a Python script or querying a database) and reading the returned data, the model ceases to merely converse: it perceives environmental feedback, evaluates results, and acts iteratively.
 
 \begin{example}
-A \emph{tool} is nothing more exotic than a function the surrounding program is willing to run on the model's behalf: execute this Python snippet, read this file, query this database, fetch this page.
-The model itself runs nothing.
-It emits a structured request; the program hosting it carries that request out and pastes the result back into the conversation as ordinary text; the model reads the result and decides what to do next.
-So a question such as \emph{does the fit improve if the outliers are dropped?} stops being answered from memory.
-The model writes the fit, asks for it to be run, reads the residuals that come back, notices that one predictor has gone unstable, and revises.
-That loop is the entire distance between a system that describes an analysis and one that performs it.
+A \emph{tool} is nothing more exotic than an external function the surrounding hosting program is willing to execute on the model's behalf: run a Python script, read a file, query an SQL database, or fetch a web page.
+The language model itself executes no code.
+Instead, it emits a \emph{structured request} (such as a standardized JSON block naming a function and its arguments); the host application executes that function, captures the output, and feeds the result back into the prompt context as plain text.
+The model then reads that output and determines its next step.
+
+Under this setup, a question such as \emph{"Does the regression fit improve if the outliers are dropped?"} is no longer answered from stagnant memory.
+The model generates the code to fit the model, requests its execution, inspects the returned residual summary, notices that a predictor variable has become unstable, and automatically revises the statistical model.
+That iterative loop represents the entire functional distance between a system that merely describes an analysis and one that actively carries it out.
 \end{example}
 
-The techniques for making a model reason and act well are a research field in their own right; it is worth naming the landscape even though the details belong to later chapters.
-On the \emph{prompting} side, chain-of-thought has search-based extensions: \emph{self-consistency} samples several reasoning paths and keeps the majority answer, and \emph{tree-of-thoughts} searches over intermediate steps rather than committing to one.
-Whereas \emph{ReAct} and \emph{Reflexion} interleave reasoning with tool calls and let a model revise after seeing a result (developed in Chapters~\ref{chapter:ContextEngineering} and~\ref{chapter:AgentLoop}).
-On the \emph{training} side, reinforcement learning from human feedback (RLHF) is the instruction-tuning method named above; its relatives (learning from AI feedback, constitutional methods) and the reinforcement-learning training behind current reasoning models push the same lever further.
-The shape of RLHF is worth carrying even without the details: people rank competing model responses to the same prompt, those rankings train a separate model that scores responses, and the language model is then optimized to score well, which lets a preference nobody can write down as a loss function be learned from comparisons instead.
-The point is that ``make the model reason and act better'' is an active, crowded field rather than a single trick; the course develops the parts it uses and names the rest so the reader can place them.
+
+The techniques for improving how a model reasons and acts constitute a major research field; naming this landscape helps anchor concepts developed in later chapters.
+
+\begin{itemize}
+    \item \textbf{Prompting Strategies:} 
+    Standard chain-of-thought prompting has evolved into search-based extensions.
+    \emph{Self-consistency} samples multiple reasoning paths in parallel and selects the majority answer, while \emph{tree-of-thoughts} evaluates and branches over intermediate steps rather than committing to a single path.
+    Frameworks like \emph{ReAct} (interleaving \textbf{Re}asoning and \textbf{Act}ing) and \emph{Reflexion} (incorporating self-reflection and memory to debug errors) allow a model to evaluate tool execution outputs and refine its approach dynamically (Chapters~\ref{chapter:ContextEngineering} and~\ref{chapter:AgentLoop}).
+
+    \item \textbf{Training Approaches:} 
+    Beyond prompt engineering, models are fine-tuned directly for better alignment and reasoning.
+    Reinforcement Learning from Human Feedback (RLHF) is the foundational method here. Its relatives include RLAIF (learning from AI feedback) and \emph{Constitutional AI}—a framework that replaces manual human grading of harmful outputs by using an explicit, written set of principles (a ``constitution'') to direct a secondary AI model to critique, revise, and score responses automatically.
+\end{itemize}
+
+The core intuition behind RLHF and RLAIF is worth keeping in mind: evaluators rank competing model responses to the same prompt, those rankings train a separate \emph{reward model} that scores responses, and the language model is optimized against that score.
+This allows complex preferences that cannot be written down as a formal mathematical loss function (e.g. clarity, safety, or tone) to be learned directly from human rankings.
+
+Overall, making a model reason and act effectively is an active, evolving field rather than a single trick; this course builds directly on these core paradigms while providing the context needed to place new advances.
 
 The progression did not stop at tool use.
-A recent step folds reasoning back inside the model: \emph{reasoning models}\index{Reasoning model} are trained to carry out extended chains of thought internally before they answer, rather than being prompted to reason step by step, and models are increasingly \emph{multimodal}, taking images and other data alongside text.
-The practical consequences, including a latent reasoning trace that cannot be read as an audit log and a thinking budget in place of a prompt scaffold, are treated in Chapter~\ref{chapter:AgentLoop}.
-Both consequences are concrete rather than abstract: the internal deliberation is optimized to help the model reach an answer, not to be read by a person, so it is a poor record of why the model did what it did; and what replaces the prompt scaffold is a coarser control, a dial setting how much deliberation to spend before answering.
+Recent advances fold step-by-step reasoning directly into the architecture itself: \emph{reasoning models}\index{Reasoning model} are trained using reinforcement learning to perform extended internal deliberation before emitting a final answer, rather than relying on users to prompt them to think step by step.
+Concurrently, models have become increasingly \emph{multimodal}, processing visual inputs alongside ordinary text.
 
-Each step so far has been described from the inside, as one more limitation removed.
+These native reasoning capabilities carry important practical consequences, particularly regarding transparency and control (developed in Chapter~\ref{chapter:AgentLoop}):
+
+\begin{itemize}
+    \item \textbf{Internal (Latent) Reasoning Traces:} The model's raw internal deliberation process is optimized strictly to maximize problem-solving accuracy, not for human readability. Consequently, this hidden reasoning trace cannot be treated as a faithful, verifiable audit log explaining \emph{why} a model arrived at a specific conclusion.
+    \item \textbf{Thinking Budgets vs. Prompt Scaffolds:} External prompt structures designed to force multi-step reasoning (such as complex chain-of-thought templates) are replaced by a direct \emph{thinking budget}—a configurable control that allocates computational compute dynamically to allow longer internal deliberation before responding.
+\end{itemize}
+
+These developments shift the developer's role: rather than manually constructing complex prompting scaffolds, the objective becomes setting deliberation budgets and directing systems that reason natively.
+
+
+Each step so far has been described from the inside, as one more technical limitation removed.
 From outside the research community, the same sequence registered as two events.
 In November~2022, the release of ChatGPT put an instruction-tuned model in front of anyone with a browser and sent a shock wave well beyond the research community, showcasing the language model as a general-purpose advisor.
 Three years later, in December~2025, agentic coding crossed a practical threshold: on narrow, well-specified programming tasks whose success can be checked automatically, a frontier model such as Anthropic's Opus~4.6 approached the reliability of a junior software engineer or data scientist, turning much routine low-level coding into something a researcher directs rather than writes by hand, freeing attention for the parts of the work that call for judgment.
 The qualifier carries weight: reliability falls off as tasks widen, as the specification thins, or as success stops being cheaply verifiable, so the threshold is best read as one crossed within a regime rather than across programming as a whole.
-\emph{Cheaply verifiable} is the load-bearing phrase, and it means only this: some check settles the matter without a person reading the work (a test suite that passes, a simulation that reproduces a known result, a residual that drops), so an agent can iterate against it unattended, whereas without such a check someone must inspect every attempt.
+\emph{Cheaply verifiable} is the load-bearing phrase, and it means only this: an automated check settles the matter without a person reading the work (a test suite that passes, a simulation that reproduces a known result, a residual that drops), so an agent can iterate against it unattended, whereas without such a check someone must inspect every attempt.
 Neither was a new idea so much as a new level of a capability the sequence above had been building toward.
 The progression is therefore still under way, and its shape is unchanged: each step extends what the system can reliably do on its own.
 Still, a legible, incremental progression is often felt from outside as a sudden arrival.
