@@ -146,7 +146,7 @@ A minimal diff showing the addition of a CSV branch to a loader:
 \begin{lstlisting}[language=diff]
 --- a/src/loader.py
 +++ b/src/loader.py
-@@ -12,6 +12,10 @@ def load_dataset(path):
+@@ -12,4 +12,9 @@ def load_dataset(path):
      if path.endswith('.npz'):
          data = np.load(path)
          return data['X'], data['y']
