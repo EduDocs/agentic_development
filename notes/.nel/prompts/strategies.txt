@@ -11,8 +11,8 @@
 # of move it favors. Read PROGRESSION.md for the .md <-> .tex sidecar model.
 
 panel-driven (balanced): read the latest reviewer feedback and close its highest-value items, in whichever register each item calls for — no standing bias; let the panel's critique choose the move
-spine-exploration (.md-led): sketch new directions and restructured arguments in the sidecars first, harmonize the conceptual spine across chapters, and only realize into prose once a direction is solid (lean on /md2tex)
-prose-crystallization (.tex-led): take the settled spine and write/sharpen the shipped prose — tighten definitions, sharpen principles, complete worked examples — then feed concept changes back with /tex2md
+spine-exploration (.md-led): sketch new directions and restructured arguments in the sidecars first, harmonize the conceptual spine across chapters, and only realize into prose once a direction is solid (lean on /concepts2prose)
+prose-crystallization (.tex-led): take the settled spine and write/sharpen the shipped prose — tighten definitions, sharpen principles, complete worked examples — then feed concept changes back with /prose2concepts
 citation-integrity: convert informal inline author-year mentions into real \cite keys against references.bib, resolve vague sources, and add independent corroborating references so no claim rests on a single vendor post
 grounding-and-rigor: pull techniques and citations from the resources/ library to shore up claims, verify code snippets run as written, close logical gaps, and make every claim checkable in-chapter
 visual-pedagogy: add or improve TikZ figures that make one relationship visible per chapter (shared visual language, self-contained captions, referenced from prose); target the chapters whose central abstraction still has no figure

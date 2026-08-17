@@ -30,7 +30,7 @@ cmd="${1:-}"; shift || true
 # Commands that drive the engine need its Python present. Fail clearly if the
 # resolved engine is wrong/missing rather than erroring cryptically downstream.
 case "$cmd" in
-    step|evaluate|verify|compose|archive|doctor|db-archive)
+    step|evaluate|verify|consult|compose|archive|doctor|db-archive)
         if [[ ! -f "$ENGINE/compose.py" ]]; then
             echo "nel: engine not found at '$ENGINE' (no compose.py)." >&2
             echo "      Set NEL_ENGINE=/path/to/engine, or run 'python3 <engine>/scaffold.py update $PROJECT'." >&2
@@ -49,7 +49,7 @@ esac
 # `resources` are deliberately still allowed — doctor is what tells you this is
 # not a project, and resources lists the engine's own knowledge layer.
 case "$cmd" in
-    step|evaluate|verify|compose|build|archive|db-archive)
+    step|evaluate|verify|consult|compose|build|archive|db-archive)
         if [[ ! -f "$PROJECT/nel.toml" && ! -f "$PROJECT/project.toml" ]]; then
             echo "nel: '$PROJECT' is not a nel project (no nel.toml) — refusing '$cmd'." >&2
             echo "      This looks like the engine repo, which has no manuscript by design." >&2
@@ -61,7 +61,12 @@ esac
 
 case "$cmd" in
     step)       exec python3 "$ENGINE/step.py" "$@" --project "$PROJECT" ;;
-    evaluate)   exec python3 "$ENGINE/evaluate.py" --project "$PROJECT" ;;
+    # "$@" is forwarded so the attended lenses reach evaluate.py:
+    #   --persona <name>   one reviewer instead of the declared panel
+    #   --gates-only       compile + metrics + verifier, no reviewer at all
+    # Both are ephemeral (nothing cached, nothing recorded); the bare verb is
+    # unchanged and still runs the declared panel through the cache (ADR 0021).
+    evaluate)   exec python3 "$ENGINE/evaluate.py" --project "$PROJECT" "$@" ;;
     verify)
         # Proof mode's fast inner loop (ADR 0013): run ONLY the project's
         # declared [evaluation.verifier] command and print its verdict as one
@@ -69,6 +74,14 @@ case "$cmd" in
         # enough to run after every substantive edit, so `step` is spent on
         # drafts rather than on a construction that does not even check.
         exec python3 "$ENGINE/evaluate.py" --verify --project "$PROJECT" ;;
+    consult)
+        # Advice, not a verdict. Fans ONE question out to every installed
+        # backend family and prints their replies raw. The panel judges a
+        # finished draft; this is for a generator that is stuck mid-move and
+        # would otherwise have to spend a whole `step` to get another opinion.
+        # Ephemeral by the same rule as the attended lenses (ADR 0021): a
+        # question is not an attempt, so nothing is cached or recorded.
+        exec python3 "$ENGINE/consult.py" --project "$PROJECT" "$@" ;;
     compose)    exec python3 "$ENGINE/compose.py" --project "$PROJECT" ;;
     archive)    exec python3 "$ENGINE/db/archive.py" --project "$PROJECT" "$@" ;;
     doctor)     exec python3 "$ENGINE/doctor.py" --project "$PROJECT" "$@" ;;
@@ -157,6 +170,6 @@ case "$cmd" in
         "${pdflatex[@]}" >/dev/null 2>&1
         echo "built $PROJECT/$BUILD_DIR/main.pdf" ;;
     *)
-        echo "usage: ./nel {step <rationale> --approach <name> [--register tex|md|both] | evaluate | verify | compose | archive <top|show|history|status|pending|...> | db-archive [--by <id>] | build | resources [--path <name>] | doctor [--compile] [--fix] [--strict]}" >&2
+        echo "usage: ./nel {step <rationale> --approach <name> [--register tex|md|both] [--dead-end \"<obstruction>|<lesson>\"] | evaluate [--persona <name> | --gates-only] | verify | consult \"<question>\" | compose | archive <top|show|history|status|pending|ledger|retire|...> | db-archive [--by <id>] | build | resources [--path <name>] | doctor [--compile] [--fix] [--strict]}" >&2
         exit 2 ;;
 esac
