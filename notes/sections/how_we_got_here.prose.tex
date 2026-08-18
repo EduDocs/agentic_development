@@ -53,7 +53,7 @@ Removing that bottleneck was the next breakthrough.
 \section{The Transformer and the Age of Scale (2017--2018)}
 \label{section:TransformerEra}
 
-\emph{Attention}\index{Attention} arose as a solution to this bottleneck: rather than forcing the model to rely on a single summary vector, attention allows a network to dynamic compute a weighted score for every input word, selectively focusing on the most relevant parts of the input sequence at each step. 
+\emph{Attention}\index{Attention} arose as a solution to this bottleneck: rather than forcing the model to rely on a single summary vector, attention allows a network to dynamically compute a weighted score for every input word, selectively focusing on the most relevant parts of the input sequence at each step. 
 Additive attention first let a recurrent decoder look back across all intermediate encoder states rather than a single fixed vector (Bahdanau et al., 2015), relieving pressure on long inputs while retaining sequential recurrence.
 
 The mechanism acts as a dynamic weighted lookup, and stating it plainly is essential since virtually all modern AI architectures build upon it. 
