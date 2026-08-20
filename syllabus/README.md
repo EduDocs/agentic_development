@@ -34,7 +34,7 @@ Standard 3-credit course: **14 teaching weeks × 3 contact hours + a week-15 fin
 Boundaries are deliberately soft; the progression matters more than the grid.
 
 ## Learning outcomes
-By the end, you can (full text + evidence map: [`outcomes.md`](outcomes.md),
+Upon completion of this course, the learner will be able to: (full text + evidence map: [`outcomes.md`](outcomes.md),
 [`assessment-map.md`](assessment-map.md)):
 
 1. **LO1** Execute and direct an AI agent through a standardized, repeatable task sequence.
