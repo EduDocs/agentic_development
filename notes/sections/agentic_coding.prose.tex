@@ -8,12 +8,12 @@ The researcher is the author who has contracted out the typing.
 Every file the agent creates, every function it writes, every import it adds belongs to the researcher and will be submitted, graded, and eventually run again on a clean machine.
 
 This distinction matters because agentic tools can produce large volumes of plausible-looking code very quickly.
-The risk is not that the agent writes bad code; it is that the researcher stops reading.
-The moment the researcher outsources \emph{comprehension} to the agent, the work ceases to be reproducible, auditable, or defensible.
-Code ownership is key.
-A practical test of it: if a collaborator, a reviewer, or a thesis committee asked why a particular line is there, could you answer without replaying the session that produced it?
+The risk is not that the agent writes bad code; it is that the researcher stops \emph{verifying}.
+Reading every line of agent-written code does not scale, and it is not how practitioners work.
+What cannot be delegated is \emph{responsibility}: the researcher must be able to show that the code does what is claimed, even without having read every line.
+A practical test: if a collaborator, a reviewer, or a thesis committee asked why a result should be trusted, could you point to the evidence (tests, independent checks, a clean rerun) without replaying the session that produced it?
 
-Section~\ref{section:AgenticCodingLoop} lays out the read--direct--inspect loop; the sections that follow sharpen each phase in turn: directing the agent with precise instructions, reading the diff it produces (Section~\ref{section:ReadingDiff}), pinning a reproducible environment (Section~\ref{section:ReproducibleEnvironments}), and keeping a clean version history so the work stays auditable.
+Section~\ref{section:AgenticCodingLoop} lays out the specify--execute--verify--commit loop; the sections that follow sharpen each phase in turn: directing the agent with precise instructions, verifying what it produces (Section~\ref{section:Verification}), inspecting diffs where inspection pays off (Section~\ref{section:ReadingDiff}), pinning a reproducible environment (Section~\ref{section:ReproducibleEnvironments}), and keeping a clean version history so the work stays auditable.
 
 \section{The Agentic Coding Loop}
 \label{section:AgenticCodingLoop}
@@ -23,8 +23,8 @@ Agentic coding proceeds in a cycle that alternates between researcher direction 
 \begin{enumerate}
 \item \textbf{Specify.} State clearly what the agent should produce (a function, a script, a test) with explicit constraints on interface, style, and correctness criteria.
 \item \textbf{Execute.} The agent writes the code, runs it if appropriate, and reports the result.
-\item \textbf{Read.} The researcher reads changes the agent made through diffs, file inspection, and testing.
-\item \textbf{Commit or revise.} When the change is appropriate and understood, commit it. If not, provide corrective direction and iterate through the loop.
+\item \textbf{Verify.} The researcher checks the change with evidence scaled to its risk: tests, independent checks, reviewer agents, automated gates, and targeted reading of the diff (Section~\ref{section:Verification}).
+\item \textbf{Commit or revise.} When the change is verified to the level its risk warrants, commit it. If not, provide corrective direction and iterate through the loop.
 \end{enumerate}
 
 One word in that list carries technical weight worth pinning down before the loop can be run.
@@ -32,16 +32,16 @@ To \emph{commit}\index{Commit} is to record the project's current state in its v
 A commit is not a backup of a file: it is a labelled point the project can be returned to, compared against, or undone back to, and it is what turns a session of edits into a record someone else can audit.
 
 This iterative process is deliberately incremental.
-Each cycle should produce a small, reviewable change, not a thousand-line scaffolding dump.
-A change the researcher cannot fully read is a change the researcher does not own.
+Each cycle should produce a small, verifiable change, not a thousand-line scaffolding dump.
+A change the researcher has no means of checking is a change the researcher does not own.
 
 \begin{figure}[htb!]
 \begin{center}
 \input{figures/agentic-coding-loop}
 \caption{The agentic coding loop.
-Direction and execution alternate: the researcher \emph{specifies}, the agent \emph{executes}, the researcher \emph{reads} the resulting diff, and the change is either \emph{committed} or sent back for revision.
+Direction and execution alternate: the researcher \emph{specifies}, the agent \emph{executes}, the researcher \emph{verifies} the resulting change, and the change is either \emph{committed} or sent back for revision.
 The \emph{Execute} step is grounded by a verification oracle (interpreter, test runner, compiler) it can invoke on its own output, so each run--fail--fix cycle is checked feedback rather than a prediction; that grounded inner loop is why the outer loop converges even when the first attempt is wrong.
-\emph{Read} is the one node that cannot be delegated: it is the ownership checkpoint, where the researcher comes to understand the change well enough to answer for it.}
+\emph{Verify} is the accountability checkpoint: the checking itself may be automated or delegated, but the researcher decides what evidence suffices and answers for the result.}
 \label{figure:AgenticCodingLoop}
 \end{center}
 \end{figure}
@@ -69,7 +69,7 @@ That is a matter of judgment, not a test: it sits at the \emph{critic} end of th
 
 \begin{principle}
 \label{principle:IncrementalDevelopment}
-Prefer small, reviewable changes over large, opaque ones.
+Prefer small, verifiable changes over large, opaque ones.
 An instruction that says ``implement the entire pipeline'' will produce code faster than ``implement the data loader, then stop'' — but the former is harder to verify and harder to correct.
 Small steps compound correctly; large steps compound errors.
 \end{principle}
@@ -118,15 +118,44 @@ Compound instructions that ask for several things at once produce compound diffs
 
 \begin{remark}
 ``Add a CSV loader, write tests for it, and update the \code{CLAUDE.md} to document it'' is three tasks.
-If the tests are wrong, reverting them also reverts the loader.
-Three separate instructions (e.g., loader, then tests, then documentation) each produce a single-purpose commit that can be independently reviewed, accepted, or reverted.
+If the loader is wrong, reverting them also reverts the tests.
+Three separate instructions (e.g., tests, then loader, then documentation) each produce a single-purpose commit that can be independently reviewed, accepted, or reverted.
 \end{remark}
+
+\section{Verifying What the Agent Wrote}
+\label{section:Verification}\index{Verification}
+
+An agent can produce more code in a minute than a person can read in an hour, so line-by-line review of everything is neither feasible nor the standard practice.
+The researcher's responsibility is instead met by a \emph{portfolio} of checks, each cheap relative to reading and each catching a different kind of error, with effort concentrated where an error would cost most.
+
+\begin{enumerate}
+\item \textbf{Tests as the specification.} Write or approve tests \emph{before} the agent implements: known-answer cases against analytic or published results, invariants that must hold on every input, and edge cases such as empty or missing data. A test the researcher wrote states what correct means independently of the agent's code.
+\item \textbf{Independent checks.} A toy problem with a known answer, a second implementation of the core computation, sanity plots, unit and dimension checks, and perturbation tests (does a small change to the input move the output by a plausible amount?).
+\item \textbf{Reviewer agents.} A second agent, started in fresh context and prompted to find hidden assumptions and failure modes, can surface problems cheaply. It is correlated with the author model and shares its blind spots, so it supplements the other checks and never replaces them.
+\item \textbf{Automated gates.} Linters, type checkers, continuous integration, and pre-commit hooks reject whole classes of mistakes before a human looks.
+\item \textbf{Diff triage.} Read the summary and the list of files changed, then read closely only the high-risk parts: data loading and cleaning, statistics, numerics, and anything that touches reported results (Section~\ref{section:ReadingDiff}).
+\item \textbf{Provenance.} Small atomic commits, logged runs, and a one-command rerun on a clean machine make any later discrepancy traceable.
+\end{enumerate}
+
+\begin{principle}
+\label{principle:ScaleVerification}
+Scale verification to risk.
+Boilerplate that tests and gates cover needs a glance; a change to how data are filtered, scaled, or scored deserves a close read and an independent check.
+The researcher owns the decision about how much evidence is enough, and that decision is the part of the work that cannot be handed to the agent.
+\end{principle}
+
+\begin{example}
+An agent is asked to harmonize measurements from two instruments and quietly converts one column from milligrams to micrograms.
+The diff is a single line inside a longer refactor and the code runs cleanly.
+A known-answer test that feeds in a sample of known concentration and compares the output against the certified value fails at once, with no one having read that line.
+The test caught what a skim of the diff would likely have missed.
+\end{example}
 
 \section{Reading the Diff}
 \label{section:ReadingDiff}
 
 A \emph{diff}\index{Diff} is a compact representation of the changes between two versions of a file: lines added are prefixed with~\code{+}; lines removed with~\code{-}.
-Reading diffs before committing is a cornerstone habit in agentic coding.
+Reading diffs is the right tool where tests are weak or absent, and it is the final layer of the verification portfolio rather than a blanket rule: skim everything, read the risky parts closely.
 Every diff shares the same small anatomy (Figure~\ref{figure:DiffAnatomy}), worth learning once so the specimens below read at a glance.
 
 \begin{figure}[htb!]
@@ -162,7 +191,7 @@ The first two lines name the file as it was (\code{a/}) and as it now is (\code{
 the line beginning \code{@@} locates the excerpt, reporting where in the file the shown region starts and how long it is before and after the change.
 Lines beginning with a space are unchanged context, printed only so the reader can see where the new lines land,
 and the text after the closing \code{@@} names the enclosing function.
-A diff therefore shows a neighborhood, not a whole file: it is meant to be read in full in seconds, which is what makes reading every one of them a realistic habit rather than a pious one.
+A diff therefore shows a neighborhood, not a whole file: a small one can be read in seconds, which is what makes close reading of the risky ones realistic.
 Reading this diff reveals that the CSV branch assumes the target column is named \code{'target'} and that the remaining columns are all features.
 Neither of these constraints appears in the instruction; both affect correctness on real data.
 The diff also introduces a dependency on \code{pandas} (the \code{pd} alias) that must already be present in the environment, itself a change worth catching in the diff rather than at run time on a clean machine.
@@ -182,12 +211,12 @@ Nothing downstream announces this, and no oracle in the loop is asking the quest
 The diff is the only place the change is visible before the results are written up.
 \end{example}
 
-Reading diffs develops two habits.
+Targeted diff reading develops two habits.
 The first is \emph{catching errors}: agents make mistakes --- wrong assumptions, missing edge cases, subtle logic errors --- that are invisible in the running output but legible in the diff.
-The second is \emph{maintaining ownership}: a researcher who reads every diff understands their own codebase; one who does not is dependent on the agent to remember what was done and why.
+The second is \emph{maintaining a working model of the codebase}: a researcher who reads the consequential changes can still explain how the system works; one who reads nothing depends on the agent to remember what was done and why.
 
 \begin{remark}
-The  habit of reading changes and owning the result is what Anthropic's AI-fluency framework names \emph{diligence}: the discipline of ensuring that the speed an agent offers never costs the researcher responsibility, transparency, or accountability for what remains their own work.
+The habit of verifying changes in proportion to their risk, and answering for the result, is what Anthropic's AI-fluency framework names \emph{diligence}: the discipline of ensuring that the speed an agent offers never costs the researcher responsibility, transparency, or accountability for what remains their own work.
 Its companion competences in that framework, \emph{description} and \emph{discernment}, are developed in Chapter~\ref{chapter:ContextEngineering} and Chapter~\ref{chapter:Evaluation}.
 \end{remark}
 

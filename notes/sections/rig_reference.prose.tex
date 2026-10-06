@@ -40,7 +40,7 @@ Chapter~\ref{chapter:AgenticRig} introduced the layered permission model (Princi
 \item \textbf{Plan} --- read-only. The agent can explore and propose but cannot change anything. Use it for anything touching more than a couple of files, before granting write access.
 \end{itemize}
 
-The plan-then-execute workflow is the practical form of the specify--execute--read loop of Chapter~\ref{chapter:AgenticCoding}: enter plan mode, describe the goal, refine the proposed plan, then switch modes and let the agent execute the plan it already committed to.
+The plan-then-execute workflow is the practical form of the specify--execute--verify loop of Chapter~\ref{chapter:AgenticCoding}: enter plan mode, describe the goal, refine the proposed plan, then switch modes and let the agent execute the plan it already committed to.
 
 Standing rules live in \code{.claude/settings.json}, which is committed to the repository so a team shares one trust configuration:
 

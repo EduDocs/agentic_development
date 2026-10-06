@@ -12,19 +12,25 @@ videos:
 
 ## Purpose
 Make "the researcher owns every change" a working discipline: the
-specify–execute–read–commit loop and the habit of reading every diff.
+specify–execute–verify–commit loop, with verification scaled to risk (tests, independent
+checks, reviewer agents, and targeted reading) rather than line-by-line review of everything.
 
 <!-- EVOLVE-BLOCK-START -->
 ## Key points / spine
-- Agentic coding is authorship with the typing contracted out: every file the agent writes belongs to the researcher and will be graded and re-run on a clean machine. The risk is not bad code — it is the researcher who stops reading.
-- The **Specify → Execute → Read → Commit** loop, run incrementally (Principle~IncrementalDevelopment: small steps compound correctly; large steps compound errors).
-- **Reading the diff** is the single most important habit: the worked CSV-loader diff shows a diff *revealing* a hidden `'target'`-column assumption invisible in the running output.
+- Agentic coding is authorship with the typing contracted out: every file the agent writes belongs to the researcher and will be graded and re-run on a clean machine. The risk is not bad code — it is the researcher who stops *verifying*. Responsibility cannot be delegated; the means of verification can.
+- The **Specify → Execute → Verify → Commit** loop, run incrementally (Principle~IncrementalDevelopment: small steps compound correctly; large steps compound errors).
+- Reading every line does not scale and is not how practitioners work. Verification is a **portfolio scaled to risk**: (1) **tests as the spec** — write or approve tests *first*, including property/invariant tests and known-answer checks against analytic or published results; (2) **independent checks** — a second implementation, a toy problem with a known answer, sanity plots, unit and dimension checks, perturbation/sensitivity tests; (3) **reviewer agents** — a fresh-context critic or adversarial agent prompted to find assumptions and failure modes (useful, but correlated with the author model, so never the sole check); (4) **automated gates** — linters, type checkers, CI, and pre-commit hooks; (5) **diff-level triage** — read summaries and diffstats, then read closely only the high-risk parts (data handling, statistics, numerics, anything touching results); (6) **provenance** — small atomic commits, logged runs, and a one-command clean-machine rerun.
+- **Reading the diff** remains the right tool where tests are weak: the worked CSV-loader diff shows a diff *revealing* a hidden `'target'`-column assumption invisible in the running output. Treat it as targeted inspection, not a blanket rule.
 - Reproducibility: dependency pinning, virtual environments, a **one-command run**; atomic commits (Principle~AtomicCommits) with messages that explain *why*.
 
 ## Directions
 - The diff-reading example was singled out by the clarity panel as the manuscript's most effective device — preserve the "show what the diff reveals" pattern and consider a second, subtler instance (a silent dtype/units change).
 
+- Add a short worked example of a test or independent check catching an error that reading the diff would likely miss (e.g. a known-answer test exposing a silent units/dtype change), to pair with the CSV-loader diff.
+- Add a "what to read closely vs. verify by test" risk-triage heuristic; note the limits of reviewer agents (shared blind spots with the author model).
+
 ## Decisions
+- 2026-10-06: spine reframed from "read every diff" to risk-scaled verification (tests, independent checks, reviewer agents, gates, triage); human accountability kept, line-by-line reading demoted to targeted inspection. The 2026-07-10 entries below reflect the earlier framing and the prose and the diligence Remark need to be updated to match.
 - 2026-07-10: read-every-diff framed as a professional discipline and explicitly forward-referenced from Ch.~AgenticRig's human-in-the-loop material, so the two chapters form one argument about ownership.
 - 2026-07-10 (realized in prose): added the **chapter roadmap** after the opening (read–direct–inspect loop, then the diff / environments / version-history sections).
 - 2026-07-10 (realized in prose, rigor nit): the CSV-loader diff discussion now notes the **implicit `pandas`/`pd` dependency** the diff introduces — reinforcing "read what the diff assumes" rather than modeling the omission.
