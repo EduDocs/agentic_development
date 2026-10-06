@@ -7,6 +7,7 @@ Building the loop yourself, rather than configuring a pre-built one, means under
 Building a research agent means writing tool definitions, choosing how to structure the control loop, specifying what the agent should return, and anticipating the ways the loop can fail.
 This chapter develops each of these in turn.
 None of it requires new mathematics, and the program is smaller than it sounds: an agent of the kind built here is a few dozen lines of ordinary Python wrapped around one repeated network call.
+The examples assume basic Python familiarity, including functions, dictionaries, loops, and exceptions; no prior experience building agents is required.
 Your code sends the conversation so far to the model's API (the network endpoint a program sends text to and reads a reply from), inspects the reply, and, when the reply asks for a tool, runs the matching Python function and sends its result back.
 The machinery is small; what is unfamiliar is that one participant in the loop is not deterministic, so the program must be written to tolerate a collaborator that will sometimes do the wrong thing.
 Section~\ref{section:ToolDefinitions} covers tool definitions and their schemas; Section~\ref{section:ReAct} develops the ReAct control pattern that interleaves reasoning and action; Section~\ref{section:StructuredOutputs} shows how to constrain what the agent returns; Section~\ref{section:FailureModes} catalogs the ways the loop breaks and how to guard against each; and Section~\ref{section:WorkflowsAndAgents} steps back to when a fixed workflow, rather than an agent, is the better thing to build.
@@ -43,7 +44,7 @@ In the Anthropic API, a tool is specified as a JSON object with the following st
 {
   "name": "fit_model",
   "description": "Fit a candidate symbolic expression to the training
-    data and return the mean squared error on the held-out validation split.
+    data and return the mean squared error (MSE) on the held-out validation split.
     The expression must be a Python-evaluable string using variables
     x0, x1, ... corresponding to the feature columns.",
   "input_schema": {
@@ -60,12 +61,14 @@ In the Anthropic API, a tool is specified as a JSON object with the following st
 \end{lstlisting}
 
 The tool above belongs to the symbolic-regression setting used throughout the course: a candidate formula goes in as text, and a number measuring how badly it fits comes back.
+It reports mean squared error (MSE) on a held-out validation split: a portion of the data set aside to compare candidate formulas rather than fit them. If the analysis also uses a final test set, reserve that for a one-time check after the choices are settled.
 JSON is nothing more than a text format for nested key-value data, the same shape as a Python dictionary, so the object repays a close reading field by field.
 The \code{name} is the identifier the model emits when it wants the tool; it comes back verbatim in the model's reply, and the loop uses it to look up which Python function to run.
 The \code{input\_schema} declares the arguments in JSON Schema, a small conventional vocabulary for describing data:
 \code{"type": "object"} says the arguments arrive as a set of named fields, \code{properties} lists those fields with a type and a description apiece, and \code{required} names the ones the model may not omit.
 Note also what the object does \emph{not} contain, which is any code that fits anything:
 the definition is the advertisement, and the implementation is a separate Python function the loop invokes when the model asks for the tool by name.
+The phrase ``Python-evaluable'' describes the expression's syntax, not its safety: do not pass model-supplied text to unrestricted Python \code{eval}. Use a parser that accepts only the operators and variables you intend, or evaluate it in an isolated sandbox.
 
 The description field is the most consequential.
 It tells the model \emph{when to call the tool} (what preconditions must hold), \emph{what the tool expects} (the semantics of each parameter), and \emph{what the tool returns} (what the model should do with the result).
@@ -148,7 +151,7 @@ The model never executes anything itself; it asks, and the loop decides whether 
 
 \begin{remark}
 A single turn need not carry a single tool call.
-When a task fans out into independent sub-tasks, such as fitting five candidate expressions or querying three data sources, a frontier model can emit several tool calls in one response, and the loop executes them concurrently, appends all the results as a batch, and re-invokes the model once (Anthropic, 2025).
+When a task fans out into independent sub-tasks, such as fitting five candidate expressions or querying three data sources, a leading model can emit several tool calls in one response, and the loop executes them concurrently, appends all the results as a batch, and re-invokes the model once (Anthropic, 2025).
 This \emph{parallel tool calling}\index{Parallel!tool calling} is the idiomatic way to run the fan-out patterns of Chapter~\ref{chapter:Orchestration}: the round trips collapse from one per call to one per batch, and the model reasons over the whole set of results together.
 The loop's obligations are unchanged, each result is still validated at its own tool boundary, but its accounting becomes per batch rather than per call.
 \end{remark}
@@ -179,6 +182,7 @@ Everything the chapter has introduced so far, the tool definitions, the message 
 
 \begin{example}
 The control loop, stripped to its essentials.
+The listing is illustrative: setup for \code{client}, \code{TOOLS}, and the API response is omitted.
 \begin{lstlisting}[language=python]
 messages = [{"role": "user", "content": task_description}]
 
@@ -195,6 +199,7 @@ for step in range(MAX_STEPS):
     results = []
     for c in calls:                # one turn may request several tools
         try:
+            # ** unpacks the input fields as named arguments
             out = TOOLS[c.name](**c.input)
         except Exception as err:   # the error becomes the next observation
             out = f"ERROR {type(err).__name__}: {err}"
