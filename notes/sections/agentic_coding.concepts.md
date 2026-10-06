@@ -23,11 +23,8 @@ checks, reviewer agents, and targeted reading) rather than line-by-line review o
 - **Reading the diff** remains the right tool where tests are weak: the worked CSV-loader diff shows a diff *revealing* a hidden `'target'`-column assumption invisible in the running output. Treat it as targeted inspection, not a blanket rule.
 - Reproducibility: dependency pinning, virtual environments, a **one-command run**; atomic commits (Principle~AtomicCommits) with messages that explain *why*.
 
-## Directions
-- The diff-reading example was singled out by the clarity panel as the manuscript's most effective device — preserve the "show what the diff reveals" pattern and consider a second, subtler instance (a silent dtype/units change).
-
-- Add a short worked example of a test or independent check catching an error that reading the diff would likely miss (e.g. a known-answer test exposing a silent units/dtype change), to pair with the CSV-loader diff.
-- Add a "what to read closely vs. verify by test" risk-triage heuristic; note the limits of reviewer agents (shared blind spots with the author model).
+## Directions (complete)
+- Preserved the diff-reading example, added a known-answer example of a test catching a silent units/dtype error, and added risk-triage guidance that notes reviewer agents' shared blind spots (see the 2026-10-06 decision above).
 
 ## Decisions
 - 2026-10-06: spine reframed from "read every diff" to risk-scaled verification (tests, independent checks, reviewer agents, gates, triage); human accountability kept, line-by-line reading demoted to targeted inspection. The 2026-07-10 entries below document the earlier framing; this pass updates the prose and the diligence Remark to match the new framing.

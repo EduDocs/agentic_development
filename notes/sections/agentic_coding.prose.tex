@@ -127,12 +127,12 @@ If the loader is wrong, reverting the commit also reverts its tests.
 \label{section:Verification}\index{Verification}
 
 An agent can produce more code in a minute than a person can read in an hour, so line-by-line review of everything is neither feasible nor the standard practice.
-The researcher's responsibility is instead met by a \emph{portfolio} of checks, each cheap relative to reading and each catching a different kind of error, with effort concentrated where an error would cost most.
+The researcher's responsibility is instead met by a \emph{portfolio} of complementary checks, each catching different kinds of error. Choose their depth and cost according to the risk, concentrating effort where an error would cost most.
 
 \begin{enumerate}
 \item \textbf{Tests as the specification.} Write or approve tests \emph{before} the agent implements: known-answer cases against analytic or published results, invariants that must hold on every input, and edge cases such as empty or missing data. A test the researcher wrote states what correct means independently of the agent's code.
 \item \textbf{Independent checks.} A toy problem with a known answer, a second implementation of the core computation, sanity plots, unit and dimension checks, and perturbation tests (does a small change to the input move the output by a plausible amount?).
-\item \textbf{Reviewer agents.} A second agent, started in fresh context and prompted to find hidden assumptions and failure modes, can surface problems cheaply. It is correlated with the author model and shares its blind spots, so it supplements the other checks and never replaces them.
+\item \textbf{Reviewer agents.} A second agent, started in fresh context and prompted to find hidden assumptions and failure modes, can surface problems the author may miss; weigh its value against its setup and review costs. It is correlated with the author model and shares its blind spots, so it supplements the other checks and never replaces them.
 \item \textbf{Automated gates.} Linters, type checkers, continuous integration, and pre-commit hooks reject whole classes of mistakes before a human looks.
 \item \textbf{Diff triage.} Read the summary and the list of files changed, then read closely only the high-risk parts: data loading and cleaning, statistics, numerics, and anything that touches reported results (Section~\ref{section:ReadingDiff}).
 \item \textbf{Provenance.} Small atomic commits, logged runs, and a one-command rerun on a clean machine make any later discrepancy traceable.
