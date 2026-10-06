@@ -30,7 +30,7 @@ checks, reviewer agents, and targeted reading) rather than line-by-line review o
 - Add a "what to read closely vs. verify by test" risk-triage heuristic; note the limits of reviewer agents (shared blind spots with the author model).
 
 ## Decisions
-- 2026-10-06: spine reframed from "read every diff" to risk-scaled verification (tests, independent checks, reviewer agents, gates, triage); human accountability kept, line-by-line reading demoted to targeted inspection. The 2026-07-10 entries below reflect the earlier framing and the prose and the diligence Remark need to be updated to match.
+- 2026-10-06: spine reframed from "read every diff" to risk-scaled verification (tests, independent checks, reviewer agents, gates, triage); human accountability kept, line-by-line reading demoted to targeted inspection. The 2026-07-10 entries below document the earlier framing; this pass updates the prose and the diligence Remark to match the new framing.
 - 2026-07-10: read-every-diff framed as a professional discipline and explicitly forward-referenced from Ch.~AgenticRig's human-in-the-loop material, so the two chapters form one argument about ownership.
 - 2026-07-10 (realized in prose): added the **chapter roadmap** after the opening (read–direct–inspect loop, then the diff / environments / version-history sections).
 - 2026-07-10 (realized in prose, rigor nit): the CSV-loader diff discussion now notes the **implicit `pandas`/`pd` dependency** the diff introduces — reinforcing "read what the diff assumes" rather than modeling the omission.
