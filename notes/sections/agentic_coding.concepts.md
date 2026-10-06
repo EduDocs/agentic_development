@@ -24,7 +24,7 @@ checks, reviewer agents, and targeted reading) rather than line-by-line review o
 - Reproducibility: dependency pinning, virtual environments, a **one-command run**; atomic commits (Principle~AtomicCommits) with messages that explain *why*.
 
 ## Directions (complete)
-- Preserved the diff-reading example, added a known-answer example of a test catching a silent units/dtype error, and added risk-triage guidance that notes reviewer agents' shared blind spots (see the 2026-10-06 decision above).
+- Preserved the diff-reading example, added a known-answer example of a test catching a silent unit-conversion error, and added risk-triage guidance that notes reviewer agents' shared blind spots (see the 2026-10-06 decision below).
 
 ## Decisions
 - 2026-10-06: spine reframed from "read every diff" to risk-scaled verification (tests, independent checks, reviewer agents, gates, triage); human accountability kept, line-by-line reading demoted to targeted inspection. The 2026-07-10 entries below document the earlier framing; this pass updates the prose and the diligence Remark to match the new framing.
