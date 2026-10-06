@@ -146,7 +146,7 @@ The researcher owns the decision about how much evidence is enough, and that dec
 \end{principle}
 
 \begin{example}
-An agent is asked to harmonize measurements from two instruments and quietly converts one column from milligrams to micrograms.
+An agent is asked to harmonize measurements from two instruments and converts a measurement of 2 milligrams per liter to micrograms per liter by mistakenly dividing by 1,000 instead of multiplying, yielding 0.002 rather than 2,000 micrograms per liter.
 The diff is a single line inside a longer refactor and the code runs cleanly.
 A known-answer test that feeds in a sample of known concentration and compares the output against the certified value fails at once, with no one having read that line.
 The test caught what a skim of the diff would likely have missed.
