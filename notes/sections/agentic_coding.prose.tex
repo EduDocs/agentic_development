@@ -118,8 +118,9 @@ Compound instructions that ask for several things at once produce compound diffs
 
 \begin{remark}
 ``Add a CSV loader, write tests for it, and update the \code{CLAUDE.md} to document it'' is three tasks.
-If the loader is wrong, reverting them also reverts the tests.
-Three separate instructions (e.g., tests, then loader, then documentation) each produce a single-purpose commit that can be independently reviewed, accepted, or reverted.
+Keep the instructions separate: write the tests first, then implement the loader, then update the documentation.
+Commit the passing loader and its tests together as one conceptual change; keep the documentation in a separate commit.
+If the loader is wrong, reverting the commit also reverts its tests.
 \end{remark}
 
 \section{Verifying What the Agent Wrote}
