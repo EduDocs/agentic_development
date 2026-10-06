@@ -15,7 +15,7 @@
     {Verification oracle\\\scriptsize interpreter, tests};
 
 \draw[conceptflow] (specify) -- node[conceptlabel, midway, above]{instruction} (exec);
-\draw[conceptflow] (exec) -- node[conceptlabel, midway, right]{diff} (verify);
+\draw[conceptflow] (exec) -- node[conceptlabel, midway, right]{change} (verify);
 \draw[conceptflow] (verify) -- node[conceptlabel, midway, below]{evidence suffices} (commit);
 \draw[conceptflow] (commit) -- node[conceptlabel, midway, left]{revise / next change} (specify);
 \draw[conceptflow, <->] (exec) -- node[conceptlabel, midway, above]{run / fail / fix} (oracle);
